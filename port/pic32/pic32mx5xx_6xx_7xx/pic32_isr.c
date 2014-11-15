@@ -7,7 +7,7 @@
 #include "port/bitop.h"
 #include "lib/module.h"
 
-static NMODULE_INFO_CREATE("ISR PIC32mx5xx/6xx/7xx driver", "Nenad Radulovic");
+static const NMODULE_INFO_CREATE("ISR PIC32mx5xx/6xx/7xx driver", "Nenad Radulovic");
 
 static uint32_t g_isr_bitmap[3];
 

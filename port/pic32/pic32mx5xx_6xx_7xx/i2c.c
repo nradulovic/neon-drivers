@@ -7,11 +7,9 @@
 #include "mcu/i2c.h"
 #include "pic32_isr.h"
 #include "pic32_clocks.h"
-#include "lib/bitop.h"
-#include "port/i2c.h"
 #include "registers.h"
+#include "lib/bitop.h"
 #include "lib/debug.h"
-#include "port/bitop.h"
 #include "lib/module.h"
 
 #define CONFIG_PULSE_GOBBLER_NS         104
@@ -55,7 +53,7 @@ struct i2c_bus
     const struct i2c_periph * const device;
 };
 
-static NMODULE_INFO_CREATE("I2C PIC32mx5xx/6xx/7xx driver", "Nenad Radulovic");
+static const NMODULE_INFO_CREATE("I2C PIC32mx5xx/6xx/7xx driver", "Nenad Radulovic");
 
 #if defined (I2C_ID_1)
 static const struct i2c_periph g_i2c1_periph =
