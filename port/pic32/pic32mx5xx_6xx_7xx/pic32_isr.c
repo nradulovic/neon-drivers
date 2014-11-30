@@ -1,11 +1,11 @@
 
 #include <xc.h>
 
-#include "plat/isr.h"
+#include "port/isr.h"
 #include "pic32_isr.h"
-#include "lib/debug.h"
+#include "shares/debug.h"
 #include "port/bitop.h"
-#include "lib/module.h"
+#include "shared/component.h"
 
 static const NMODULE_INFO_CREATE("ISR PIC32mx5xx/6xx/7xx driver", "Nenad Radulovic");
 
