@@ -10,27 +10,26 @@
 extern "C" {
 #endif
 
-#define rtc_init_driver             ab_rtcmc_init_driver
-#define rtc_term_driver             ab_rtcmc_term_driver
-#define rtc_set_time                ab_rtcmc_set_time
-#define rtc_get_time                ab_rtcmc_get_time
-#define rtc_tick_isr                ab_rtcmc_tick_isr
+#define rtc_default_init_driver     ab_rtcmc_init_driver
+#define rtc_default_term_driver     ab_rtcmc_term_driver
+#define rtc_default_set_time        ab_rtcmc_set_time
+#define rtc_default_get_time        ab_rtcmc_get_time
+#define rtc_default_tick            ab_rtcmc_tick
 
 struct i2c_bus;
 struct nrtc_time;
 
-struct ab_rtcmc_32768_eoz9_config
+struct ab_rtcmc_config
 {
     struct i2c_bus *            bus;
     uint8_t                     id;
-    ncpu_reg                    isr_prio;
 };
 
-nerror ab_rtcmc_init_driver(const void * config);
-void   ab_rtcmc_term_driver(void);
-nerror ab_rtcmc_set_time(const struct nrtc_time * time);
-nerror ab_rtcmc_get_time(struct nrtc_time * time);
-void   ab_rtcmc_tick_isr(void);
+void ab_rtcmc_init_driver(const void * config);
+void ab_rtcmc_term_driver(void);
+void ab_rtcmc_set_time(const struct nrtc_time * time);
+void ab_rtcmc_get_time(struct nrtc_time * time);
+void ab_rtcmc_tick(void);
 
 #ifdef	__cplusplus
 }

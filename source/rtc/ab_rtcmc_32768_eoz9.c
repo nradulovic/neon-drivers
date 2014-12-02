@@ -1,18 +1,12 @@
 
 #include <string.h>
 
-#include "rtc/ab_rtcmc_32768_eoz9.h"
-#include "rtc/rtc_class.h"
 #include "port/i2c.h"
 #include "shared/error.h"
-
-
-#define CONFIG_DEFAULT_YEAR             2014
-#define CONFIG_DEFAULT_MONTH            1
-#define CONFIG_DEFAULT_DAY              1
-#define CONFIG_DEFAULT_HOUR             0
-#define CONFIG_DEFAULT_MINUTE           0
-#define CONFIG_DEFAULT_SECOND           0
+#include "lib/num_conv.h"
+#include "driver/config.h"
+#include "rtc/ab_rtcmc_32768_eoz9.h"
+#include "rtc/rtc_class.h"
 
 #define REG_CONTROL_1                   0x00
 #define REG_CONTROL_INT                 0x01
@@ -80,10 +74,11 @@
 struct context
 {
     struct i2c_slave            i2c_slave;
-    ncpu_reg                    isr_prio;
+    struct nrtc_time            time;
+    struct nrtc_state           state;
 };
 
-struct rtc_time_registers
+struct PORT_C_PACKED ab_rtcmc_time_registers
 {
     uint8_t                     seconds;
     uint8_t                     minutes;
@@ -94,110 +89,185 @@ struct rtc_time_registers
     uint8_t                     years;
 };
 
-static struct context g_context;
+static struct context                g_context;
 
-struct nrtc_time              g_rtc_time;
-
-const struct i2c_slave_config g_rtc_i2c_config =
+static const struct i2c_slave_config g_rtc_i2c_config =
 {
     I2C_SLAVE_RD_NACK | I2C_SLAVE_RD_REPEAT,
     RTC_SLAVE_ADDRESS
 };
 
-nerror ab_rtcmc_init_driver(const void * config)
+void ab_rtcmc_init_driver(
+    const void *                config)
 {
-    const struct ab_rtcmc_32768_eoz9_config * custom_config;
     uint8_t                     reg;
-    struct rtc_time_registers   regs;
     nerror                      error;
 
-    custom_config      = (const struct ab_rtcmc_32768_eoz9_config *)config;
-    g_context.isr_prio = custom_config->isr_prio;
-    i2c_slave_open(&g_context.i2c_slave, &g_rtc_i2c_config, custom_config->bus,
-        custom_config->id);
-
+    g_context.state.time   = RTC_TIME_VALID;
+    g_context.state.device = RTC_DEVICE_OK;
+    i2c_slave_open(&g_context.i2c_slave, &g_rtc_i2c_config,
+        ((const struct ab_rtcmc_config *)config)->bus,
+        ((const struct ab_rtcmc_config *)config)->id);
     error = i2c_slave_read(&g_context.i2c_slave, REG_CONTROL_STATUS, &reg, 1);
 
     if (error) {
-        goto FAILURE;
+        goto NO_COMM_FAILURE;
     }
 
     if (reg & CONTROL_STATUS_PON) {
+        struct nrtc_time        new_time;
+
         reg &= ~CONTROL_STATUS_PON;
 
-        error = i2c_slave_write(&g_context.i2c_slave, REG_CONTROL_STATUS, &reg, 1);
+        error = i2c_slave_write(&g_context.i2c_slave, REG_CONTROL_STATUS, &reg,
+            1);
 
         if (error) {
-            goto FAILURE;
+            goto NO_COMM_FAILURE;
         }
-        g_rtc_time.year   = CONFIG_DEFAULT_YEAR;
-        g_rtc_time.month  = CONFIG_DEFAULT_MONTH;
-        g_rtc_time.day    = CONFIG_DEFAULT_DAY;
-        g_rtc_time.hour   = CONFIG_DEFAULT_HOUR;
-        g_rtc_time.minute = CONFIG_DEFAULT_MINUTE;
-        g_rtc_time.second = CONFIG_DEFAULT_SECOND;
+        new_time.year   = CONFIG_DEFAULT_RTC_YEAR;
+        new_time.month  = CONFIG_DEFAULT_RTC_MONTH;
+        new_time.day    = CONFIG_DEFAULT_RTC_DAY;
+        new_time.hour   = CONFIG_DEFAULT_RTC_HOUR;
+        new_time.minute = CONFIG_DEFAULT_RTC_MINUTE;
+        new_time.second = CONFIG_DEFAULT_RTC_SECOND;
+        ab_rtcmc_set_time(&new_time);
 
-        error = ab_rtcmc_set_time(&g_rtc_time);
-
-        if (error) {
-            goto FAILURE;
-        }
+        g_context.state.time = RTC_TIME_NOT_SET;
     }
-    memset(&regs, 0, sizeof(regs));
     reg   = 0;
     error = i2c_slave_write(&g_context.i2c_slave, REG_CONTROL_INT, &reg, 1);
 
     if (error) {
-        goto FAILURE;
+        goto NO_COMM_FAILURE;
     }
     reg   = CONTROL_1_WE;
     error = i2c_slave_write(&g_context.i2c_slave, REG_CONTROL_1, &reg, 1);
 
     if (error) {
-        goto FAILURE;
+        goto NO_COMM_FAILURE;
     }
     reg   = 32;
     error = i2c_slave_write(&g_context.i2c_slave, REG_TIMER_LOW, &reg, 1);
 
     if (error) {
-        goto FAILURE;
+        goto NO_COMM_FAILURE;
     }
     reg   = 0;
     error = i2c_slave_write(&g_context.i2c_slave, REG_TIMER_HIGH, &reg, 1);
 
     if (error) {
-        goto FAILURE;
+        goto NO_COMM_FAILURE;
     }
     reg   = CONTROL_1_TAR | CONTROL_1_WE;
     error = i2c_slave_write(&g_context.i2c_slave, REG_CONTROL_1, &reg, 1);
 
     if (error) {
-        goto FAILURE;
+        goto NO_COMM_FAILURE;
     }
     reg  |= CONTROL_1_TE;
     error = i2c_slave_write(&g_context.i2c_slave, REG_CONTROL_1, &reg, 1);
 
     if (error) {
-        goto FAILURE;
+        goto NO_COMM_FAILURE;
     }
     reg   = 0;
     error = i2c_slave_write(&g_context.i2c_slave, REG_CONTROL_INT_FLAG, &reg, 0);
 
     if (error) {
-        goto FAILURE;
+        goto NO_COMM_FAILURE;
     }
     reg   = CONTROL_INT_TIE;
     error = i2c_slave_write(&g_context.i2c_slave, REG_CONTROL_INT, &reg, 0);
     
     if (error) {
-        goto FAILURE;
+        goto NO_COMM_FAILURE;
     }
 
-    return (error);
-FAILURE:
-    g_rtc_time.year = 0;
+    return;
+NO_COMM_FAILURE:
+    g_context.state.time   = RTC_TIME_NOT_VALID;
+    g_context.state.device = RTC_DEVICE_NO_COMM;
+    g_context.time.year    = CONFIG_DEFAULT_RTC_YEAR;
+    g_context.time.month   = CONFIG_DEFAULT_RTC_MONTH;
+    g_context.time.day     = CONFIG_DEFAULT_RTC_DAY;
+    g_context.time.hour    = CONFIG_DEFAULT_RTC_HOUR;
+    g_context.time.minute  = CONFIG_DEFAULT_RTC_MINUTE;
+    g_context.time.second  = CONFIG_DEFAULT_RTC_SECOND;
 
-    return (error);
+    return;
 }
 
+void ab_rtcmc_term_driver(void)
+{
+    g_context.state.device = RTC_DEVICE_INACTIVE;
+}
 
+void ab_rtcmc_set_time(
+    const struct nrtc_time *    time)
+{
+    struct PORT_C_PACKED ab_rtcmc_time_registers regs;
+    nerror                      error;
+
+    regs.years   = bin_to_bcd(time->year - 2000u);
+    regs.months  = bin_to_bcd(time->month);
+    regs.days    = bin_to_bcd(time->day);
+    regs.hours   = bin_to_bcd(time->hour);
+    regs.minutes = bin_to_bcd(time->minute);
+    regs.seconds = bin_to_bcd(time->second);
+
+    error = i2c_slave_write(&g_context.i2c_slave, REG_SECONDS,
+        (const uint8_t *)&regs, sizeof(regs));
+
+    if (error) {
+        goto NO_COMM_FAILURE;
+    }
+    memcpy(&g_context.time, time, sizeof(g_context.time));
+    g_context.state.time   = RTC_TIME_VALID;
+    g_context.state.device = RTC_DEVICE_OK;
+
+    return;
+NO_COMM_FAILURE:
+    g_context.state.time   = RTC_TIME_NOT_VALID;
+    g_context.state.device = RTC_DEVICE_NO_COMM;
+
+    return;
+}
+
+void ab_rtcmc_get_time(
+    struct nrtc_time *          time)
+{
+    memcpy(time, &g_context.time, sizeof(*time));
+}
+
+void ab_rtcmc_tick(void)
+{
+    struct PORT_C_PACKED ab_rtcmc_time_registers regs;
+    uint8_t                     reg;
+    nerror                      error;
+
+    reg   = 0;
+    error = i2c_slave_write(&g_context.i2c_slave, REG_CONTROL_INT_FLAG, &reg, 1);
+
+    if (error) {
+        goto FAILURE;
+    }
+    error = i2c_slave_read(&g_context.i2c_slave, REG_SECONDS, (uint8_t *)&regs,
+        sizeof(regs));
+
+    if (error) {
+        goto FAILURE;
+    }
+    g_context.state.device = RTC_DEVICE_OK;
+    g_context.time.year   = (uint16_t)bcd_to_bin(regs.years) + 2000u;
+    g_context.time.month  = bcd_to_bin(regs.months);
+    g_context.time.day    = bcd_to_bin(regs.days);
+    g_context.time.hour   = bcd_to_bin(regs.hours);
+    g_context.time.minute = bcd_to_bin(regs.minutes);
+    g_context.time.second = bcd_to_bin(regs.seconds);
+
+    return;
+FAILURE:
+
+    return;
+}
