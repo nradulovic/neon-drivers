@@ -103,8 +103,7 @@ void ab_rtcmc_init_driver(
     uint8_t                     reg;
     nerror                      error;
 
-    g_context.state.time   = RTC_TIME_VALID;
-    g_context.state.device = RTC_DEVICE_OK;
+    g_context.state.time = 0;
     i2c_slave_open(&g_context.i2c_slave, &g_rtc_i2c_config,
         ((const struct ab_rtcmc_config *)config)->bus,
         ((const struct ab_rtcmc_config *)config)->id);
@@ -132,8 +131,9 @@ void ab_rtcmc_init_driver(
         new_time.minute = CONFIG_DEFAULT_RTC_MINUTE;
         new_time.second = CONFIG_DEFAULT_RTC_SECOND;
         ab_rtcmc_set_time(&new_time);
-
-        g_context.state.time = RTC_TIME_NOT_SET;
+        g_context.state.time &= ~RTC_TIME_SET;
+    } else {
+        g_context.state.time |=  RTC_TIME_SET;
     }
     reg   = 0;
     error = i2c_slave_write(&g_context.i2c_slave, REG_CONTROL_INT, &reg, 1);
@@ -183,10 +183,12 @@ void ab_rtcmc_init_driver(
     if (error) {
         goto NO_COMM_FAILURE;
     }
+    g_context.state.time  |= RTC_TIME_VALID;
+    g_context.state.device = RTC_DEVICE_OK;
 
     return;
 NO_COMM_FAILURE:
-    g_context.state.time   = RTC_TIME_NOT_VALID;
+    g_context.state.time  &= ~RTC_TIME_VALID;
     g_context.state.device = RTC_DEVICE_NO_COMM;
     g_context.time.year    = CONFIG_DEFAULT_RTC_YEAR;
     g_context.time.month   = CONFIG_DEFAULT_RTC_MONTH;
@@ -200,6 +202,7 @@ NO_COMM_FAILURE:
 
 void ab_rtcmc_term_driver(void)
 {
+    g_context.state.time  &= ~(RTC_TIME_SET_AND_VALID);
     g_context.state.device = RTC_DEVICE_INACTIVE;
 }
 
@@ -223,12 +226,12 @@ void ab_rtcmc_set_time(
         goto NO_COMM_FAILURE;
     }
     memcpy(&g_context.time, time, sizeof(g_context.time));
-    g_context.state.time   = RTC_TIME_VALID;
+    g_context.state.time  |= RTC_TIME_SET_AND_VALID;
     g_context.state.device = RTC_DEVICE_OK;
 
     return;
 NO_COMM_FAILURE:
-    g_context.state.time   = RTC_TIME_NOT_VALID;
+    g_context.state.time  &= ~(RTC_TIME_SET_AND_VALID);
     g_context.state.device = RTC_DEVICE_NO_COMM;
 
     return;
@@ -258,16 +261,19 @@ void ab_rtcmc_tick(void)
     if (error) {
         goto FAILURE;
     }
+    g_context.state.time  |= RTC_TIME_VALID;
     g_context.state.device = RTC_DEVICE_OK;
-    g_context.time.year   = (uint16_t)bcd_to_bin(regs.years) + 2000u;
-    g_context.time.month  = bcd_to_bin(regs.months);
-    g_context.time.day    = bcd_to_bin(regs.days);
-    g_context.time.hour   = bcd_to_bin(regs.hours);
-    g_context.time.minute = bcd_to_bin(regs.minutes);
-    g_context.time.second = bcd_to_bin(regs.seconds);
+    g_context.time.year    = (uint16_t)bcd_to_bin(regs.years) + 2000u;
+    g_context.time.month   = bcd_to_bin(regs.months);
+    g_context.time.day     = bcd_to_bin(regs.days);
+    g_context.time.hour    = bcd_to_bin(regs.hours);
+    g_context.time.minute  = bcd_to_bin(regs.minutes);
+    g_context.time.second  = bcd_to_bin(regs.seconds);
 
     return;
 FAILURE:
+    g_context.state.time  &= ~RTC_TIME_VALID;
+    g_context.state.device = RTC_DEVICE_NO_COMM;
 
     return;
 }

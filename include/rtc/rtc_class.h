@@ -7,9 +7,9 @@
 
 enum nrtc_time_state
 {
-    RTC_TIME_NOT_SET,
-    RTC_TIME_NOT_VALID,
-    RTC_TIME_VALID
+    RTC_TIME_SET                = (0x1u << 0),
+    RTC_TIME_VALID              = (0x1u << 1),
+    RTC_TIME_SET_AND_VALID      = RTC_TIME_SET | RTC_TIME_VALID
 };
 
 enum nrtc_device_state
