@@ -12,10 +12,12 @@
 #endif
 
 #define GPIO_INPUT                      (0x0ul << 0)
-#define GPIO_OUTPUT                     (0x1ul << 0)
-#define GPIO_OUTPUT_OPEN_DRAIN          (0x2ul << 0)
-#define GPIO_PULL_UP                    (0x1ul << 2)
-#define GPIO_PULL_DOWN                  (0x2ul << 2)
+#define GPIO_OUTPUT_LOW                 (0x1ul << 0)
+#define GPIO_OUTPUT_HIGH                (0x2ul << 0)
+#define GPIO_OUTPUT_OPEN_DRAIN_LOW      (0x3ul << 0)
+#define GPIO_OUTPUT_OPEN_DRAIN_FLOAT    (0x4ul << 0)
+#define GPIO_PULL_UP                    (0x1ul << 3)
+#define GPIO_PULL_DOWN                  (0x2ul << 3)
 
 struct gpio_port;
 

@@ -70,7 +70,7 @@ nerror i2c_bus_init(
     }
 
     if (periph->flags & I2C_ERRATA_01) {
-        helper_pin.flags = GPIO_OUTPUT;
+        helper_pin.flags = GPIO_OUTPUT_LOW;
         ngpio_init((uint32_t)(periph->flags >> 16), &helper_pin);
         ngpio_set((uint32_t)(periph->flags >> 16));
     }

@@ -37,25 +37,58 @@ nerror ngpio_init(uint32_t pin_id, const struct gpio_pin_config * config)
     if (gpio != g_gpio[gpio].id) {
         return (NERROR_NOT_FOUND);
     }
-
-    if (config->flags & GPIO_OUTPUT_OPEN_DRAIN) {
-        regs->odca |=  pin;
-    } else {
-        regs->odca &= ~pin;
-    }
     regs->cnpu &= ~pin;
     regs->cnpd &= ~pin;
 
-    if (config->flags & GPIO_PULL_UP) {
-        regs->cnpu |= pin;
-    } else if (config->flags & GPIO_PULL_DOWN) {
-        regs->cnpd |= pin;
+    switch (config->flags & (0x7u << 0)) {
+        case GPIO_INPUT: {
+            regs->tris |= pin;
+            break;
+        }
+        case GPIO_OUTPUT_LOW: {
+            regs->lat  &= ~pin;
+            regs->odca &= ~pin;
+            regs->tris &= ~pin;
+            break;
+        }
+        case GPIO_OUTPUT_HIGH: {
+            regs->lat  |=  pin;
+            regs->odca &= ~pin;
+            regs->tris &= ~pin;
+            break;
+        }
+        case GPIO_OUTPUT_OPEN_DRAIN_LOW: {
+            regs->lat  &= ~pin;
+            regs->odca |=  pin;
+            regs->tris &= ~pin;
+            break;
+        }
+        case GPIO_OUTPUT_OPEN_DRAIN_FLOAT: {
+            regs->lat  |=  pin;
+            regs->odca |=  pin;
+            regs->tris &= ~pin;
+            break;
+        }
+        default : {
+            regs->tris |= pin;
+            
+            return (NERROR_ARG_OUT_OF_RANGE);
+        }
     }
 
-    if (config->flags & GPIO_OUTPUT) {
-        regs->tris &= ~pin;
-    } else {
-        regs->tris |=  pin;
+    switch (config->flags & (0x3 << 3)) {
+        case GPIO_PULL_UP : {
+            regs->cnpu |= pin;
+            break;
+        }
+        case GPIO_PULL_DOWN: {
+            regs->cnpd |= pin;
+            break;
+        }
+        default : {
+
+            return (NERROR_ARG_OUT_OF_RANGE);
+        }
     }
 
     return (NERROR_NONE);
