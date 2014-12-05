@@ -2,10 +2,10 @@
 #define NI2C_H_
 
 #include <stdint.h>
-#include <stdbool.h>
+#include <stddef.h>
 
-#include "plat/i2c.h"
-#include "lib/error.h"
+#include "shared/error.h"
+#include "periph/i2c.h"
 
 #define I2C_BUS_MODE_MASTER             (0x0u << 0)
 #define I2C_BUS_MODE_SLAVE              (0x1u << 0)
@@ -24,7 +24,11 @@ struct i2c_master_bus_config
     uint32_t                    isr_prio;
 };
 
-struct i2c_bus;
+struct i2c_bus
+{
+    const struct nperipheral *  periph;
+    struct i2c_regs *           regs;
+};
 
 struct i2c_slave_config
 {
@@ -58,22 +62,18 @@ void i2c_driver_init(void);
 
 
 
-struct i2c_bus * i2c_bus_from_id(
-    uint32_t                    id);
-
-
-
 nerror i2c_bus_init(
-    struct i2c_bus *            bus, 
+    const struct nperipheral *  periph,
+    struct i2c_bus *            bus,
     const struct i2c_master_bus_config * config);
 
 
-    
+
 void i2c_bus_term(
     struct i2c_bus *            bus);
 
 
-    
+
 void i2c_bus_ack(
     struct i2c_bus *            bus);
 
@@ -107,6 +107,11 @@ void i2c_bus_restart(
 
 void i2c_bus_stop(
     struct i2c_bus *            bus);
+
+
+
+struct i2c_bus * i2c_bus_from_id(
+    uint8_t                     bus_id);
 
 
 

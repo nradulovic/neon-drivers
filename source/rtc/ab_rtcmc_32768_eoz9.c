@@ -1,9 +1,9 @@
 
 #include <string.h>
 
-#include "port/i2c.h"
 #include "shared/error.h"
 #include "lib/num_conv.h"
+#include "mcu/i2c.h"
 #include "driver/config.h"
 #include "rtc/ab_rtcmc_32768_eoz9.h"
 #include "rtc/rtc_class.h"
@@ -105,8 +105,8 @@ void ab_rtcmc_init_driver(
 
     g_context.state.time = 0;
     i2c_slave_open(&g_context.i2c_slave, &g_rtc_i2c_config,
-        ((const struct ab_rtcmc_config *)config)->bus,
-        ((const struct ab_rtcmc_config *)config)->id);
+        i2c_bus_from_id(((const struct ab_rtcmc_config *)config)->bus_id),
+        ((const struct ab_rtcmc_config *)config)->device_id);
     error = i2c_slave_read(&g_context.i2c_slave, REG_CONTROL_STATUS, &reg, 1);
 
     if (error) {
@@ -237,10 +237,9 @@ NO_COMM_FAILURE:
     return;
 }
 
-void ab_rtcmc_get_time(
-    struct nrtc_time *          time)
+const struct nrtc_time * ab_rtcmc_get_time(void)
 {
-    memcpy(time, &g_context.time, sizeof(*time));
+    return (&g_context.time);
 }
 
 void ab_rtcmc_tick(void)
@@ -276,4 +275,9 @@ FAILURE:
     g_context.state.device = RTC_DEVICE_NO_COMM;
 
     return;
+}
+
+const struct nrtc_state * ab_rtcmc_state(void)
+{
+    return (&g_context.state);
 }
