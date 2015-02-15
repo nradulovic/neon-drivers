@@ -1,12 +1,19 @@
 
 #include <string.h>
 
+#include "port/compiler.h"
 #include "shared/error.h"
 #include "lib/num_conv.h"
 #include "mcu/i2c.h"
-#include "driver/config.h"
 #include "rtc/ab_rtcmc_32768_eoz9.h"
 #include "rtc/rtc_class.h"
+
+#define CONFIG_DEFAULT_RTC_YEAR			2015
+#define CONFIG_DEFAULT_RTC_MONTH		1
+#define CONFIG_DEFAULT_RTC_DAY			1
+#define CONFIG_DEFAULT_RTC_HOUR			0
+#define CONFIG_DEFAULT_RTC_MINUTE		0
+#define CONFIG_DEFAULT_RTC_SECOND		0
 
 #define REG_CONTROL_1                   0x00
 #define REG_CONTROL_INT                 0x01
@@ -59,7 +66,7 @@
 #define CONTROL_STATUS_V1F              (0x1u << 2)
 #define CONTROL_STATUS_V2F              (0x1u << 3)
 #define CONTROL_STATUS_SR               (0x1u << 4)
-#define CONTROL_STATUS_PON              (0x1u << 5)
+#define CONTROL_STATUS_PON              ((uint8_t)0x1u << 5u)
 #define CONTROL_STATUS_EEBUSY           (0x1u << 7)
 
 #define CONTROL_RESET_SYSR              (0x1u << 4)

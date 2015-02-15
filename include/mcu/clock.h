@@ -10,11 +10,13 @@
 
 #include <stdint.h>
 
-#include "periph/clock.h"
+#include "device/clock.h"
 
 #ifdef	__cplusplus
 extern "C" {
 #endif
+
+void clock_enable(const struct nclock * clock);
 
 uint32_t clock_get_frequency(const struct nclock * clock);
 

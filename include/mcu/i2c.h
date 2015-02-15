@@ -1,11 +1,11 @@
 #ifndef NI2C_H_
 #define NI2C_H_
 
+#include <device/i2c.h>
 #include <stdint.h>
 #include <stddef.h>
 
 #include "shared/error.h"
-#include "periph/i2c.h"
 
 #define I2C_BUS_MODE_MASTER             (0x0u << 0)
 #define I2C_BUS_MODE_SLAVE              (0x1u << 0)
@@ -26,7 +26,7 @@ struct i2c_master_bus_config
 
 struct i2c_bus
 {
-    const struct nperipheral *  periph;
+    const struct nperiph *  periph;
     struct i2c_regs *           regs;
 };
 
@@ -63,7 +63,7 @@ void i2c_driver_init(void);
 
 
 nerror i2c_bus_init(
-    const struct nperipheral *  periph,
+    const struct nperiph *  periph,
     struct i2c_bus *            bus,
     const struct i2c_master_bus_config * config);
 
