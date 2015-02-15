@@ -6,13 +6,13 @@
  */
 
 #ifndef CLOCK_H
-#define	CLOCK_H
+#define CLOCK_H
 
 #include <stdint.h>
 
 #include "device/clock.h"
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -21,9 +21,9 @@ void clock_enable(const struct nclock * clock);
 uint32_t clock_get_frequency(const struct nclock * clock);
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* CLOCK_H */
+#endif  /* CLOCK_H */
 

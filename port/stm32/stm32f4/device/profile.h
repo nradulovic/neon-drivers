@@ -42,9 +42,9 @@ extern "C" {
 /*============================================================  DATA TYPES  ==*/
 /*======================================================  GLOBAL VARIABLES  ==*/
 
-extern const struct nperiph   	g_gpios[];
-extern const struct nperiph   	g_uart1;
-extern const struct nperiph   	g_uart2;
+extern const struct nperiph     g_gpios[];
+extern const struct nperiph     g_uart1;
+extern const struct nperiph     g_uart2;
 
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 /*--------------------------------------------------------  C++ extern end  --*/

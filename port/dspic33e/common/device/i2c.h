@@ -6,13 +6,13 @@
  */
 
 #ifndef COMMON_I2C_H
-#define	COMMON_I2C_H
+#define COMMON_I2C_H
 
 #include <stdint.h>
 
 #include "port/isr.h"
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -22,9 +22,9 @@ extern "C" {
 /* FIXME: name properly this errata */
 #define I2C_ERRATA_01           (0x1u << 0)
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* COMMON_I2C_H */
+#endif  /* COMMON_I2C_H */
 

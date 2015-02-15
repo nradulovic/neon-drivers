@@ -32,8 +32,8 @@
 /*=========================================================  INCLUDE FILES  ==*/
 /*===============================================================  MACRO's  ==*/
 
-#define PORT_GPIOS						10
-#define PORT_BITS_PER_GPIO				16
+#define PORT_GPIOS                      10
+#define PORT_BITS_PER_GPIO              16
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus

@@ -39,108 +39,108 @@
 /*=======================================================  LOCAL VARIABLES  ==*/
 
 /*-- GPIOA  ------------------------------------------------------------------*/
-static const struct nclock 		g_gpioa_clock =
+static const struct nclock      g_gpioa_clock =
 {
-	.reg				= &RCC->AHB1ENR,
-	.mask				= RCC_AHB1ENR_GPIOAEN
+    .reg                = &RCC->AHB1ENR,
+    .mask               = RCC_AHB1ENR_GPIOAEN
 };
 
 /*-- GPIOB  ------------------------------------------------------------------*/
-static const struct nclock 		g_gpiob_clock =
+static const struct nclock      g_gpiob_clock =
 {
-	.reg				= &RCC->AHB1ENR,
-	.mask				= RCC_AHB1ENR_GPIOBEN
+    .reg                = &RCC->AHB1ENR,
+    .mask               = RCC_AHB1ENR_GPIOBEN
 };
 
 /*-- GPIOC  ------------------------------------------------------------------*/
-static const struct nclock 		g_gpioc_clock =
+static const struct nclock      g_gpioc_clock =
 {
-	.reg				= &RCC->AHB1ENR,
-	.mask				= RCC_AHB1ENR_GPIOCEN
+    .reg                = &RCC->AHB1ENR,
+    .mask               = RCC_AHB1ENR_GPIOCEN
 };
 
 /*-- UART1  ------------------------------------------------------------------*/
-static struct nuart_driver 		g_uart1_driver;
-static const struct nmux 		g_uart1_mux =
+static struct nuart_driver      g_uart1_driver;
+static const struct nmux        g_uart1_mux =
 {
-	.af					= GPIO_AF7_USART1,
-	.mode				= GPIO_MODE_AF_PP,
-	.pull				= GPIO_NOPULL
+    .af                 = GPIO_AF7_USART1,
+    .mode               = GPIO_MODE_AF_PP,
+    .pull               = GPIO_NOPULL
 };
-static const struct nclock 		g_uart1_clock =
+static const struct nclock      g_uart1_clock =
 {
-	.reg				= &RCC->APB2ENR,
-	.mask				= RCC_APB2ENR_USART1EN
+    .reg                = &RCC->APB2ENR,
+    .mask               = RCC_APB2ENR_USART1EN
 };
-static const struct nisr 		g_uart1_isr[] =
+static const struct nisr        g_uart1_isr[] =
 {
-	{
-		.irqn			= USART1_IRQn
-	}
+    {
+        .irqn           = USART1_IRQn
+    }
 };
 
 /*-- UART2  ------------------------------------------------------------------*/
-static struct nuart_driver 		g_uart2_driver;
-static const struct nmux 		g_uart2_mux =
+static struct nuart_driver      g_uart2_driver;
+static const struct nmux        g_uart2_mux =
 {
-	.af					= GPIO_AF7_USART2,
-	.mode				= GPIO_MODE_AF_PP,
-	.pull				= GPIO_NOPULL
+    .af                 = GPIO_AF7_USART2,
+    .mode               = GPIO_MODE_AF_PP,
+    .pull               = GPIO_NOPULL
 };
-static const struct nclock 		g_uart2_clock =
+static const struct nclock      g_uart2_clock =
 {
-	.reg				= &RCC->APB1ENR,
-	.mask				= RCC_APB1ENR_USART2EN
+    .reg                = &RCC->APB1ENR,
+    .mask               = RCC_APB1ENR_USART2EN
 };
-static const struct nisr 		g_uart2_isr[] =
+static const struct nisr        g_uart2_isr[] =
 {
-	{
-		.irqn			= USART2_IRQn
-	}
+    {
+        .irqn           = USART2_IRQn
+    }
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 
-const struct nperiph   			g_gpios[] =
+const struct nperiph            g_gpios[] =
 {
-	{
-		.id 				= 1,
-		.class_id			= NGPIO_DEVICE_CLASS_ID,
-		.address			= (volatile unsigned int *)GPIOA_BASE,
-		.clock				= &g_gpioa_clock
-	}, {
-		.id 				= 2,
-		.class_id			= NGPIO_DEVICE_CLASS_ID,
-		.address			= (volatile unsigned int *)GPIOB_BASE,
-		.clock				= &g_gpiob_clock
-	}, {
-		.id 				= 3,
-		.class_id			= NGPIO_DEVICE_CLASS_ID,
-		.address			= (volatile unsigned int *)GPIOC_BASE,
-		.clock				= &g_gpioc_clock
-	}
+    {
+        .id                 = 1,
+        .class_id           = NGPIO_DEVICE_CLASS_ID,
+        .address            = (volatile unsigned int *)GPIOA_BASE,
+        .clock              = &g_gpioa_clock
+    }, {
+        .id                 = 2,
+        .class_id           = NGPIO_DEVICE_CLASS_ID,
+        .address            = (volatile unsigned int *)GPIOB_BASE,
+        .clock              = &g_gpiob_clock
+    }, {
+        .id                 = 3,
+        .class_id           = NGPIO_DEVICE_CLASS_ID,
+        .address            = (volatile unsigned int *)GPIOC_BASE,
+        .clock              = &g_gpioc_clock
+    }
 };
 
-const struct nperiph 			g_uart1 =
+const struct nperiph            g_uart1 =
 {
-	.id 				= 1,
-	.class_id			= NUART_DEVICE_CLASS_ID,
-	.driver 			= &g_uart1_driver,
-	.address			= (volatile unsigned int *)USART1_BASE,
-	.isr				= &g_uart1_isr[0],
-	.clock				= &g_uart1_clock,
-	.mux 				= &g_uart1_mux
+    .id                 = 1,
+    .class_id           = NUART_DEVICE_CLASS_ID,
+    .driver             = &g_uart1_driver,
+    .address            = (volatile unsigned int *)USART1_BASE,
+    .isr                = &g_uart1_isr[0],
+    .clock              = &g_uart1_clock,
+    .mux                = &g_uart1_mux
 };
 
-const struct nperiph 			g_uart2 =
+const struct nperiph            g_uart2 =
 {
-	.id					= 2,
-	.class_id			= NUART_DEVICE_CLASS_ID,
-	.driver 			= &g_uart2_driver,
-	.address			= (volatile unsigned int *)USART2_BASE,
-	.isr				= &g_uart2_isr[0],
-	.clock				= &g_uart2_clock,
-	.mux 				= &g_uart2_mux
+    .id                 = 2,
+    .class_id           = NUART_DEVICE_CLASS_ID,
+    .driver             = &g_uart2_driver,
+    .address            = (volatile unsigned int *)USART2_BASE,
+    .isr                = &g_uart2_isr[0],
+    .clock              = &g_uart2_clock,
+    .mux                = &g_uart2_mux
 };
 
 /*============================================  LOCAL FUNCTION DEFINITIONS  ==*/

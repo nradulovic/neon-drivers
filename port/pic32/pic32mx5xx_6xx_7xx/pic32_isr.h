@@ -6,14 +6,14 @@
  */
 
 #ifndef PIC32_ISR_H
-#define	PIC32_ISR_H
+#define PIC32_ISR_H
 
 #include <stdint.h>
 
 #include "port/cpu.h"
 #include "lib/error.h"
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -58,9 +58,9 @@ nerror pic32_isr_request(
 void pic32_isr_release(
     const struct pic32_isr *    isr);
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* PIC32_ISR_H */
+#endif  /* PIC32_ISR_H */
 

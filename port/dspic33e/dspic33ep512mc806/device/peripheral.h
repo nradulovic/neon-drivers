@@ -6,9 +6,9 @@
  */
 
 #ifndef PERIPHERAL_H
-#define	PERIPHERAL_H
+#define PERIPHERAL_H
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -16,9 +16,9 @@ extern "C" {
 #define ARCH_ATTR_MULTI_ISR             1
 #define ARCH_ATTR_CLOCK                 1
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* PERIPHERAL_H */
+#endif  /* PERIPHERAL_H */
 

@@ -8,12 +8,12 @@
 #include "rtc/ab_rtcmc_32768_eoz9.h"
 #include "rtc/rtc_class.h"
 
-#define CONFIG_DEFAULT_RTC_YEAR			2015
-#define CONFIG_DEFAULT_RTC_MONTH		1
-#define CONFIG_DEFAULT_RTC_DAY			1
-#define CONFIG_DEFAULT_RTC_HOUR			0
-#define CONFIG_DEFAULT_RTC_MINUTE		0
-#define CONFIG_DEFAULT_RTC_SECOND		0
+#define CONFIG_DEFAULT_RTC_YEAR         2015
+#define CONFIG_DEFAULT_RTC_MONTH        1
+#define CONFIG_DEFAULT_RTC_DAY          1
+#define CONFIG_DEFAULT_RTC_HOUR         0
+#define CONFIG_DEFAULT_RTC_MINUTE       0
+#define CONFIG_DEFAULT_RTC_SECOND       0
 
 #define REG_CONTROL_1                   0x00
 #define REG_CONTROL_INT                 0x01

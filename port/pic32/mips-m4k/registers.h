@@ -6,9 +6,9 @@
  */
 
 #ifndef REGISTERS_H
-#define	REGISTERS_H
+#define REGISTERS_H
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -21,9 +21,9 @@ extern "C" {
 #define REGISTER_INV(address, mask)                                             \
     ((volatile unsigned int *)(address))[3] = mask
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* REGISTERS_H */
+#endif  /* REGISTERS_H */
 

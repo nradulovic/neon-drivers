@@ -42,58 +42,58 @@
 
 void nperiph_clock_enable(const struct nperiph * periph)
 {
-	const struct nclock * 		clock = periph->clock;
+    const struct nclock *       clock = periph->clock;
 
-	*clock->reg |= clock->mask;
+    *clock->reg |= clock->mask;
 }
 
 void nperiph_clock_disable(const struct nperiph * periph)
 {
-	const struct nclock * 		clock = periph->clock;
+    const struct nclock *       clock = periph->clock;
 
-	*clock->reg &= ~clock->mask;
+    *clock->reg &= ~clock->mask;
 }
 
 void nperiph_isr_enable(const struct nperiph * periph, uint32_t irq_enum)
 {
-	const struct nisr * 		isr_array = periph->isr;
+    const struct nisr *         isr_array = periph->isr;
 
-	NVIC_EnableIRQ(isr_array[irq_enum].irqn);
+    NVIC_EnableIRQ(isr_array[irq_enum].irqn);
 }
 
 void nperiph_isr_disable(const struct nperiph * periph, uint32_t irq_enum)
 {
-	const struct nisr * 		isr_array = periph->isr;
+    const struct nisr *         isr_array = periph->isr;
 
-	NVIC_DisableIRQ(isr_array[irq_enum].irqn);
+    NVIC_DisableIRQ(isr_array[irq_enum].irqn);
 }
 
 void nperiph_isr_clear_flag(const struct nperiph * periph, uint32_t irq_enum)
 {
-	const struct nisr *			isr_array = periph->isr;
+    const struct nisr *         isr_array = periph->isr;
 
-	NVIC_ClearPendingIRQ(isr_array[irq_enum].irqn);
+    NVIC_ClearPendingIRQ(isr_array[irq_enum].irqn);
 }
 
 void nperiph_isr_set_flag(const struct nperiph * periph, uint32_t irq_enum)
 {
-	const struct nisr *			isr_array = periph->isr;
+    const struct nisr *         isr_array = periph->isr;
 
-	NVIC_SetPendingIRQ(isr_array[irq_enum].irqn);
+    NVIC_SetPendingIRQ(isr_array[irq_enum].irqn);
 }
 
 void nperiph_isr_set_prio(const struct nperiph * periph, uint32_t irq_num, uint32_t prio)
 {
-	const struct nisr * 		isr_array = periph->isr;
+    const struct nisr *         isr_array = periph->isr;
 
-	NVIC_SetPriority(isr_array[irq_num].irqn, prio);
+    NVIC_SetPriority(isr_array[irq_num].irqn, prio);
 }
 
 uint32_t nperiph_isr_get_prio(const struct nperiph * periph, uint32_t irq_num)
 {
-	const struct nisr * 		isr_array = periph->isr;
+    const struct nisr *         isr_array = periph->isr;
 
-	return (NVIC_GetPriority(isr_array[irq_num].irqn));
+    return (NVIC_GetPriority(isr_array[irq_num].irqn));
 }
 
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/

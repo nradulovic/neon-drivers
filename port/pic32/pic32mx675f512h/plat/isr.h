@@ -6,9 +6,9 @@
  */
 
 #ifndef ISR_H
-#define	ISR_H
+#define ISR_H
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -30,9 +30,9 @@ extern "C" {
 #define ISR_PRIO_11
 #define ISR_PRIO_12
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* ISR_H */
+#endif  /* ISR_H */
 

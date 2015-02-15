@@ -43,7 +43,7 @@ extern "C" {
 
 struct nuart_device
 {
-	UART_HandleTypeDef			handle;
+    UART_HandleTypeDef          handle;
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/

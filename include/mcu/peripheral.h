@@ -27,7 +27,7 @@
  *********************************************************************//** @{ */
 
 #ifndef NEON_DRIVERS_PERIPHERAL_H_
-#define	NEON_DRIVERS_PERIPHERAL_H_
+#define NEON_DRIVERS_PERIPHERAL_H_
 
 /*=========================================================  INCLUDE FILES  ==*/
 
@@ -38,11 +38,11 @@
 /*===============================================================  MACRO's  ==*/
 
 #define periph_id(periph)               (periph)->id
-#define periph_class_id(periph)			(periph)->class_id
+#define periph_class_id(periph)         (periph)->class_id
 #define periph_flags(periph)            (periph)->flags
-#define periph_driver(periph)			(periph)->driver
-#define periph_address(periph)     		(periph)->address
-#define periph_mux(periph)				(periph)->mux
+#define periph_driver(periph)           (periph)->driver
+#define periph_address(periph)          (periph)->address
+#define periph_mux(periph)              (periph)->mux
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
@@ -59,10 +59,10 @@ struct nmux;
 struct nperiph
 {
     uint32_t                    id;
-    uint32_t					class_id;
+    uint32_t                    class_id;
     uint32_t                    flags;
-    void *						driver;
-    const struct nperiph *  	host;
+    void *                      driver;
+    const struct nperiph *      host;
 #if (ARCH_IO_ADDRESS == 1)
     volatile unsigned int *     address;
 #endif
@@ -76,7 +76,7 @@ struct nperiph
     const struct nclock *       clock;
 #endif
 #if (ARCH_ATTR_MUX == 1)
-    const struct nmux *			mux;
+    const struct nmux *         mux;
 #endif
     const void *                variations;
 };
@@ -103,5 +103,5 @@ uint32_t nperiph_isr_get_prio(const struct nperiph * periph, uint32_t irq_num);
 /** @endcond *//** @} *//******************************************************
  * END of peripheral.h
  ******************************************************************************/
-#endif	/* NEON_DRIVERS_PERIPHERAL_H_ */
+#endif  /* NEON_DRIVERS_PERIPHERAL_H_ */
 

@@ -43,7 +43,7 @@
 struct i2c_bus * i2c_bus_from_id(
     uint8_t                     bus_id)
 {
-	return (NULL);
+    return (NULL);
 }
 
 
@@ -73,7 +73,7 @@ nerror i2c_slave_read(
     void *                      data,
     size_t                      size)
 {
-	return (NERROR_NOT_IMPLEMENTED);
+    return (NERROR_NOT_IMPLEMENTED);
 }
 
 
@@ -84,7 +84,7 @@ nerror i2c_slave_write(
     const void *                data,
     size_t                      size)
 {
-	return (NERROR_NOT_IMPLEMENTED);
+    return (NERROR_NOT_IMPLEMENTED);
 }
 
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/

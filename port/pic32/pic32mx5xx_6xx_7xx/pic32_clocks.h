@@ -6,20 +6,20 @@
  */
 
 #ifndef PIC32_CLOCKS_H
-#define	PIC32_CLOCKS_H
+#define PIC32_CLOCKS_H
 
 #include <stdint.h>
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
 uint32_t clock_get_peripheral_clock(void);
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* PIC32_CLOCKS_H */
+#endif  /* PIC32_CLOCKS_H */
 

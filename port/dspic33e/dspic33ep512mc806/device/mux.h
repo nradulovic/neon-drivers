@@ -6,18 +6,18 @@
  */
 
 #ifndef MUX_H
-#define	MUX_H
+#define MUX_H
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* MUX_H */
+#endif  /* MUX_H */
 

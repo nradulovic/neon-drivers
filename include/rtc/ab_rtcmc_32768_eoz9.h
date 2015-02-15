@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -50,7 +50,7 @@ const struct nrtc_time  * ab_rtcmc_get_time(void);
 
 const struct nrtc_state * ab_rtcmc_state(void);
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 

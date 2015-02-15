@@ -6,18 +6,18 @@
  */
 
 #ifndef GPIO_H
-#define	GPIO_H
+#define GPIO_H
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
 #define PORT_BITS_PER_GPIO              16
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* GPIO_H */
+#endif  /* GPIO_H */
 

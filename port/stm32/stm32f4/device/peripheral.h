@@ -40,7 +40,7 @@
 #define ARCH_IO_ADDRESS                 1
 #define ARCH_ATTR_MULTI_ISR             1
 #define ARCH_ATTR_CLOCK                 1
-#define ARCH_ATTR_MUX					1
+#define ARCH_ATTR_MUX                   1
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
@@ -51,21 +51,21 @@ extern "C" {
 
 struct nisr
 {
-	IRQn_Type					irqn;
+    IRQn_Type                   irqn;
 };
 
 struct nmux
 {
-	unsigned int 				af;
-	unsigned int 				mode;
-	unsigned int 				pull;
+    unsigned int                af;
+    unsigned int                mode;
+    unsigned int                pull;
 };
 
 struct nclock
 {
-	struct nclock *				host;
-	volatile uint32_t *			reg;
-	unsigned int				mask;
+    struct nclock *             host;
+    volatile uint32_t *         reg;
+    unsigned int                mask;
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/

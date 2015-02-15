@@ -6,9 +6,9 @@
  */
 
 #ifndef PERIPH_CLOCK_H
-#define	PERIPH_CLOCK_H
+#define PERIPH_CLOCK_H
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -22,9 +22,9 @@ struct nclock
 };
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* PERIPH_CLOCK_H */
+#endif  /* PERIPH_CLOCK_H */
 
