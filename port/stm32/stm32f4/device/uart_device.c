@@ -201,11 +201,11 @@ struct nuart_driver * nuart_open(
 
     switch (config->flags & NUART_WORDLENGTH) {
         case NUART_WORDLENGTH_8: {
-            device_handle->Init.StopBits = UART_WORDLENGTH_8B;
+            device_handle->Init.WordLength = UART_WORDLENGTH_8B;
             break;
         }
         case NUART_WORDLENGTH_9: {
-            device_handle->Init.StopBits = UART_WORDLENGTH_9B;
+            device_handle->Init.WordLength = UART_WORDLENGTH_9B;
             break;
         }
         default : {
