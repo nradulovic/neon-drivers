@@ -1,20 +1,20 @@
 /*
- * This file is part of Neon.
+ * This file is part of neon-test.
  *
- * Copyright (C) 2010 - 2015 Nenad Radulovic
+ * Copyright (C) 2010 - 2015 nenad
  *
- * Neon is free software: you can redistribute it and/or modify
+ * neon-test is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Neon is distributed in the hope that it will be useful,
+ * neon-test is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Neon.  If not, see <http://www.gnu.org/licenses/>.
+ * along with neon-test.  If not, see <http://www.gnu.org/licenses/>.
  *
  * web site:    
  * e-mail  :    
@@ -29,10 +29,20 @@
 
 /*=========================================================  INCLUDE FILES  ==*/
 
-#include "mcu/i2c.h"
+#include <stddef.h>
+
+#include "shared/debug.h"
+#include "shared/component.h"
+#include "mcu/peripheral.h"
 
 /*=========================================================  LOCAL MACRO's  ==*/
+
+#define IS_DEVICE(device)               (((device)->id & 0xffff0000u) == NPERIPH_MAGIC)
+
 /*======================================================  LOCAL DATA TYPES  ==*/
+
+static const NCOMPONENT_DEFINE("Peripheral device driver", "Nenad Radulovic");
+
 /*=============================================  LOCAL FUNCTION PROTOTYPES  ==*/
 /*=======================================================  LOCAL VARIABLES  ==*/
 /*======================================================  GLOBAL VARIABLES  ==*/
@@ -40,54 +50,30 @@
 /*===================================  GLOBAL PRIVATE FUNCTION DEFINITIONS  ==*/
 /*====================================  GLOBAL PUBLIC FUNCTION DEFINITIONS  ==*/
 
-struct i2c_bus * i2c_bus_from_id(
-    uint8_t                     bus_id)
+
+struct np_drv * np_drv_get(const struct np_dev * device)
 {
-    return (NULL);
+    struct np_drv *            driver;
+
+    NASSERT(NAPI_POINTER, device != NULL);
+    NASSERT(NAPI_OBJECT,  IS_DEVICE(device));
+    driver = device->p_drv;
+
+    NASSERT(NAPI_USAGE, driver->ref == 0u);
+    driver->p_dev  = device;
+    driver->data = NULL;
+
+    return (driver);
 }
 
-
-
-void i2c_slave_open(
-    struct i2c_slave *          slave,
-    const struct i2c_slave_config * config,
-    struct i2c_bus *            bus,
-    uint8_t                     id)
+void np_drv_put(struct np_drv * driver)
 {
-
-}
-
-
-
-void i2c_slave_close(
-    struct i2c_slave *          slave)
-{
-
-}
-
-
-
-nerror i2c_slave_read(
-    struct i2c_slave *          slave,
-    uint8_t                     address,
-    void *                      data,
-    size_t                      size)
-{
-    return (NERROR_NOT_IMPLEMENTED);
-}
-
-
-
-nerror i2c_slave_write(
-    struct i2c_slave *          slave,
-    uint8_t                     address,
-    const void *                data,
-    size_t                      size)
-{
-    return (NERROR_NOT_IMPLEMENTED);
+    NASSERT(NAPI_POINTER, driver != NULL);
+    NASSERT(NAPI_OBJECT,  IS_DEVICE(driver->p_dev));
+    NASSERT(NAPI_USAGE,   driver->ref == 0u);
 }
 
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/
 /** @endcond *//** @} *//** @} *//*********************************************
- * END of i2c.c
+ * END of peripheral.c
  ******************************************************************************/

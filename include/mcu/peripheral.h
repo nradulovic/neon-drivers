@@ -31,18 +31,14 @@
 
 /*=========================================================  INCLUDE FILES  ==*/
 
+#include <device/p_dev.h>
 #include <stdint.h>
 
-#include "device/peripheral.h"
 
 /*===============================================================  MACRO's  ==*/
 
-#define periph_id(periph)               (periph)->id
-#define periph_class_id(periph)         (periph)->class_id
-#define periph_flags(periph)            (periph)->flags
-#define periph_driver(periph)           (periph)->driver
-#define periph_address(periph)          (periph)->address
-#define periph_mux(periph)              (periph)->mux
+#define NPERIPH_MAGIC                   0xdead0000u
+#define NPERIPH_ID(class, id)           (NPERIPH_MAGIC | (((class) & 0xffu) << 8) | ((id) & 0xffu))
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
@@ -51,48 +47,121 @@ extern "C" {
 
 /*============================================================  DATA TYPES  ==*/
 
-struct nisr;
-struct npower;
-struct nclock;
-struct nmux;
+struct np_drv;
+struct np_dev_isr;
+struct np_dev_rst;
+struct np_dev_clock;
+struct np_dev_mux;
 
-struct nperiph
+struct np_drv
+{
+    const struct np_dev *       p_dev;
+    uint32_t                    ref;
+    void *                      data;
+};
+
+struct np_dev
 {
     uint32_t                    id;
-    uint32_t                    class_id;
     uint32_t                    flags;
-    void *                      driver;
-    const struct nperiph *      host;
-#if (ARCH_IO_ADDRESS == 1)
-    volatile unsigned int *     address;
+    struct np_drv *             p_drv;
+    const struct np_dev *       host;
+#if (ARCH_ATTR_ADDRESS == 1)
+    volatile void *             address;
 #endif
-#if (ARCH_ATTR_MULTI_ISR == 1)
-    const struct nisr *         isr;
+#if (ARCH_ATTR_ISR == 1)
+    const struct np_dev_isr *   isr;
 #endif
-#if (ARCH_ATTR_POWER_AVARE == 1)
-    const struct npower *       power;
+#if (ARCH_ATTR_RESET == 1)
+    const struct np_dev_rst *   rst;
 #endif
 #if (ARCH_ATTR_CLOCK == 1)
-    const struct nclock *       clock;
+    const struct np_dev_clock * clock;
 #endif
 #if (ARCH_ATTR_MUX == 1)
-    const struct nmux *         mux;
+    const struct np_dev_mux *   mux;
 #endif
-    const void *                variations;
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 
-void nperiph_clock_enable(const struct nperiph * periph);
-void nperiph_clock_disable(const struct nperiph * periph);
 
-void nperiph_isr_enable(const struct nperiph * periph, uint32_t irq_enum);
-void nperiph_isr_disable(const struct nperiph * periph, uint32_t irq_enum);
-void nperiph_isr_clear_flag(const struct nperiph * periph, uint32_t irq_enum);
-void nperiph_isr_set_flag(const struct nperiph * periph, uint32_t irq_enum);
-void nperiph_isr_set_prio(const struct nperiph * periph, uint32_t irq_num, uint32_t prio);
-uint32_t nperiph_isr_get_prio(const struct nperiph * periph, uint32_t irq_num);
+#define np_dev_id(device)                                                       \
+    (((device)->id >> 0u) & 0xffu)
+
+#define np_dev_class_id(device)                                                 \
+    (((device)->id >> 8u) & 0xffu)
+
+#define np_dev_flags(device)                                                    \
+    (device)->flags
+
+#define np_dev_driver(device)                                                   \
+    (device)->p_drv
+
+#define np_dev_address(device)                                                  \
+    (device)->address
+
+#define np_drv_dev(drv)                 (drv)->p_dev
+
+struct np_drv * np_drv_get(
+    const struct np_dev *       dev);
+
+void np_drv_put(
+    struct np_drv *             drv);
+
+#define np_drv_set_data(drv, priv_data)                                         \
+    (drv)->data = (priv_data)
+
+#define np_drv_get_data(drv)                                                    \
+    (drv)->data
+
+#define np_drv_ref_up(drv)                                                      \
+    (++(drv)->ref)
+
+#define np_drv_ref_down(drv)                                                    \
+    (--(drv)->ref)
+
+#define np_drv_clock_enable(drv, num)                                           \
+    np_clock_enable(&(drv)->p_dev->clock[num])
+
+#define np_drv_clock_disable(drv, num)                                          \
+    np_clock_disable(&(drv)->p_dev->clock[num])
+
+#define np_drv_isr_enable(drv, num)                                             \
+    np_isr_enable(&(drv)->p_dev->isr[num])
+
+#define np_drv_isr_disable(drv, num)                                            \
+    np_isr_disable(&(drv)->p_dev->isr[num])
+
+#define np_drv_isr_clear_flag(drv, num)                                         \
+    np_isr_clear_flag(&(drv)->p_dev->isr[num])
+
+#define np_drv_isr_set_flag(drv, num)                                           \
+    np_isr_set_flag(&(drv)->p_dev->isr[num])
+
+#define np_drv_isr_set_prio(drv, num, prio)                                     \
+    np_isr_set_prio(&(drv)->p_dev->isr[num], prio)
+
+#define np_drv_isr_get_prio(drv, num)                                           \
+    np_isr_get_prio(&(drv)->p_dev->isr[num])
+
+#define np_drv_mux_enable(drv, num, pin_id)                                     \
+    np_mux_enable(&(drv)->p_dev->mux[num], pin_id)
+
+#define np_drv_mux_disable(drv, num, pin_id)                                    \
+    np_mux_disable(&(drv)->p_dev->mux[num], pin_id)
+
+void np_clock_enable(const struct np_dev_clock * clock);
+void np_clock_disable(const struct np_dev_clock * clock);
+void np_isr_enable(const struct np_dev_isr * isr);
+void np_isr_disable(const struct np_dev_isr * isr);
+void np_isr_clear_flag(const struct np_dev_isr * isr);
+void np_isr_set_flag(const struct np_dev_isr * isr);
+void np_isr_set_prio(const struct np_dev_isr * isr, uint32_t prio);
+uint32_t np_isr_get_prio(const struct np_dev_isr * isr);
+void np_mux_enable(const struct np_dev_mux * mux, uint32_t pin_id);
+void np_mux_disable(const struct np_dev_mux * mux, uint32_t pin_id);
 
 /*--------------------------------------------------------  C++ extern end  --*/
 #ifdef __cplusplus

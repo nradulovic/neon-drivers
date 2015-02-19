@@ -38,14 +38,12 @@
 #include "port/compiler.h"
 #include "shared/error.h"
 #include "timer/timer.h"
+#include "mcu/peripheral.h"
 #include "device/uart_device.h"
 
 /*===============================================================  MACRO's  ==*/
 
-#define NUART_DEVICE_TO_DRV(uart_device)                                        \
-    CONTAINER_OF(uart_device, struct nuart_driver, device)
-
-#define NUART_DEVICE_CLASS_ID           ((uint32_t)0xdead0001u)
+#define NUART_DEVICE_CLASS_ID           2
 
 #define NUART_WORDLENGTH_8              (0x1u << 0)
 #define NUART_WORDLENGTH_9              (0x1u << 1)
@@ -83,7 +81,6 @@ extern "C" {
 
 /*============================================================  DATA TYPES  ==*/
 
-struct nperiph;
 
 struct nuart_config
 {
@@ -96,37 +93,41 @@ struct nuart_config
 
 
 
-struct nuart_driver
+struct nuart_drv
 {
-    const struct nperiph *      periph;
-    struct nuart_device         device;
-    const uint8_t *             tx_buff;
+    struct np_drv               p_drv;
+    struct np_dev_uart          ctx;
+    uint32_t                    cfg_flags;
+    uint32_t                    cfg_tx_gpio;
+    uint32_t                    cfg_rx_gpio;
+    uint32_t                    state;
+    enum nerror                 error;
+    const void *                tx_buff;
     size_t                      tx_size;
-    uint8_t *                   rx_buff;
+    void *                      rx_buff;
     size_t                      rx_size;
-    void *                      priv_data;
-    void                     (* reader)(struct nuart_driver *, enum nerror, void *, size_t);
-    void                     (* writer)(struct nuart_driver *, enum nerror, const void *, size_t);
+    struct ntimer               rx_timeout;
+    void                     (* reader)(struct nuart_drv *, enum nerror, void *, size_t);
+    void                     (* writer)(struct nuart_drv *, enum nerror, const void *, size_t);
     nsystimer_tick              timeout_ticks;
-    struct ntimer               timeout;
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 
-struct nuart_driver * nuart_open(
-    const struct nperiph *      peripheral,
+struct nuart_drv * nuart_open(
+    const struct np_dev *       dev,
     const struct nuart_config * config);
 
 
 
 void nuart_close(
-    struct nuart_driver *       driver);
+    struct nuart_drv *          drv);
 
 
 
 enum nerror nuart_read(
-    struct nuart_driver *       driver,
+    struct nuart_drv *          drv,
     void *                      buffer,
     size_t                      size,
     nsystimer_tick              timeout);
@@ -134,71 +135,97 @@ enum nerror nuart_read(
 
 
 enum nerror nuart_write(
-    struct nuart_driver *       driver,
+    struct nuart_drv *          drv,
     const void *                buffer,
-    size_t                      size,
-    nsystimer_tick              timeout);
-
-
-
-void nuart_set_priv_data(
-    struct nuart_driver *       driver,
-    void *                      data);
-
-
-
-PORT_C_INLINE
-void * nuart_priv_data(
-    struct nuart_driver *       driver)
-{
-    return (driver->priv_data);
-}
+    size_t                      size);
 
 
 
 void nuart_set_reader(
-    struct nuart_driver *       driver,
-    void                     (* reader)(struct nuart_driver *, enum nerror, void *, size_t));
+    struct nuart_drv *          drv,
+    void                     (* reader)(struct nuart_drv *, enum nerror, void *, size_t));
 
 
 
 void nuart_set_writer(
-    struct nuart_driver *       driver,
-    void                     (* writer)(struct nuart_driver *, enum nerror, const void *, size_t));
+    struct nuart_drv *          drv,
+    void                     (* writer)(struct nuart_drv *, enum nerror, const void *, size_t));
 
 
 enum nerror nuart_read_start(
-    struct nuart_driver *       driver,
+    struct nuart_drv *          drv,
     void *                      buffer,
     size_t                      size,
     uint32_t                    timeout);
 
 
 
-void nuart_read_restart_i(
-    struct nuart_driver *       driver);
+void nuart_read_restart_isr(
+    struct nuart_drv *          drv);
 
 
 
 void nuart_read_stop(
-    struct nuart_driver *       driver);
+    struct nuart_drv *          drv);
 
 
 
 enum nerror nuart_write_start(
-    struct nuart_driver *       driver,
+    struct nuart_drv *          drv,
     const void *                buffer,
     size_t                      size);
 
 
 
 void nuart_write_restart_i(
-    struct nuart_driver *       driver);
+    struct nuart_drv *          drv);
 
 
 
 void nuart_write_stop(
-    struct nuart_driver *       driver);
+    struct nuart_drv *          drv);
+
+/*--  Peripheral specific functions  -----------------------------------------*/
+
+
+void np_uart_init(
+    struct nuart_drv *          drv,
+    const struct nuart_config * config);
+
+
+
+void np_uart_term(
+    struct nuart_drv *          drv);
+
+
+
+void np_uart_rx_start(
+    struct nuart_drv *          drv);
+
+
+
+void np_uart_rx_restart(
+    struct nuart_drv *          drv);
+
+
+
+void np_uart_rx_stop(
+    struct nuart_drv *          drv);
+
+
+
+void np_uart_tx_start(
+    struct nuart_drv *          drv);
+
+
+
+void np_uart_tx_restart(
+    struct nuart_drv *          drv);
+
+
+
+void np_uart_tx_stop(
+    struct nuart_drv *          drv);
 
 /*--------------------------------------------------------  C++ extern end  --*/
 #ifdef __cplusplus

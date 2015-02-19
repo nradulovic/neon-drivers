@@ -22,33 +22,25 @@
  * @file
  * @author      nenad
  * @brief       Brief description
- * @defgroup    def_group Name
- * @brief       Brief description
  *********************************************************************//** @{ */
-
-#ifndef NEON_DRIVERS_INCLUDE_MCU_PROFILE_H_
-#define NEON_DRIVERS_INCLUDE_MCU_PROFILE_H_
+/**@defgroup    def_impl Implementation
+ * @brief       Default Implementation
+ * @{ *//*--------------------------------------------------------------------*/
 
 /*=========================================================  INCLUDE FILES  ==*/
 
-#include <device/p_dev_data.h>
+#include "mcu/profile.h"
+#include "mcu/gpio.h"
 
-/*===============================================================  MACRO's  ==*/
-/*-------------------------------------------------------  C++ extern base  --*/
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/*============================================================  DATA TYPES  ==*/
+/*=========================================================  LOCAL MACRO's  ==*/
+/*======================================================  LOCAL DATA TYPES  ==*/
+/*=============================================  LOCAL FUNCTION PROTOTYPES  ==*/
+/*=======================================================  LOCAL VARIABLES  ==*/
 /*======================================================  GLOBAL VARIABLES  ==*/
-/*===================================================  FUNCTION PROTOTYPES  ==*/
-/*--------------------------------------------------------  C++ extern end  --*/
-#ifdef __cplusplus
-}
-#endif
-
+/*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
+/*===================================  GLOBAL PRIVATE FUNCTION DEFINITIONS  ==*/
+/*====================================  GLOBAL PUBLIC FUNCTION DEFINITIONS  ==*/
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/
-/** @endcond *//** @} *//******************************************************
- * END of profile.h
+/** @endcond *//** @} *//** @} *//*********************************************
+ * END of gpio.c
  ******************************************************************************/
-#endif /* NEON_DRIVERS_INCLUDE_MCU_PROFILE_H_ */
