@@ -41,9 +41,9 @@ extern "C" {
 
 /*============================================================  DATA TYPES  ==*/
 
-struct nuart_device
+struct np_dev_uart
 {
-    UART_HandleTypeDef          handle;
+    UART_HandleTypeDef          huart;
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/

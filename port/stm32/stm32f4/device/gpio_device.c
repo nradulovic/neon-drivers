@@ -40,33 +40,8 @@
 /*=======================================================  LOCAL VARIABLES  ==*/
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
-
-static const struct nperiph * port_no_periph(uint32_t port_no)
-{
-    return (&g_gpios[port_no]);
-}
-
 /*===================================  GLOBAL PRIVATE FUNCTION DEFINITIONS  ==*/
 /*====================================  GLOBAL PUBLIC FUNCTION DEFINITIONS  ==*/
-
-void ngpio_mux_init(
-    uint32_t                    pin_id,
-    const struct nmux *         mux)
-{
-    const struct nperiph *      periph;
-    GPIO_InitTypeDef            gpio_config;
-
-    periph = port_no_periph(NGPIO_PIN_ID_TO_PORT(pin_id));
-    nperiph_clock_enable(periph);
-    gpio_config.Alternate = mux->af;
-    gpio_config.Mode      = mux->mode;
-    gpio_config.Pin       = NGPIO_PIN_ID_TO_PIN(pin_id);
-    gpio_config.Pull      = mux->pull;
-    gpio_config.Speed     = GPIO_SPEED_FAST;
-
-    HAL_GPIO_Init((GPIO_TypeDef *)periph_address(periph), &gpio_config);
-}
-
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/
 /** @endcond *//** @} *//** @} *//*********************************************
  * END of gpio_device.c

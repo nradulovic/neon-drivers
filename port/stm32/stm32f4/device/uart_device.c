@@ -36,7 +36,6 @@
 #include "shared/component.h"
 #include "mcu/peripheral.h"
 #include "mcu/profile.h"
-#include "mcu/gpio.h"
 #include "mcu/uart.h"
 
 /*=========================================================  LOCAL MACRO's  ==*/
@@ -49,21 +48,21 @@ void uart_timeout_handler(
 
 
 void uart_setup_transmit_i(
-    struct nuart_driver *           drv);
+    struct nuart_drv *          drv);
 
 
 
 void uart_stop_transmit_i(
-    struct nuart_driver *           drv);
+    struct nuart_drv *          drv);
 
 
 
 void uart_setup_receive_i(
-    struct nuart_driver *           drv);
+    struct nuart_drv *          drv);
 
 
 void uart_stop_receive_i(
-    struct nuart_driver *           drv);
+    struct nuart_drv *          drv);
 
 /*=======================================================  LOCAL VARIABLES  ==*/
 
@@ -75,396 +74,333 @@ static const NCOMPONENT_DEFINE("UART device driver", "Nenad Radulovic");
 
 void uart_timeout_handler(void * arg)
 {
-    struct nuart_driver *           drv = arg;
+    struct nuart_drv *          drv = arg;
 
     nuart_read_stop(drv);
 
     if (drv->reader) {
-        UART_HandleTypeDef *    device_handle;
+        UART_HandleTypeDef *    huart;
 
-        device_handle = &drv->device.handle;
+        huart = &drv->ctx.huart;
         drv->reader(
                 drv,
                 NERROR_TIMEOUT,
                 drv->rx_buff,
-                device_handle->RxXferSize - device_handle->RxXferCount);
+                huart->RxXferSize - huart->RxXferCount);
     }
 }
 
 
 
 void uart_setup_transmit_i(
-    struct nuart_driver *           drv)
+    struct nuart_drv *          drv)
 {
-    UART_HandleTypeDef *        device_handle;
+    UART_HandleTypeDef *        huart;
 
-    device_handle = &drv->device.handle;
-    device_handle->pTxBuffPtr  = drv->tx_buff;
-    device_handle->TxXferCount = drv->tx_size;
-    device_handle->TxXferSize  = drv->tx_size;
+    huart = &drv->ctx.huart;
+    huart->pTxBuffPtr  = drv->tx_buff;
+    huart->TxXferCount = drv->tx_size;
+    huart->TxXferSize  = drv->tx_size;
 
-    if (device_handle->State == HAL_UART_STATE_BUSY_RX) {
-        device_handle->State = HAL_UART_STATE_BUSY_TX_RX;
+    if (huart->State == HAL_UART_STATE_BUSY_RX) {
+        huart->State = HAL_UART_STATE_BUSY_TX_RX;
     } else {
-        device_handle->State = HAL_UART_STATE_BUSY_TX;
+        huart->State = HAL_UART_STATE_BUSY_TX;
     }
 
-    __HAL_UART_ENABLE_IT(device_handle, UART_IT_PE);
-    __HAL_UART_ENABLE_IT(device_handle, UART_IT_ERR);
-    __HAL_UART_ENABLE_IT(device_handle, UART_IT_TXE);
+    __HAL_UART_ENABLE_IT(huart, UART_IT_PE);
+    __HAL_UART_ENABLE_IT(huart, UART_IT_ERR);
+    __HAL_UART_ENABLE_IT(huart, UART_IT_TXE);
 }
 
 
 
 void uart_stop_transmit_i(
-    struct nuart_driver *           drv)
+    struct nuart_drv *          drv)
 {
-    UART_HandleTypeDef *        device_handle;
+    UART_HandleTypeDef *        huart;
 
-    device_handle = &drv->device.handle;
+    huart = &drv->ctx.huart;
 
-    if (device_handle->State == HAL_UART_STATE_BUSY_TX_RX) {
-        device_handle->State =  HAL_UART_STATE_BUSY_RX;
+    if (huart->State == HAL_UART_STATE_BUSY_TX_RX) {
+        huart->State =  HAL_UART_STATE_BUSY_RX;
     } else {
-        device_handle->State =  HAL_UART_STATE_READY;
-        __HAL_UART_DISABLE_IT(device_handle, UART_IT_PE);
-        __HAL_UART_DISABLE_IT(device_handle, UART_IT_ERR);
+        huart->State =  HAL_UART_STATE_READY;
+        __HAL_UART_DISABLE_IT(huart, UART_IT_PE);
+        __HAL_UART_DISABLE_IT(huart, UART_IT_ERR);
     }
-    __HAL_UART_DISABLE_IT(device_handle, UART_IT_TXE);
+    __HAL_UART_DISABLE_IT(huart, UART_IT_TXE);
 }
 
 
 
 void uart_setup_receive_i(
-    struct nuart_driver *           drv)
+    struct nuart_drv *          drv)
 {
-    UART_HandleTypeDef *        device_handle;
+    UART_HandleTypeDef *        huart;
 
-    device_handle = &drv->device.handle;
-    device_handle->pRxBuffPtr  = drv->rx_buff;
-    device_handle->RxXferCount = drv->rx_size;
-    device_handle->RxXferSize  = drv->rx_size;
+    huart = &drv->ctx.huart;
+    huart->pRxBuffPtr  = drv->rx_buff;
+    huart->RxXferCount = drv->rx_size;
+    huart->RxXferSize  = drv->rx_size;
 
-    if (device_handle->State == HAL_UART_STATE_BUSY_TX) {
-        device_handle->State = HAL_UART_STATE_BUSY_TX_RX;
+    if (huart->State == HAL_UART_STATE_BUSY_TX) {
+        huart->State = HAL_UART_STATE_BUSY_TX_RX;
     } else {
-        device_handle->State = HAL_UART_STATE_BUSY_RX;
+        huart->State = HAL_UART_STATE_BUSY_RX;
     }
 
-    __HAL_UART_ENABLE_IT(device_handle, UART_IT_PE);
-    __HAL_UART_ENABLE_IT(device_handle, UART_IT_ERR);
-    __HAL_UART_ENABLE_IT(device_handle, UART_IT_RXNE);
+    __HAL_UART_ENABLE_IT(huart, UART_IT_PE);
+    __HAL_UART_ENABLE_IT(huart, UART_IT_ERR);
+    __HAL_UART_ENABLE_IT(huart, UART_IT_RXNE);
 }
 
 
 
 void uart_stop_receive_i(
-    struct nuart_driver *           drv)
+    struct nuart_drv *          drv)
 {
-    UART_HandleTypeDef *        device_handle;
+    UART_HandleTypeDef *        huart;
 
-    device_handle = &drv->device.handle;
+    huart = &drv->ctx.huart;
 
-    if (device_handle->State == HAL_UART_STATE_BUSY_TX_RX) {
-        device_handle->State =  HAL_UART_STATE_BUSY_TX;
+    if (huart->State == HAL_UART_STATE_BUSY_TX_RX) {
+        huart->State =  HAL_UART_STATE_BUSY_TX;
     } else {
-        device_handle->State =  HAL_UART_STATE_READY;
-        __HAL_UART_DISABLE_IT(device_handle, UART_IT_PE);
-        __HAL_UART_DISABLE_IT(device_handle, UART_IT_ERR);
+        huart->State =  HAL_UART_STATE_READY;
+        __HAL_UART_DISABLE_IT(huart, UART_IT_PE);
+        __HAL_UART_DISABLE_IT(huart, UART_IT_ERR);
     }
-    __HAL_UART_DISABLE_IT(device_handle, UART_IT_RXNE);
+    __HAL_UART_DISABLE_IT(huart, UART_IT_RXNE);
 }
 
 /*===================================  GLOBAL PRIVATE FUNCTION DEFINITIONS  ==*/
 /*====================================  GLOBAL PUBLIC FUNCTION DEFINITIONS  ==*/
 
 
-struct nuart_driver * nuart_open(
-    const struct nperiph *      periph,
-    const struct nuart_config * config)
+void np_uart_init(struct nuart_drv * drv, const struct nuart_config * config)
 {
-    struct nuart_driver *       driver;
-    UART_HandleTypeDef *        device_handle;
+    UART_HandleTypeDef *        huart;
 
-    NASSERT(NAPI_POINTER, periph != NULL);
-    NASSERT(NAPI_OBJECT,  periph_class_id(periph) == NUART_DEVICE_CLASS_ID);
+    np_drv_ref_up(&drv->p_drv);
 
-    driver         = periph_driver(periph);
-    memset(driver, 0, sizeof(*driver));
-    driver->periph = periph;
-
-    device_handle = &driver->device.handle;
-    device_handle->Instance          = (USART_TypeDef *)periph_address(periph);
-    device_handle->Init.BaudRate     = config->baud_rate;
-    device_handle->Init.HwFlowCtl    = UART_HWCONTROL_NONE;
-    device_handle->Init.OverSampling = UART_OVERSAMPLING_16;
+    huart = &drv->ctx.huart;
+    huart->Instance          = (USART_TypeDef *)np_dev_address(np_drv_dev(&drv->p_drv));
+    huart->Init.BaudRate     = config->baud_rate;
+    huart->Init.HwFlowCtl    = UART_HWCONTROL_NONE;
+    huart->Init.OverSampling = UART_OVERSAMPLING_16;
 
     switch (config->flags & NUART_WORDLENGTH) {
         case NUART_WORDLENGTH_8: {
-            device_handle->Init.WordLength = UART_WORDLENGTH_8B;
+            huart->Init.WordLength = UART_WORDLENGTH_8B;
             break;
         }
         case NUART_WORDLENGTH_9: {
-            device_handle->Init.WordLength = UART_WORDLENGTH_9B;
+            huart->Init.WordLength = UART_WORDLENGTH_9B;
             break;
         }
         default : {
-            return (NULL);
+            return;
         }
     }
     switch (config->flags & NUART_STOPBITS) {
         case NUART_STOPBITS_1: {
-            device_handle->Init.StopBits = UART_STOPBITS_1;
+            huart->Init.StopBits = UART_STOPBITS_1;
             break;
         }
         case NUART_STOPBITS_2: {
-            device_handle->Init.StopBits = UART_STOPBITS_2;
+            huart->Init.StopBits = UART_STOPBITS_2;
             break;
         }
         default: {
-            return (NULL);
+            NASSERT_ALWAYS(NAPI_USAGE);
+            return;
         }
     }
     switch (config->flags & NUART_PARITY) {
         case NUART_PARITY_NONE: {
-            device_handle->Init.Parity = UART_PARITY_NONE;
+            huart->Init.Parity = UART_PARITY_NONE;
             break;
         }
         case NUART_PARITY_EVEN: {
-            device_handle->Init.Parity = UART_PARITY_EVEN;
+            huart->Init.Parity = UART_PARITY_EVEN;
             break;
         }
         case NUART_PARITY_ODD: {
-            device_handle->Init.Parity = UART_PARITY_ODD;
+            huart->Init.Parity = UART_PARITY_ODD;
             break;
         }
         default: {
-            return (NULL);
+            NASSERT_ALWAYS(NAPI_USAGE);
+            return;
         }
     }
     switch (config->flags & NUART_MODE) {
         case NUART_MODE_TX: {
-            device_handle->Init.Mode = UART_MODE_TX;
+            huart->Init.Mode = UART_MODE_TX;
             break;
         }
         case NUART_MODE_RX: {
-            device_handle->Init.Mode = UART_MODE_RX;
+            huart->Init.Mode = UART_MODE_RX;
             break;
         }
         case NUART_MODE_RX_TX: {
-            device_handle->Init.Mode = UART_MODE_TX_RX;
+            huart->Init.Mode = UART_MODE_TX_RX;
             break;
         }
+        default: {
+            NASSERT_ALWAYS(NAPI_USAGE);
+            return;
+        }
     }
+    np_drv_ref_up(&drv->p_drv);
 
     if (config->flags & NUART_MODE_RX) {
-        ngpio_mux_init(config->rx_gpio, driver->periph->mux);
+        np_drv_mux_enable(&drv->p_drv, 0, config->rx_gpio);
     }
 
     if (config->flags & NUART_MODE_TX) {
-        ngpio_mux_init(config->tx_gpio, driver->periph->mux);
+        np_drv_mux_enable(&drv->p_drv, 0, config->tx_gpio);
     }
-    nperiph_clock_enable(driver->periph);
+    np_drv_clock_enable(&drv->p_drv, 0);
 
     if (config->flags & NUART_SET_ISR_PRIO) {
-        nperiph_isr_set_prio(driver->periph, 0, config->isr_prio);
+        np_drv_isr_set_prio(&drv->p_drv, 0, config->isr_prio);
     } else {
-        nperiph_isr_set_prio(driver->periph, 0, CONFIG_INTR_MAX_ISR_PRIO);
+        np_drv_isr_set_prio(&drv->p_drv, 0, CONFIG_INTR_MAX_ISR_PRIO);
     }
-    nperiph_isr_clear_flag(driver->periph, 0);
-    nperiph_isr_enable(driver->periph, 0);
-
-    if (HAL_UART_Init(device_handle) != HAL_OK) {
-        return (NULL);
-    }
-    ntimer_init(&driver->timeout);
-
-    return (driver);
+    np_drv_isr_clear_flag(&drv->p_drv, 0);
+    np_drv_isr_enable(&drv->p_drv, 0);
+    HAL_UART_Init(huart);
 }
 
 
 
-void nuart_close(
-    struct nuart_driver *       driver)
+void np_uart_term(
+    struct nuart_drv *          drv)
 {
-    uart_stop_transmit_i(driver);
-    uart_stop_receive_i(driver);
-    ntimer_cancel(&driver->timeout);
-    HAL_UART_DeInit(&driver->device.handle);
-    nperiph_isr_disable(driver->periph, 0);
-    nperiph_clock_disable(driver->periph);
+    np_drv_isr_disable(&drv->p_drv, 0);
+    np_drv_ref_down(&drv->p_drv);
 }
 
 
 
-enum nerror nuart_read(
-    struct nuart_driver *       driver,
-    void *                      buffer,
-    size_t                      size,
-    nsystimer_tick              timeout)
+void np_uart_rx_start(
+    struct nuart_drv *          drv)
 {
-    return (NERROR_NOT_IMPLEMENTED);
+    np_drv_isr_disable(&drv->p_drv, 0);
+    uart_setup_receive_i(drv);
+    np_drv_isr_enable(&drv->p_drv, 0);
 }
 
 
 
-enum nerror nuart_write(
-    struct nuart_driver *       driver,
-    const void *                buffer,
-    size_t                      size,
-    nsystimer_tick              timeout)
+void np_uart_rx_restart(
+    struct nuart_drv *          drv)
 {
-    return (NERROR_NOT_IMPLEMENTED);
+    uart_setup_receive_i(drv);
 }
 
 
 
-enum nerror nuart_read_start(
-    struct nuart_driver *       driver,
-    void *                      buffer,
-    size_t                      size,
-    uint32_t                    timeout)
+void np_uart_rx_stop(
+    struct nuart_drv *          drv)
 {
-    if ((driver->device.handle.State == HAL_UART_STATE_BUSY_RX) ||
-        (driver->device.handle.State == HAL_UART_STATE_BUSY_TX_RX)) {
-        return (NERROR_DEVICE_BUSY);
-    }
-    nperiph_isr_disable(driver->periph, 0);
-    driver->timeout_ticks = timeout;
-    driver->rx_buff       = buffer;
-    driver->rx_size       = size;
-    uart_setup_receive_i(driver);
-    nperiph_isr_enable(driver->periph, 0);
-
-    return (NERROR_NONE);
+    np_drv_isr_disable(&drv->p_drv, 0);
+    uart_stop_receive_i(drv);
+    np_drv_isr_enable(&drv->p_drv, 0);
 }
 
 
 
-void nuart_read_restart_i(
-    struct nuart_driver *       driver)
+void np_uart_tx_start(
+    struct nuart_drv *          drv)
 {
-    uart_setup_receive_i(driver);
+    np_drv_isr_disable(&drv->p_drv, 0);
+    uart_setup_transmit_i(drv);
+    np_drv_isr_enable(&drv->p_drv, 0);
 }
 
 
 
-void nuart_read_stop(
-    struct nuart_driver *       driver)
+void np_uart_tx_restart(
+    struct nuart_drv *          drv)
 {
-    nperiph_isr_disable(driver->periph, 0);
-    uart_stop_receive_i(driver);
-    nperiph_isr_enable(driver->periph, 0);
+    uart_setup_transmit_i(drv);
 }
 
 
 
-enum nerror nuart_write_start(
-    struct nuart_driver *       driver,
-    const void *                buffer,
-    size_t                      size)
+void np_uart_tx_stop(
+    struct nuart_drv *          drv)
 {
-    if ((driver->device.handle.State == HAL_UART_STATE_BUSY_TX) ||
-        (driver->device.handle.State == HAL_UART_STATE_BUSY_TX_RX)) {
-        return (NERROR_DEVICE_BUSY);
-    }
-    nperiph_isr_disable(driver->periph, 0);
-    driver->tx_buff = buffer;
-    driver->tx_size = size;
-    uart_setup_transmit_i(driver);
-    nperiph_isr_enable(driver->periph, 0);
-
-    return (NERROR_NONE);
+    np_drv_isr_disable(&drv->p_drv, 0);
+    uart_stop_transmit_i(drv);
+    np_drv_isr_enable(&drv->p_drv, 0);
 }
 
 
 
-void nuart_write_restart_i(
-    struct nuart_driver *       driver)
+void HAL_UART_ErrorCallback(UART_HandleTypeDef * huart)
 {
-    uart_setup_transmit_i(driver);
-}
+    struct nuart_drv *          drv;
 
-
-
-void nuart_write_stop(
-    struct nuart_driver *       driver)
-{
-    nperiph_isr_disable(driver->periph, 0);
-    uart_stop_transmit_i(driver);
-    nperiph_isr_enable(driver->periph, 0);
-}
-
-
-
-void HAL_UART_ErrorCallback(UART_HandleTypeDef * device_handle)
-{
-    struct nuart_driver *           drv;
-    struct nuart_device *       device;
-
-    device = CONTAINER_OF(device_handle, struct nuart_device, handle);
-    drv    = NUART_DEVICE_TO_DRV(device);
+    drv = CONTAINER_OF(huart, struct nuart_drv, ctx.huart);
 
     if (drv->reader) {
         drv->reader(
                 drv,
                 NERROR_DEVICE_FAIL,
                 drv->rx_buff,
-                device_handle->RxXferSize - device_handle->RxXferCount);
+                huart->RxXferSize - huart->RxXferCount);
     }
 }
 
 
 
-void HAL_UART_RxFirstCallback(UART_HandleTypeDef * device_handle)
+void HAL_UART_RxFirstCallback(UART_HandleTypeDef * huart)
 {
-    struct nuart_driver *       driver;
-    struct nuart_device *       device;
+    struct nuart_drv *          drv;
 
-    device = CONTAINER_OF(device_handle, struct nuart_device, handle);
-    driver = NUART_DEVICE_TO_DRV(device);
+    drv = CONTAINER_OF(huart, struct nuart_drv, ctx.huart);
 
-    if (driver->timeout_ticks && driver->reader) {
+    if (drv->timeout_ticks && drv->reader) {
         ntimer_start_i(
-                &driver->timeout,
-                driver->timeout_ticks,
+                &drv->rx_timeout,
+                drv->timeout_ticks,
                 uart_timeout_handler,
-                driver,
+                drv,
                 NTIMER_ATTR_ONE_SHOT);
     }
 }
 
 
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef * device_handle)
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef * huart)
 {
-    struct nuart_driver *       driver;
-    struct nuart_device *       device;
+    struct nuart_drv *          drv;
 
-    device = CONTAINER_OF(device_handle, struct nuart_device, handle);
-    driver = NUART_DEVICE_TO_DRV(device);
+    drv = CONTAINER_OF(huart, struct nuart_drv, ctx.huart);
 
-    if (driver->timeout_ticks) {
-        ntimer_cancel_i(&driver->timeout);
+    if (drv->timeout_ticks) {
+        ntimer_cancel_i(&drv->rx_timeout);
     }
 
-    if (driver->reader) {
-        driver->reader(driver, NERROR_NONE, driver->rx_buff, driver->rx_size);
+    if (drv->reader) {
+        drv->reader(drv, NERROR_NONE, drv->rx_buff, drv->rx_size);
     }
 }
 
 
 
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef * device_handle)
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef * huart)
 {
-    struct nuart_driver *       driver;
-    struct nuart_device *       device;
+    struct nuart_drv *          drv;
 
-    device = CONTAINER_OF(device_handle, struct nuart_device, handle);
-    driver = NUART_DEVICE_TO_DRV(device);
+    drv = CONTAINER_OF(huart, struct nuart_drv, ctx.huart);
 
-    if (driver->writer) {
-        driver->writer(driver, NERROR_NONE, driver->tx_buff, driver->tx_size);
+    if (drv->writer) {
+        drv->writer(drv, NERROR_NONE, drv->tx_buff, drv->tx_size);
     }
 }
 
@@ -475,10 +411,10 @@ void USART1_IRQHandler(void);
 
 void USART1_IRQHandler(void)
 {
-    struct nuart_driver *       driver;
+    struct nuart_drv *          drv;
 
-    driver = periph_driver(&g_uart1);
-    HAL_UART_IRQHandler(&driver->device.handle);
+    drv = CONTAINER_OF(np_dev_driver(&g_uart1), struct nuart_drv, p_drv);
+    HAL_UART_IRQHandler(&drv->ctx.huart);
 }
 #endif
 
@@ -489,10 +425,10 @@ void USART2_IRQHandler(void);
 
 void USART2_IRQHandler(void)
 {
-    struct nuart_driver *       driver;
+    struct nuart_drv *          drv;
 
-    driver = periph_driver(&g_uart2);
-    HAL_UART_IRQHandler(&driver->device.handle);
+    drv = CONTAINER_OF(np_dev_driver(&g_uart2), struct nuart_drv, p_drv);
+    HAL_UART_IRQHandler(&drv->ctx.huart);
 }
 #endif
 

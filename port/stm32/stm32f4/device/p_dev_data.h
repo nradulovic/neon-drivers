@@ -26,10 +26,13 @@
  * @brief       Brief description
  *********************************************************************//** @{ */
 
-#ifndef DEVICE_CLOCK_H_
-#define DEVICE_CLOCK_H_
+#ifndef DEVICE_P_DEV_DATA_H_
+#define DEVICE_P_DEV_DATA_H_
 
 /*=========================================================  INCLUDE FILES  ==*/
+
+#include "mcu/peripheral.h"
+
 /*===============================================================  MACRO's  ==*/
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
@@ -38,6 +41,11 @@ extern "C" {
 
 /*============================================================  DATA TYPES  ==*/
 /*======================================================  GLOBAL VARIABLES  ==*/
+
+extern const struct np_dev     g_gpios[];
+extern const struct np_dev     g_uart1;
+extern const struct np_dev     g_uart2;
+
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 /*--------------------------------------------------------  C++ extern end  --*/
 #ifdef __cplusplus
@@ -46,6 +54,6 @@ extern "C" {
 
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/
 /** @endcond *//** @} *//******************************************************
- * END of clock.h
+ * END of profile.h
  ******************************************************************************/
-#endif /* DEVICE_CLOCK_H_ */
+#endif /* DEVICE_P_DEV_DATA_H_ */

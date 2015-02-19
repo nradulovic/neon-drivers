@@ -26,20 +26,15 @@
  * @brief       Brief description
  *********************************************************************//** @{ */
 
-#ifndef DEVICE_PERIPHERAL_H_
-#define DEVICE_PERIPHERAL_H_
+#ifndef DEVICE_P_DEV_H_
+#define DEVICE_P_DEV_H_
 
 /*=========================================================  INCLUDE FILES  ==*/
-
-#include <stdint.h>
-
-#include "stm32f4xx.h"
-
 /*===============================================================  MACRO's  ==*/
 
-#define ARCH_IO_ADDRESS                 1
-#define ARCH_ATTR_MULTI_ISR             1
+#define ARCH_ATTR_ADDRESS               1
 #define ARCH_ATTR_CLOCK                 1
+#define ARCH_ATTR_ISR                   1
 #define ARCH_ATTR_MUX                   1
 
 /*-------------------------------------------------------  C++ extern base  --*/
@@ -49,23 +44,23 @@ extern "C" {
 
 /*============================================================  DATA TYPES  ==*/
 
-struct nisr
+struct np_dev_clock
 {
-    IRQn_Type                   irqn;
+    volatile void *             reg;
+    unsigned int                mask;
 };
 
-struct nmux
+struct np_dev_isr
+{
+    unsigned int                irqn;
+    unsigned int                flags;
+};
+
+struct np_dev_mux
 {
     unsigned int                af;
     unsigned int                mode;
     unsigned int                pull;
-};
-
-struct nclock
-{
-    struct nclock *             host;
-    volatile uint32_t *         reg;
-    unsigned int                mask;
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/
@@ -79,4 +74,4 @@ struct nclock
 /** @endcond *//** @} *//******************************************************
  * END of peripheral.h
  ******************************************************************************/
-#endif /* DEVICE_PERIPHERAL_H_ */
+#endif /* DEVICE_P_DEV_H_ */

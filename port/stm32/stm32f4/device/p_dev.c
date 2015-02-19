@@ -29,7 +29,10 @@
 
 /*=========================================================  INCLUDE FILES  ==*/
 
+#include "stm32f4xx.h"
 #include "mcu/peripheral.h"
+#include "mcu/profile.h"
+#include "mcu/gpio.h"
 
 /*=========================================================  LOCAL MACRO's  ==*/
 /*======================================================  LOCAL DATA TYPES  ==*/
@@ -40,63 +43,67 @@
 /*===================================  GLOBAL PRIVATE FUNCTION DEFINITIONS  ==*/
 /*====================================  GLOBAL PUBLIC FUNCTION DEFINITIONS  ==*/
 
-void nperiph_clock_enable(const struct nperiph * periph)
+void np_clock_enable(const struct np_dev_clock * clock)
 {
-    const struct nclock *       clock = periph->clock;
-
-    *clock->reg |= clock->mask;
+    *(volatile uint32_t *)clock->reg |= clock->mask;
 }
 
-void nperiph_clock_disable(const struct nperiph * periph)
+void np_clock_disable(const struct np_dev_clock * clock)
 {
-    const struct nclock *       clock = periph->clock;
-
-    *clock->reg &= ~clock->mask;
+    *(volatile uint32_t *)clock->reg &= ~clock->mask;
 }
 
-void nperiph_isr_enable(const struct nperiph * periph, uint32_t irq_enum)
+void np_isr_enable(const struct np_dev_isr * isr)
 {
-    const struct nisr *         isr_array = periph->isr;
-
-    NVIC_EnableIRQ(isr_array[irq_enum].irqn);
+    NVIC_EnableIRQ(isr->irqn);
 }
 
-void nperiph_isr_disable(const struct nperiph * periph, uint32_t irq_enum)
+void np_isr_disable(const struct np_dev_isr * isr)
 {
-    const struct nisr *         isr_array = periph->isr;
-
-    NVIC_DisableIRQ(isr_array[irq_enum].irqn);
+    NVIC_DisableIRQ(isr->irqn);
 }
 
-void nperiph_isr_clear_flag(const struct nperiph * periph, uint32_t irq_enum)
+void np_isr_clear_flag(const struct np_dev_isr * isr)
 {
-    const struct nisr *         isr_array = periph->isr;
-
-    NVIC_ClearPendingIRQ(isr_array[irq_enum].irqn);
+    NVIC_ClearPendingIRQ(isr->irqn);
 }
 
-void nperiph_isr_set_flag(const struct nperiph * periph, uint32_t irq_enum)
+void np_isr_set_flag(const struct np_dev_isr * isr)
 {
-    const struct nisr *         isr_array = periph->isr;
-
-    NVIC_SetPendingIRQ(isr_array[irq_enum].irqn);
+    NVIC_SetPendingIRQ(isr->irqn);
 }
 
-void nperiph_isr_set_prio(const struct nperiph * periph, uint32_t irq_num, uint32_t prio)
+void np_isr_set_prio(const struct np_dev_isr * isr, uint32_t prio)
 {
-    const struct nisr *         isr_array = periph->isr;
-
-    NVIC_SetPriority(isr_array[irq_num].irqn, prio);
+    NVIC_SetPriority(isr->irqn, prio);
 }
 
-uint32_t nperiph_isr_get_prio(const struct nperiph * periph, uint32_t irq_num)
+uint32_t np_isr_get_prio(const struct np_dev_isr * isr)
 {
-    const struct nisr *         isr_array = periph->isr;
+    return (NVIC_GetPriority(isr->irqn));
+}
 
-    return (NVIC_GetPriority(isr_array[irq_num].irqn));
+void np_mux_enable(const struct np_dev_mux * mux, uint32_t pin_id)
+{
+    const struct np_dev *       dev;
+    const struct ngpio_pin_config config;
+    GPIO_InitTypeDef            gpio_config;
+
+    dev = &g_gpios[NGPIO_PIN_ID_TO_PORT(pin_id)];
+    gpio_config.Alternate = mux->af;
+    gpio_config.Mode      = mux->mode;
+    gpio_config.Pin       = NGPIO_PIN_ID_TO_PIN(pin_id);
+    gpio_config.Pull      = mux->pull;
+    gpio_config.Speed     = GPIO_SPEED_FAST;
+
+    HAL_GPIO_Init((GPIO_TypeDef *)np_dev_address(dev), &gpio_config);
+}
+
+void np_mux_disable(const struct np_dev_mux * mux, uint32_t pin_id)
+{
 }
 
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/
 /** @endcond *//** @} *//** @} *//*********************************************
- * END of peripheral.c
+ * END of peripheral_device.c
  ******************************************************************************/
