@@ -62,8 +62,6 @@ struct nuart_drv * nuart_open(
 
     NASSERT(NAPI_USAGE, (config->flags & dev->flags) == config->flags);
     drv->cfg_flags      = config->flags;
-    drv->cfg_tx_gpio    = config->tx_gpio;
-    drv->cfg_rx_gpio    = config->rx_gpio;
     drv->state          = 0u;
     drv->tx_buff        = NULL;
     drv->tx_size        = 0u;

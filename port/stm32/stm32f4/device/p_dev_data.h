@@ -42,9 +42,15 @@ extern "C" {
 /*============================================================  DATA TYPES  ==*/
 /*======================================================  GLOBAL VARIABLES  ==*/
 
-extern const struct np_dev     g_gpios[];
-extern const struct np_dev     g_uart1;
-extern const struct np_dev     g_uart2;
+
+extern const struct np_dev      g_gpioa;
+extern const struct np_dev      g_gpiob;
+extern const struct np_dev      g_gpioc;
+extern const struct np_dev      g_uart1;
+extern const struct np_dev      g_uart2;
+
+extern const struct np_dev *    g_gpios[];
+extern const struct np_dev *    g_uarts[];
 
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 /*--------------------------------------------------------  C++ extern end  --*/

@@ -30,6 +30,7 @@
 /*=========================================================  INCLUDE FILES  ==*/
 
 #include "stm32f4xx.h"
+#include "port/sys_lock.h"
 #include "mcu/peripheral.h"
 #include "mcu/profile.h"
 #include "mcu/gpio.h"
@@ -75,6 +76,7 @@ void np_isr_set_flag(const struct np_dev_isr * isr)
 
 void np_isr_set_prio(const struct np_dev_isr * isr, uint32_t prio)
 {
+    prio = NSYS_LOCK_LEVEL_TO_CODE(prio);
     NVIC_SetPriority(isr->irqn, prio);
 }
 
@@ -89,10 +91,10 @@ void np_mux_enable(const struct np_dev_mux * mux, uint32_t pin_id)
     const struct ngpio_pin_config config;
     GPIO_InitTypeDef            gpio_config;
 
-    dev = &g_gpios[NGPIO_PIN_ID_TO_PORT(pin_id)];
+    dev = np_dev_find_by_major(g_gpios, pin_id);
     gpio_config.Alternate = mux->af;
     gpio_config.Mode      = mux->mode;
-    gpio_config.Pin       = NGPIO_PIN_ID_TO_PIN(pin_id);
+    gpio_config.Pin       = NPERIPH_MINOR_ID(pin_id);
     gpio_config.Pull      = mux->pull;
     gpio_config.Speed     = GPIO_SPEED_FAST;
 

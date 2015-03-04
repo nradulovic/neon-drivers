@@ -256,18 +256,29 @@ void np_uart_init(struct nuart_drv * drv, const struct nuart_config * config)
     np_drv_ref_up(&drv->p_drv);
 
     if (config->flags & NUART_MODE_RX) {
+#define NMUX_UART_RX 1
+
+        uint32_t nmux_find_gpio_id(uint32_t io_periph_class, uint32_t major, uint32_t minor);
+
+        uint32_t rx_gpio;
+
+        rx_gpio = nmux_find_gpio_id(NMUX_UART_RX, np_dev_id(&drv->p_drv->p_dev), 0);
+#if 0
         np_drv_mux_enable(&drv->p_drv, 0, config->rx_gpio);
+#endif
     }
 
     if (config->flags & NUART_MODE_TX) {
+#if 0
         np_drv_mux_enable(&drv->p_drv, 0, config->tx_gpio);
+#endif
     }
     np_drv_clock_enable(&drv->p_drv, 0);
 
     if (config->flags & NUART_SET_ISR_PRIO) {
         np_drv_isr_set_prio(&drv->p_drv, 0, config->isr_prio);
     } else {
-        np_drv_isr_set_prio(&drv->p_drv, 0, CONFIG_INTR_MAX_ISR_PRIO);
+        np_drv_isr_set_prio(&drv->p_drv, 0, CONFIG_ISR_MAX_PRIO);
     }
     np_drv_isr_clear_flag(&drv->p_drv, 0);
     np_drv_isr_enable(&drv->p_drv, 0);

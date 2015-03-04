@@ -87,8 +87,6 @@ struct nuart_config
     uint32_t                    flags;
     uint32_t                    baud_rate;
     uint32_t                    isr_prio;
-    uint32_t                    tx_gpio;
-    uint32_t                    rx_gpio;
 };
 
 

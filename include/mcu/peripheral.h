@@ -37,8 +37,12 @@
 
 /*===============================================================  MACRO's  ==*/
 
-#define NPERIPH_MAGIC                   0xdead0000u
-#define NPERIPH_ID(class, id)           (NPERIPH_MAGIC | (((class) & 0xffu) << 8) | ((id) & 0xffu))
+#define NPERIPH_MAGIC                   ((uint32_t)0xdead0000u)
+#define NPERIPH_DEV_ID(class, id)       (NPERIPH_MAGIC | (((class) & 0xffu) << 8) | ((id) & 0xffu))
+
+#define NPERIPH_MAJOR_ID(id)            ((uint32_t)id >> 16u)
+#define NPERIPH_MINOR_ID(id)            ((uint32_t)id & 0xffffu)
+#define NPERIPH_ID(major, minor)        (((uint32_t)major << 16u) | ((uint32_t)minor & 0xffffu))
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
@@ -58,6 +62,12 @@ struct np_drv
     const struct np_dev *       p_dev;
     uint32_t                    ref;
     void *                      data;
+};
+
+struct np_drv_id
+{
+    const struct np_dev *       p_dev;
+    struct np_drv *             p_drv;
 };
 
 struct np_dev
@@ -101,6 +111,28 @@ struct np_dev
 
 #define np_dev_address(device)                                                  \
     (device)->address
+
+#define np_dev_mux(device)                                                      \
+    (device)->mux
+
+static inline
+const struct np_dev * np_dev_find_by_major(const struct np_dev * dev_class[], uint32_t id)
+{
+    const struct np_dev *       dev;
+    uint32_t                    major;
+
+    major = NPERIPH_MAJOR_ID(id);
+    dev   = dev_class[major];
+
+    if (dev) {
+
+        if (dev->id != major) {
+
+        }
+    }
+
+    return (dev);
+}
 
 #define np_drv_dev(drv)                 (drv)->p_dev
 
