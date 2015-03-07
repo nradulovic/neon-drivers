@@ -34,15 +34,13 @@
 #include <device/p_dev.h>
 #include <stdint.h>
 
-
 /*===============================================================  MACRO's  ==*/
 
-#define NPERIPH_MAGIC                   ((uint32_t)0xdead0000u)
-#define NPERIPH_DEV_ID(class, id)       (NPERIPH_MAGIC | (((class) & 0xffu) << 8) | ((id) & 0xffu))
+#define NP_DEV_MAGIC                    ((uint8_t)0xdeu)
+#define NP_DEV_RECOGNITION(class, id)   { NP_DEV_MAGIC, (class), (id), 0 }
 
-#define NPERIPH_MAJOR_ID(id)            ((uint32_t)id >> 16u)
-#define NPERIPH_MINOR_ID(id)            ((uint32_t)id & 0xffffu)
-#define NPERIPH_ID(major, minor)        (((uint32_t)major << 16u) | ((uint32_t)minor & 0xffffu))
+#define NP_DEV_ID_TO_MAJOR(id)          ((uint32_t)id >> 16u)
+#define NP_DEV_ID_TO_MINOR(id)          ((uint32_t)id & 0xffffu)
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
@@ -72,7 +70,15 @@ struct np_drv_id
 
 struct np_dev
 {
-    uint32_t                    id;
+    struct np_dev_recognition
+    {
+        uint8_t                     magic;
+        uint8_t                     dev_class;
+        uint8_t                     major;
+        uint8_t                     minor;
+    }                           recognition;
+    uint16_t                    dev_class;
+    uint16_t                    id;
     uint32_t                    flags;
     struct np_drv *             p_drv;
     const struct np_dev *       host;
@@ -101,7 +107,7 @@ struct np_dev
     (((device)->id >> 0u) & 0xffu)
 
 #define np_dev_class_id(device)                                                 \
-    (((device)->id >> 8u) & 0xffu)
+    ((device)->recognition.dev_class)
 
 #define np_dev_flags(device)                                                    \
     (device)->flags
@@ -116,17 +122,17 @@ struct np_dev
     (device)->mux
 
 static inline
-const struct np_dev * np_dev_find_by_major(const struct np_dev * dev_class[], uint32_t id)
+const struct np_dev * np_dev_find_by_id(const struct np_dev * dev_class[], uint32_t id)
 {
     const struct np_dev *       dev;
     uint32_t                    major;
 
-    major = NPERIPH_MAJOR_ID(id);
+    major = NP_DEV_ID_TO_MAJOR(id);
     dev   = dev_class[major];
 
     if (dev) {
 
-        if (dev->id != major) {
+        if (dev->recognition.major != major) {
 
         }
     }

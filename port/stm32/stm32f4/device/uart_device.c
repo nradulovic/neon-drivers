@@ -258,11 +258,6 @@ void np_uart_init(struct nuart_drv * drv, const struct nuart_config * config)
     if (config->flags & NUART_MODE_RX) {
 #define NMUX_UART_RX 1
 
-        uint32_t nmux_find_gpio_id(uint32_t io_periph_class, uint32_t major, uint32_t minor);
-
-        uint32_t rx_gpio;
-
-        rx_gpio = nmux_find_gpio_id(NMUX_UART_RX, np_dev_id(&drv->p_drv->p_dev), 0);
 #if 0
         np_drv_mux_enable(&drv->p_drv, 0, config->rx_gpio);
 #endif

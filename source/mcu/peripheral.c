@@ -37,7 +37,7 @@
 
 /*=========================================================  LOCAL MACRO's  ==*/
 
-#define IS_DEVICE(device)               (((device)->id & 0xffff0000u) == NPERIPH_MAGIC)
+#define IS_DEVICE(device)               ((device)->recognition.magic == NP_DEV_MAGIC)
 
 /*======================================================  LOCAL DATA TYPES  ==*/
 

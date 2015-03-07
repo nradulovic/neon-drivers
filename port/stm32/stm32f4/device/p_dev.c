@@ -94,7 +94,7 @@ void np_mux_enable(const struct np_dev_mux * mux, uint32_t pin_id)
     dev = np_dev_find_by_major(g_gpios, pin_id);
     gpio_config.Alternate = mux->af;
     gpio_config.Mode      = mux->mode;
-    gpio_config.Pin       = NPERIPH_MINOR_ID(pin_id);
+    gpio_config.Pin       = NP_DEV_ID_TO_MINOR(pin_id);
     gpio_config.Pull      = mux->pull;
     gpio_config.Speed     = GPIO_SPEED_FAST;
 

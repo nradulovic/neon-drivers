@@ -104,7 +104,7 @@ static const struct np_dev_isr          g_uart2_isr =
 
 const struct np_dev             g_gpioa =
 {
-    .id                 = NPERIPH_DEV_ID(NGPIO_DEVICE_CLASS_ID, 1),
+    .recognition        = NP_DEV_RECOGNITION(NGPIO_DEVICE_CLASS_ID, 1),
     .p_drv              = &g_gpioa_driver.p_drv,
     .address            = (volatile unsigned int *)GPIOA_BASE,
     .clock              = &g_gpioa_clock
@@ -112,7 +112,7 @@ const struct np_dev             g_gpioa =
 
 const struct np_dev             g_gpiob =
 {
-    .id                 = NPERIPH_DEV_ID(NGPIO_DEVICE_CLASS_ID, 2),
+    .recognition        = NP_DEV_RECOGNITION(NGPIO_DEVICE_CLASS_ID, 2),
     .p_drv              = &g_gpiob_driver.p_drv,
     .address            = (volatile unsigned int *)GPIOB_BASE,
     .clock              = &g_gpiob_clock
@@ -120,7 +120,7 @@ const struct np_dev             g_gpiob =
 
 const struct np_dev             g_gpioc =
 {
-    .id                 = NPERIPH_DEV_ID(NGPIO_DEVICE_CLASS_ID, 3),
+    .recognition        = NP_DEV_RECOGNITION(NGPIO_DEVICE_CLASS_ID, 3),
     .p_drv              = &g_gpioc_driver.p_drv,
     .address            = (volatile unsigned int *)GPIOC_BASE,
     .clock              = &g_gpioc_clock
@@ -128,7 +128,7 @@ const struct np_dev             g_gpioc =
 
 const struct np_dev             g_uart1 =
 {
-    .id                 = NPERIPH_DEV_ID(NUART_DEVICE_CLASS_ID, 1),
+    .recognition        = NP_DEV_RECOGNITION(NUART_DEVICE_CLASS_ID, 1),
     .flags              = NUART_MODE_RX | NUART_MODE_TX | NUART_PARITY_EVEN |
                           NUART_PARITY_ODD | NUART_PARITY_NONE |NUART_STOPBITS_1 |
                           NUART_STOPBITS_2 | NUART_WORDLENGTH_8 |
@@ -142,7 +142,7 @@ const struct np_dev             g_uart1 =
 
 const struct np_dev            g_uart2 =
 {
-    .id                 = NPERIPH_DEV_ID(NUART_DEVICE_CLASS_ID, 2),
+    .recognition        = NP_DEV_RECOGNITION(NUART_DEVICE_CLASS_ID, 2),
     .flags              = NUART_MODE_RX | NUART_MODE_TX | NUART_PARITY_EVEN |
                           NUART_PARITY_ODD | NUART_PARITY_NONE |NUART_STOPBITS_1 |
                           NUART_STOPBITS_2 | NUART_WORDLENGTH_8 |
@@ -161,13 +161,15 @@ const struct np_dev *           g_gpios[] =
 {
     &g_gpioa,
     &g_gpiob,
-    &g_gpioc
+    &g_gpioc,
+    NULL
 };
 
 const struct np_dev *           g_uarts[] =
 {
     &g_uart1,
-    &g_uart2
+    &g_uart2,
+    NULL
 };
 
 /*============================================  LOCAL FUNCTION DEFINITIONS  ==*/

@@ -44,6 +44,10 @@
 /*===============================================================  MACRO's  ==*/
 
 #define NUART_DEVICE_CLASS_ID           2
+#define NUART_MUX_FN_RX                 0
+#define NUART_MUX_FN_TX                 1
+#define NUART_MUX_FN_CTS                2
+#define NUART_MUX_FN_RTS                3
 
 #define NUART_WORDLENGTH_8              (0x1u << 0)
 #define NUART_WORDLENGTH_9              (0x1u << 1)
