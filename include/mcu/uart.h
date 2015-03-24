@@ -32,18 +32,17 @@
 /*=========================================================  INCLUDE FILES  ==*/
 
 
+#include <arch/p_uart.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include "port/compiler.h"
 #include "shared/error.h"
 #include "timer/timer.h"
-#include "mcu/peripheral.h"
-#include "device/uart_device.h"
+#include "port/peripheral.h"
 
 /*===============================================================  MACRO's  ==*/
 
-#define NUART_DEVICE_CLASS_ID           2
 #define NUART_MUX_FN_RX                 0
 #define NUART_MUX_FN_TX                 1
 #define NUART_MUX_FN_CTS                2
@@ -131,8 +130,7 @@ void nuart_close(
 enum nerror nuart_read(
     struct nuart_drv *          drv,
     void *                      buffer,
-    size_t                      size,
-    nsystimer_tick              timeout);
+    size_t                      size);
 
 
 
@@ -157,8 +155,7 @@ void nuart_set_writer(
 enum nerror nuart_read_start(
     struct nuart_drv *          drv,
     void *                      buffer,
-    size_t                      size,
-    uint32_t                    timeout);
+    size_t                      size);
 
 
 

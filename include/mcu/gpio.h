@@ -1,12 +1,12 @@
 #ifndef NGPIO_H_
 #define NGPIO_H_
 
+#include <arch/p_gpio.h>
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "port/peripheral.h"
 #include "shared/error.h"
-#include "mcu/peripheral.h"
-#include "device/gpio_device.h"
 
 #define NGPIO_DEVICE_CLASS_ID           1
 

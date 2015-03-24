@@ -1,7 +1,7 @@
 #ifndef NI2C_H_
 #define NI2C_H_
 
-#include <device/i2c_device.h>
+#include <arch/p_i2c.h>
 #include <stdint.h>
 #include <stddef.h>
 

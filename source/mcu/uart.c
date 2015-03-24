@@ -100,14 +100,13 @@ void nuart_close(
 enum nerror nuart_read(
     struct nuart_drv *          drv,
     void *                      buffer,
-    size_t                      size,
-    nsystimer_tick              timeout)
+    size_t                      size)
 {
     enum nerror                 error;
 
     drv->reader = NULL;
 
-    error = nuart_read_start(drv, buffer, size, timeout);
+    error = nuart_read_start(drv, buffer, size);
 
     return (error);
 }
@@ -151,8 +150,7 @@ void nuart_set_writer(
 enum nerror nuart_read_start(
     struct nuart_drv *          drv,
     void *                      buffer,
-    size_t                      size,
-    uint32_t                    timeout)
+    size_t                      size)
 {
     /*
      * TODO: use spinlock here
@@ -161,7 +159,6 @@ enum nerror nuart_read_start(
         return (NERROR_DEVICE_BUSY);
     }
     drv->state        |= NUART_MODE_RX;
-    drv->timeout_ticks = timeout;
     drv->rx_buff       = buffer;
     drv->rx_size       = size;
     np_uart_rx_start(drv);
