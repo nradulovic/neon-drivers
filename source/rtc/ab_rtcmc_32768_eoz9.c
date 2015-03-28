@@ -1,10 +1,10 @@
 
+#include "lib/string/num_conv.h"
 #include <string.h>
 
-#include "port/compiler.h"
-#include "shared/error.h"
-#include "lib/num_conv.h"
-#include "mcu/i2c.h"
+#include "base/port/compiler.h"
+#include "base/shared/error.h"
+#include "base/port/i2c.h"
 #include "rtc/ab_rtcmc_32768_eoz9.h"
 #include "rtc/rtc_class.h"
 
