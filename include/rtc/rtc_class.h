@@ -3,7 +3,7 @@
 #define RTC_CLASS_H_
 
 #include <stdint.h>
-#include "shared/error.h"
+#include "base/error.h"
 
 enum nrtc_time_state
 {

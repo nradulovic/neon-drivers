@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include "shared/error.h"
+#include "base/error.h"
 #include "family/p_i2c.h"
 
 #define I2C_BUS_MODE_MASTER             (0x0u << 0)
