@@ -34,19 +34,6 @@
 # include "family/p_stm32f411xe.h"
 #endif
 
-/**@brief       Specify the number of bits used in ISR priority mask. For now
- *              all STM32F4 series MCU's use 4 bits
- */
-#if !defined(NCORE_LOCK_LEVEL_BITS)
-#define NCORE_LOCK_LEVEL_BITS           4u
-#endif
-
-/**@brief       This is defined to ONE if the port supports Cortex-M bit-banding
- */
-#if !defined(PORT_BIT_BAND)
-#define PORT_BIT_BAND                   1u
-#endif
-
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
 extern "C" {

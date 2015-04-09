@@ -36,8 +36,8 @@
  * Turn off this module if not enabled or available in the current port
  */
 #if (NPROFILE_EN_GPIO)
-#include "base/shared/debug.h"
-#include "base/shared/component.h"
+#include "base/debug.h"
+#include "base/component.h"
 #include "mcu/gpio.h"
 
 /*=========================================================  LOCAL MACRO's  ==*/

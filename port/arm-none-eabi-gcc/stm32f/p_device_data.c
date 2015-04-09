@@ -33,11 +33,11 @@
 #include "mcu/profile.h"
 
 #if (NPROFILE_EN_UART)
-#include "base/port/uart.h"
+#include "mcu/uart.h"
 #endif
 
 #if (NPROFILE_EN_GPIO)
-#include "base/port/gpio.h"
+#include "mcu/gpio.h"
 #endif
 
 /*=========================================================  LOCAL MACRO's  ==*/

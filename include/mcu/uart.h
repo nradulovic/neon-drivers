@@ -34,11 +34,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/port/compiler.h"
-#include "base/port/peripheral.h"
-#include "base/port/profile.h"
-#include "base/shared/error.h"
-#include "../../../port/arm-none-eabi-gcc/stm32f/family/p_uart.h"
+#include "port/compiler.h"
+#include "base/error.h"
+#include "mcu/peripheral.h"
+#include "mcu/profile.h"
+#include "family/p_uart.h"
 
 /*===============================================================  MACRO's  ==*/
 

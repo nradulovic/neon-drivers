@@ -31,7 +31,7 @@
 
 /*=========================================================  INCLUDE FILES  ==*/
 
-#include "base/config.h"
+#include "mcu/config.h"
 #include "mcu/peripheral.h"
 
 #include "family/p_profile_data.h"

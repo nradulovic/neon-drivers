@@ -34,7 +34,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "base/port/peripheral.h"
+#include "mcu/peripheral.h"
 #include "family/p_gpio.h"
 
 /*===============================================================  MACRO's  ==*/

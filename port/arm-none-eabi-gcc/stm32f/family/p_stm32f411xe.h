@@ -34,12 +34,11 @@
 /*===============================================================  MACRO's  ==*/
 
 #define NPROFILE_MAX_CPU_CLOCK          (100ul * 1000000ul)
-#define NCORE_TIMER_MAX_VAL       0xfffffful
 #define NPROFILE_RAM_SIZE               (128ul * 1024ul)
 
-#define NPROFILE_AVAILABLE_GPIO         0
+#define NPROFILE_AVAILABLE_GPIO         NP_EN_MAJOR_1 | NP_EN_MAJOR_2 | NP_EN_MAJOR_3
 
-#define NPROFILE_AVAILABLE_UART         0
+#define NPROFILE_AVAILABLE_UART         NP_EN_MAJOR_1 | NP_EN_MAJOR_2 | NP_EN_MAJOR_6
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
