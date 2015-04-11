@@ -21,7 +21,7 @@
  *//***********************************************************************//**
  * @file
  * @author      Nenad Radulovic
- * @brief       Profile data for STM32Fxxx port
+ * @brief       Profile data
  *********************************************************************//** @{ */
 
 /*=========================================================  INCLUDE FILES  ==*/
@@ -35,33 +35,48 @@
 /*======================================================  GLOBAL VARIABLES  ==*/
 
 #if (NPROFILE_EN_GPIO)
-const struct np_dev *                   g_gpios[] =
+const struct np_dev *          	g_gpios[] =
 {
-#if (NPROFILE_EN_GPIO & NP_EN_MAJOR(1))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(1))
     &g_gpioa,
 #endif
-#if (NPROFILE_EN_GPIO & NP_EN_MAJOR(2))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(2))
     &g_gpiob,
 #endif
-#if (NPROFILE_EN_GPIO & NP_EN_MAJOR(3))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(3))
     &g_gpioc,
 #endif
+	/* NOTE:
+	 * Last member must be NULL.
+	 */
     NULL
 };
 #endif /* NPROFILE_EN_GPIO */
 
 #if (NPROFILE_EN_UART)
-const struct np_dev *                   g_uarts[] =
+const struct np_dev *          	g_uarts[] =
 {
-#if (NPROFILE_EN_UART & NP_EN_MAJOR(1))
+#if (NPROFILE_EN_UART & NPROFILE_EN(1))
     &g_uart1,
 #endif
-#if (NPROFILE_EN_UART & NP_EN_MAJOR(2))
+#if (NPROFILE_EN_UART & NPROFILE_EN(2))
     &g_uart2,
 #endif
-#if (NPROFILE_EN_UART & NP_EN_MAJOR(6))
+#if (NPROFILE_EN_UART & NPROFILE_EN(3))
+    &g_uart3,
+#endif
+#if (NPROFILE_EN_UART & NPROFILE_EN(4))
+    &g_uart4,
+#endif
+#if (NPROFILE_EN_UART & NPROFILE_EN(5))
+    &g_uart5,
+#endif
+#if (NPROFILE_EN_UART & NPROFILE_EN(6))
     &g_uart6,
 #endif
+	/* NOTE:
+	 * Last member must be NULL.
+	 */
     NULL
 };
 #endif /* NPROFILE_EN_UART */

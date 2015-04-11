@@ -6,7 +6,8 @@
 #include <stddef.h>
 
 #include "base/error.h"
-#include "family/p_i2c.h"
+
+#include "../../port/stm32fxxx/family/p_i2c.h"
 
 #define I2C_BUS_MODE_MASTER             (0x0u << 0)
 #define I2C_BUS_MODE_SLAVE              (0x1u << 0)

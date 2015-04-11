@@ -33,23 +33,25 @@
 /* NOTE:
  * This port supports:
  *  - register access by common structure address
- *  - peripheral dynamic clock enable/disable
+ *  - peripheral dynamic power enable/disable
  *  - dynamic ISR enable/disable
  *  - GPIO mux configuration
  *  - peripheral reset
  */
 #define NP_ATTR_ADDRESS                 1
-#define NP_ATTR_CLOCK                   1
+#define NP_ATTR_CLK                     1
 #define NP_ATTR_ISR                     1
 #define NP_ATTR_MUX                     1
-#define NP_ATTR_RESET                   1
+#define NP_ATTR_RST                     0
+#define NP_ATTR_PWR						1
 
 /* NOTE:
  * This port defines some common ARCH_* macros
  */
 #define ARCH_STM32_APB2                 0
 #define ARCH_STM32_APB1                 1
-#define ARCH_STM32_AHB                  2
+#define ARCH_STM32_AHB1                 10
+#define ARCH_STM32_AHB2					11
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
@@ -58,16 +60,9 @@ extern "C" {
 
 /*============================================================  DATA TYPES  ==*/
 
-struct np_dev_clock
+struct np_dev_clk
 {
-    volatile void *             reg;
-    unsigned int                mask;
-};
-
-struct np_dev_rst
-{
-    volatile void *             reg;
-    unsigned int                mask;
+    unsigned int                clk_bus;
 };
 
 struct np_dev_isr
@@ -81,6 +76,18 @@ struct np_dev_mux
     unsigned int                af;
     unsigned int                mode;
     unsigned int                pull;
+};
+
+struct np_dev_rst
+{
+    volatile void *             reg;
+    unsigned int                mask;
+};
+
+struct np_dev_pwr
+{
+	volatile void *             reg;
+	unsigned int                mask;
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/

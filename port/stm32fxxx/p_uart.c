@@ -139,7 +139,7 @@ void np_uart_init(struct nuart_drv * uart_drv, const struct nuart_config * confi
         }
     }
     np_drv_ref_up(p_drv);
-    np_drv_clock_enable(p_drv, 0);
+    np_drv_pwr_enable(p_drv, 0);
     uart_drv->gpios = config->gpios;
     uart_drv->flags = config->flags;
 
@@ -179,6 +179,7 @@ void np_uart_term(
     if (uart_drv->flags & NUART_MODE_TX) {
         np_drv_mux_disable(p_drv, 0, uart_drv->gpios[NUART_MUX_FN_TX]);
     }
+    np_drv_pwr_disable(&uart_drv->p_drv, 0);
     np_drv_ref_down(&uart_drv->p_drv);
 }
 
@@ -321,7 +322,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef * huart)
 
 
 
-#if (NPROFILE_EN_UART & NP_EN_MAJOR(1))
+#if (NPROFILE_EN_UART & NPROFILE_EN(1))
 void USART1_IRQHandler(void);
 
 void USART1_IRQHandler(void)
@@ -331,11 +332,11 @@ void USART1_IRQHandler(void)
     drv = CONTAINER_OF(np_dev_driver(&g_uart1), struct nuart_drv, p_drv);
     HAL_UART_IRQHandler(&drv->ctx.huart);
 }
-#endif /* (NP_EN_UART & NP_EN_MAJOR(1)) */
+#endif /* (NP_EN_UART & NPROFILE_EN(1)) */
 
 
 
-#if (NPROFILE_EN_UART & NP_EN_MAJOR(2))
+#if (NPROFILE_EN_UART & NPROFILE_EN(2))
 void USART2_IRQHandler(void);
 
 void USART2_IRQHandler(void)
@@ -345,9 +346,9 @@ void USART2_IRQHandler(void)
     drv = CONTAINER_OF(np_dev_driver(&g_uart2), struct nuart_drv, p_drv);
     HAL_UART_IRQHandler(&drv->ctx.huart);
 }
-#endif /* (NP_EN_UART & NP_EN_MAJOR(2)) */
+#endif /* (NP_EN_UART & NPROFILE_EN(2)) */
 
-#if (NPROFILE_EN_UART & NP_EN_MAJOR(6))
+#if (NPROFILE_EN_UART & NPROFILE_EN(6))
 void USART6_IRQHandler(void);
 
 void USART6_IRQHandler(void)
@@ -357,7 +358,7 @@ void USART6_IRQHandler(void)
     drv = CONTAINER_OF(np_dev_driver(&g_uart6), struct nuart_drv, p_drv);
     HAL_UART_IRQHandler(&drv->ctx.huart);
 }
-#endif /* (NP_EN_UART & NP_EN_MAJOR(6)) */
+#endif /* (NP_EN_UART & NPROFILE_EN(6)) */
 
 #endif /* (NPROFILE_EN_UART) */
 

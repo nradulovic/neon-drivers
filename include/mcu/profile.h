@@ -32,11 +32,37 @@
 /*=========================================================  INCLUDE FILES  ==*/
 
 #include "mcu/config.h"
-#include "mcu/peripheral.h"
 
 #include "family/p_profile_data.h"
 
 /*===============================================================  MACRO's  ==*/
+
+#define NPROFILE_CLASS_MAGIC            ((uint16_t)0xde00u)
+#define NPROFILE_CLASS_GPIO             (NPROFILE_CLASS_MAGIC | 1)
+#define NPROFILE_CLASS_UART             (NPROFILE_CLASS_MAGIC | 2)
+#define NPROFILE_CLASS_SPI              (NPROFILE_CLASS_MAGIC | 3)
+#define NPROFILE_CLASS_I2C              (NPROFILE_CLASS_MAGIC | 4)
+
+#define N_IS_PROFILE_CLASS(class)		(((class) & 0xff00u) == NPROFILE_CLASS_MAGIC)
+
+#define NPROFILE_EN_1             		NPROFILE_EN( 1)
+#define NPROFILE_EN_2             		NPROFILE_EN( 2)
+#define NPROFILE_EN_3             		NPROFILE_EN( 3)
+#define NPROFILE_EN_4             		NPROFILE_EN( 4)
+#define NPROFILE_EN_5             		NPROFILE_EN( 5)
+#define NPROFILE_EN_6             		NPROFILE_EN( 6)
+#define NPROFILE_EN_7             		NPROFILE_EN( 7)
+#define NPROFILE_EN_8             		NPROFILE_EN( 8)
+#define NPROFILE_EN_9             		NPROFILE_EN( 9)
+#define NPROFILE_EN_10            		NPROFILE_EN(10)
+#define NPROFILE_EN_11            		NPROFILE_EN(11)
+#define NPROFILE_EN_12            		NPROFILE_EN(12)
+#define NPROFILE_EN_13            		NPROFILE_EN(13)
+#define NPROFILE_EN_14            		NPROFILE_EN(14)
+#define NPROFILE_EN_15            		NPROFILE_EN(15)
+#define NPROFILE_EN_16            		NPROFILE_EN(16)
+
+#define NPROFILE_EN(major)        		(0x1u << (major - 1u))
 
 /**@brief       This macro checks if a GPIO is enabled.
  * @details     In order to check if particular GPIO port is enabled then do a
@@ -101,27 +127,39 @@ extern "C" {
 /* NOTE:
  * Individual peripheral data is defined in `p_profile_data.c` port source file.
  */
-#if (NPROFILE_EN_GPIO & NP_EN_MAJOR(1))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(1))
 extern const struct np_dev      g_gpioa;
 #endif
 
-#if (NPROFILE_EN_GPIO & NP_EN_MAJOR(2))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(2))
 extern const struct np_dev      g_gpiob;
 #endif
 
-#if (NPROFILE_EN_GPIO & NP_EN_MAJOR(3))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(3))
 extern const struct np_dev      g_gpioc;
 #endif
 
-#if (NPROFILE_EN_UART & NP_EN_MAJOR(1))
+#if (NPROFILE_EN_UART & NPROFILE_EN(1))
 extern const struct np_dev      g_uart1;
 #endif
 
-#if (NPROFILE_EN_UART & NP_EN_MAJOR(2))
+#if (NPROFILE_EN_UART & NPROFILE_EN(2))
 extern const struct np_dev      g_uart2;
 #endif
 
-#if (NPROFILE_EN_UART & NP_EN_MAJOR(6))
+#if (NPROFILE_EN_UART & NPROFILE_EN(3))
+extern const struct np_dev      g_uart3;
+#endif
+
+#if (NPROFILE_EN_UART & NPROFILE_EN(4))
+extern const struct np_dev      g_uart4;
+#endif
+
+#if (NPROFILE_EN_UART & NPROFILE_EN(5))
+extern const struct np_dev      g_uart5;
+#endif
+
+#if (NPROFILE_EN_UART & NPROFILE_EN(6))
 extern const struct np_dev      g_uart6;
 #endif
 
@@ -136,6 +174,14 @@ extern const struct np_dev *    g_gpios[];
 extern const struct np_dev *    g_uarts[];
 #endif
 
+#if (NPROFILE_EN_SPI)
+extern const struct np_dev *    g_spis[];
+#endif
+
+#if (NPROFILE_EN_I2C)
+extern const struct np_dev *    g_i2cs[];
+#endif
+
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 /*--------------------------------------------------------  C++ extern end  --*/
 #ifdef __cplusplus
@@ -143,6 +189,32 @@ extern const struct np_dev *    g_uarts[];
 #endif
 
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/
+
+#if !defined(NPROFILE_MAX_CPU_CLOCK)
+# error "NEON::drivers::profile: Internal error: NPROFILE_MAX_CPU_CLOCK is not defined in p_peripheral_data.h file."
+#endif
+
+#if !defined(NPROFILE_RAM_SIZE)
+# error "NEON::drivers::profile: Internal error: NPROFILE_RAM_SIZE is not defined in p_peripheral_data.h file."
+#endif
+
+#if !defined(NPROFILE_AVAILABLE_GPIO)
+# error "NEON::drivers::profile: Internal error: NPROFILE_AVAILABLE_GPIO is not defined in p_peripheral_data.h file."
+#endif
+
+#if !defined(NPROFILE_AVAILABLE_UART)
+# error "NEON::drivers::profile: Internal error: NPROFILE_AVAILABLE_UART is not defined in p_peripheral_data.h file."
+#endif
+
+#if !defined(NPROFILE_AVAILABLE_SPI)
+# error "NEON::drivers::profile: Internal error: NPROFILE_AVAILABLE_SPI is not defined in p_peripheral_data.h file."
+#endif
+
+#if !defined(NPROFILE_AVAILABLE_I2C)
+# error "NEON::drivers::profile: Internal error: NPROFILE_AVAILABLE_I2C is not defined in p_peripheral_data.h file."
+#endif
+
+
 /** @endcond *//** @} *//******************************************************
  * END of profile.h
  ******************************************************************************/

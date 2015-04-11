@@ -1,26 +1,26 @@
 /*
- * This file is part of neon-test.
+ * This file is part of Neon.
  *
- * Copyright (C) 2010 - 2015 nenad
+ * Copyright (C) 2010 - 2015 Nenad Radulovic
  *
- * neon-test is free software: you can redistribute it and/or modify
+ * Neon is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * neon-test is distributed in the hope that it will be useful,
+ * Neon is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with neon-test.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Neon.  If not, see <http://www.gnu.org/licenses/>.
  *
- * web site:    
- * e-mail  :    
+ * web site:    http://github.com/nradulovic
+ * e-mail  :    nenad.b.radulovic@gmail.com
  *//***********************************************************************//**
  * @file
- * @author      nenad
+ * @author      Nenad Radulovic
  * @brief       Brief description
  *********************************************************************//** @{ */
 /**@defgroup    def_impl Implementation
@@ -32,8 +32,10 @@
 #include "mcu/peripheral.h"
 #include "mcu/profile.h"
 
-/*
- * Turn off this module if not enabled or available in the current port
+/* NOTE:
+ * The condition will turn off this module if not enabled or not available in
+ * the current port. This kind of if/endif protection is necessary because this
+ * source file may define unwanted ISRs.
  */
 #if (NPROFILE_EN_GPIO)
 #include "base/debug.h"

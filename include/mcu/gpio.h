@@ -35,6 +35,7 @@
 #include <stdint.h>
 
 #include "mcu/peripheral.h"
+
 #include "family/p_gpio.h"
 
 /*===============================================================  MACRO's  ==*/
@@ -47,7 +48,7 @@
  * @return      Returns valid GPIO pin ID number which can be used with other
  *              functions and macros.
  */
-#define NGPIO_ID(port, pin)             NP_DEV_CREATE_ID(NP_DEV_CLASS_GPIO, port, pin)
+#define NGPIO_ID(port, pin)             NP_DEV_CREATE_ID(NPROFILE_CLASS_GPIO, port, pin)
 
 /**@brief       Convenience wrapper macro around @ref NP_DEV_ID_TO_MAJOR().
  * @param       id

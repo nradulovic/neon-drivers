@@ -37,14 +37,14 @@
 /*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
 /*===========================================  GLOBAL FUNCTION DEFINITIONS  ==*/
 
-void np_clock_enable(const struct np_dev_clock * clock)
+void np_pwr_enable(const struct np_dev_pwr * pwr)
 {
-    *(volatile uint32_t *)clock->reg |= clock->mask;
+    *(volatile uint32_t *)pwr->reg |= pwr->mask;
 }
 
-void np_clock_disable(const struct np_dev_clock * clock)
+void np_pwr_disable(const struct np_dev_pwr * pwr)
 {
-    *(volatile uint32_t *)clock->reg &= ~clock->mask;
+    *(volatile uint32_t *)pwr->reg &= ~pwr->mask;
 }
 
 void np_isr_enable(const struct np_dev_isr * isr)

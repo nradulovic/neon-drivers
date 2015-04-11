@@ -48,10 +48,10 @@
  */
 #if defined(STM32F411xE)
 /*-- GPIOA  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_GPIO & NP_EN_MAJOR(1))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(1))
 static struct ngpio_driver              g_gpioa_driver;
 
-static const struct np_dev_clock        g_gpioa_clock =
+static const struct np_dev_pwr          g_gpioa_pwr =
 {
     .reg                = &RCC->AHB1ENR,
     .mask               = RCC_AHB1ENR_GPIOAEN
@@ -59,17 +59,17 @@ static const struct np_dev_clock        g_gpioa_clock =
 
 const struct np_dev                     g_gpioa =
 {
-    .recognition        = NP_DEV_RECOGNITION(NP_DEV_CLASS_GPIO, 1),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 1),
     .p_drv              = &g_gpioa_driver.p_drv,
-    .address            = (volatile unsigned int *)GPIOA_BASE,
-    .clock              = &g_gpioa_clock
+    .address            = (volatile void *)GPIOA_BASE,
+    .pwr                = &g_gpioa_pwr
 };
 #endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_1) */
 
 /*-- GPIOB  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_GPIO & NP_EN_MAJOR(2))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(2))
 static struct ngpio_driver              g_gpiob_driver;
-static const struct np_dev_clock        g_gpiob_clock =
+static const struct np_dev_pwr          g_gpiob_pwr =
 {
     .reg                = &RCC->AHB1ENR,
     .mask               = RCC_AHB1ENR_GPIOBEN
@@ -77,18 +77,18 @@ static const struct np_dev_clock        g_gpiob_clock =
 
 const struct np_dev                     g_gpiob =
 {
-    .recognition        = NP_DEV_RECOGNITION(NP_DEV_CLASS_GPIO, 2),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 2),
     .p_drv              = &g_gpiob_driver.p_drv,
-    .address            = (volatile unsigned int *)GPIOB_BASE,
-    .clock              = &g_gpiob_clock
+    .address            = (volatile void *)GPIOB_BASE,
+    .pwr                = &g_gpiob_pwr
 };
 #endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_2) */
 
 /*-- GPIOC  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_GPIO & NP_EN_MAJOR(3))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(3))
 static struct ngpio_driver              g_gpioc_driver;
 
-static const struct np_dev_clock        g_gpioc_clock =
+static const struct np_dev_pwr          g_gpioc_pwr =
 {
     .reg                = &RCC->AHB1ENR,
     .mask               = RCC_AHB1ENR_GPIOCEN
@@ -96,16 +96,32 @@ static const struct np_dev_clock        g_gpioc_clock =
 
 const struct np_dev                     g_gpioc =
 {
-    .recognition        = NP_DEV_RECOGNITION(NP_DEV_CLASS_GPIO, 3),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 3),
     .p_drv              = &g_gpioc_driver.p_drv,
-    .address            = (volatile unsigned int *)GPIOC_BASE,
-    .clock              = &g_gpioc_clock
+    .address            = (volatile void *)GPIOC_BASE,
+    .pwr                = &g_gpioc_pwr
 };
 #endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_3) */
 
 /*-- UART1  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_UART & NP_EN_MAJOR(1))
+#if (NPROFILE_EN_UART & NPROFILE_EN(1))
 static struct nuart_drv                 g_uart1_driver;
+
+static const struct np_dev_isr          g_uart1_isr =
+{
+    .irqn               = USART1_IRQn
+};
+
+static const struct np_dev_pwr          g_uart1_pwr =
+{
+    .reg                = &RCC->APB2ENR,
+    .mask               = RCC_APB2ENR_USART1EN
+};
+
+static const struct np_dev_clk			g_uart1_clk =
+{
+	.clk_bus			= ARCH_STM32_APB2
+};
 
 static const struct np_dev_mux          g_uart1_mux =
 {
@@ -114,36 +130,42 @@ static const struct np_dev_mux          g_uart1_mux =
     .pull               = GPIO_NOPULL
 };
 
-static const struct np_dev_clock        g_uart1_clock =
-{
-    .reg                = &RCC->APB2ENR,
-    .mask               = RCC_APB2ENR_USART1EN
-};
-
-static const struct np_dev_isr          g_uart1_isr =
-{
-    .irqn               = USART1_IRQn
-};
-
 const struct np_dev                     g_uart1 =
 {
-    .recognition        = NP_DEV_RECOGNITION(NP_DEV_CLASS_UART, 1),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_UART, 1),
     .flags              = NUART_MODE_RX    | NUART_MODE_TX      | NUART_PARITY_EVEN |
                           NUART_PARITY_ODD | NUART_PARITY_NONE  | NUART_STOPBITS_1  |
                           NUART_STOPBITS_2 | NUART_WORDLENGTH_8 |
                           NUART_WORDLENGTH_9,
     .p_drv              = &g_uart1_driver.p_drv,
-    .address            = (volatile unsigned int *)USART1_BASE,
+    .address            = (volatile void *)USART1_BASE,
     .isr                = &g_uart1_isr,
-    .clock              = &g_uart1_clock,
+    .pwr                = &g_uart1_pwr,
+	.clk				= &g_uart1_clk,
     .mux                = &g_uart1_mux
 };
 
-#endif /* (NPROFILE_EN_UART & NP_EN_MAJOR(1)) */
+#endif /* (NPROFILE_EN_UART & NPROFILE_EN(1)) */
 
 /*-- UART2  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_UART & NP_EN_MAJOR(2))
+#if (NPROFILE_EN_UART & NPROFILE_EN(2))
 static struct nuart_drv                 g_uart2_driver;
+
+static const struct np_dev_isr          g_uart2_isr =
+{
+    .irqn               = USART2_IRQn
+};
+
+static const struct np_dev_pwr          g_uart2_pwr =
+{
+    .reg                = &RCC->APB1ENR,
+    .mask               = RCC_APB1ENR_USART2EN
+};
+
+static const struct np_dev_clk 			g_uart2_clk =
+{
+	.clk_bus			= ARCH_STM32_APB1
+};
 
 static const struct np_dev_mux          g_uart2_mux =
 {
@@ -152,35 +174,41 @@ static const struct np_dev_mux          g_uart2_mux =
     .pull               = GPIO_NOPULL
 };
 
-static const struct np_dev_clock        g_uart2_clock =
-{
-    .reg                = &RCC->APB1ENR,
-    .mask               = RCC_APB1ENR_USART2EN
-};
-
-static const struct np_dev_isr          g_uart2_isr =
-{
-    .irqn               = USART2_IRQn
-};
-
 const struct np_dev                     g_uart2 =
 {
-    .recognition        = NP_DEV_RECOGNITION(NP_DEV_CLASS_UART, 2),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_UART, 2),
     .flags              = NUART_MODE_RX    | NUART_MODE_TX      | NUART_PARITY_EVEN |
                           NUART_PARITY_ODD | NUART_PARITY_NONE  | NUART_STOPBITS_1  |
                           NUART_STOPBITS_2 | NUART_WORDLENGTH_8 |
                           NUART_WORDLENGTH_9,
     .p_drv              = &g_uart2_driver.p_drv,
-    .address            = (volatile unsigned int *)USART2_BASE,
+    .address            = (volatile void *)USART2_BASE,
     .isr                = &g_uart2_isr,
-    .clock              = &g_uart2_clock,
+    .pwr                = &g_uart2_pwr,
+	.clk				= &g_uart2_clk,
     .mux                = &g_uart2_mux
 };
-#endif /* (NPROFILE_EN_UART & NP_EN_MAJOR(2)) */
+#endif /* (NPROFILE_EN_UART & NPROFILE_EN(2)) */
 
 /*-- UART6  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_UART & NP_EN_MAJOR(6))
+#if (NPROFILE_EN_UART & NPROFILE_EN(6))
 static struct nuart_drv                 g_uart6_driver;
+
+static const struct np_dev_isr          g_uart6_isr =
+{
+    .irqn               = USART6_IRQn
+};
+
+static const struct np_dev_pwr          g_uart6_pwr =
+{
+    .reg                = &RCC->APB2ENR,
+    .mask               = RCC_APB2ENR_USART6EN
+};
+
+static const struct np_dev_clk			g_uart6_clk =
+{
+	.clk_bus			= ARCH_STM32_APB2
+};
 
 static const struct np_dev_mux          g_uart6_mux =
 {
@@ -189,31 +217,21 @@ static const struct np_dev_mux          g_uart6_mux =
     .pull               = GPIO_NOPULL
 };
 
-static const struct np_dev_clock        g_uart6_clock =
-{
-    .reg                = &RCC->APB2ENR,
-    .mask               = RCC_APB2ENR_USART6EN
-};
-
-static const struct np_dev_isr          g_uart6_isr =
-{
-    .irqn               = USART6_IRQn
-};
-
 const struct np_dev                     g_uart6 =
 {
-    .recognition        = NP_DEV_RECOGNITION(NP_DEV_CLASS_UART, 6),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_UART, 6),
     .flags              = NUART_MODE_RX    | NUART_MODE_TX      | NUART_PARITY_EVEN |
                           NUART_PARITY_ODD | NUART_PARITY_NONE  | NUART_STOPBITS_1  |
                           NUART_STOPBITS_2 | NUART_WORDLENGTH_8 |
                           NUART_WORDLENGTH_9,
     .p_drv              = &g_uart6_driver.p_drv,
-    .address            = (volatile unsigned int *)USART6_BASE,
+    .address            = (volatile void *)USART6_BASE,
     .isr                = &g_uart6_isr,
-    .clock              = &g_uart6_clock,
+    .pwr                = &g_uart6_pwr,
+	.clk				= &g_uart6_clk,
     .mux                = &g_uart6_mux
 };
-#endif /* (NPROFILE_EN_UART & NP_EN_MAJOR(6)) */
+#endif /* (NPROFILE_EN_UART & NPROFILE_EN(6)) */
 
 #endif /* defined(STM32F411xE) */
 

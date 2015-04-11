@@ -36,9 +36,10 @@
 #define NPROFILE_MAX_CPU_CLOCK          (100ul * 1000000ul)
 #define NPROFILE_RAM_SIZE               (128ul * 1024ul)
 
-#define NPROFILE_AVAILABLE_GPIO         NP_EN_MAJOR_1 | NP_EN_MAJOR_2 | NP_EN_MAJOR_3
-
-#define NPROFILE_AVAILABLE_UART         NP_EN_MAJOR_1 | NP_EN_MAJOR_2 | NP_EN_MAJOR_6
+#define NPROFILE_AVAILABLE_GPIO         NPROFILE_EN_1 | NPROFILE_EN_2 | NPROFILE_EN_3
+#define NPROFILE_AVAILABLE_UART         NPROFILE_EN_1 | NPROFILE_EN_2 | NPROFILE_EN_6
+#define NPROFILE_AVAILABLE_SPI			0
+#define NPROFILE_AVAILABLE_I2C			0
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
