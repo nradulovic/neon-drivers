@@ -1,31 +1,37 @@
 /*
- * This file is part of neon-test.
+ * This file is part of Neon.
  *
- * Copyright (C) 2010 - 2015 nenad
+ * Copyright (C) 2010 - 2015 Nenad Radulovic
  *
- * neon-test is free software: you can redistribute it and/or modify
+ * Neon is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * neon-test is distributed in the hope that it will be useful,
+ * Neon is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with neon-test.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Neon.  If not, see <http://www.gnu.org/licenses/>.
  *
- * web site:    
- * e-mail  :    
+ * web site:    http://github.com/nradulovic
+ * e-mail  :    nenad.b.radulovic@gmail.com
  *//***********************************************************************//**
  * @file
- * @author      nenad
- * @brief       Brief description
+ * @author      Nenad Radulovic
+ * @brief       UART driver implementation for STM32Fxxx port
  *********************************************************************//** @{ */
-/**@defgroup    def_impl Implementation
- * @brief       Default Implementation
- * @{ *//*--------------------------------------------------------------------*/
+
+/* NOTE:
+ * The driver currently supports UART1, UART2 and UART6 peripherals.
+ *
+ * TODOs:
+ * - Implement timeouts
+ * - How to handle HAL callbacks? If application code defines and uses UART HAL
+ * 		API callbacks then it's not possible to use callbacks in this source.
+ */
 
 /*=========================================================  INCLUDE FILES  ==*/
 
@@ -34,8 +40,10 @@
 #include "mcu/peripheral.h"
 #include "mcu/profile.h"
 
-/*
- * Turn off this module if not enabled or available in the current port
+/* NOTE:
+ * The condition will turn off this module if not enabled or not available in
+ * the current port. This kind of if/endif protection is necessary because this
+ * source file may define unwanted ISRs.
  */
 #if (NPROFILE_EN_UART)
 #include "base/debug.h"
@@ -185,9 +193,6 @@ void np_uart_rx_start(
     struct np_drv *             p_drv = &uart_drv->p_drv;
 
     np_drv_isr_disable(p_drv, 0);
-    uart_drv->rx_buff  = data;
-    uart_drv->rx_count = size;
-    uart_drv->rx_size  = size;
     HAL_UART_Receive_IT(huart, data, size);
     np_drv_isr_enable(p_drv, 0);
 }
@@ -226,9 +231,6 @@ void np_uart_tx_start(
     struct np_drv *             p_drv = &uart_drv->p_drv;
 
     np_drv_isr_disable(p_drv, 0);
-    uart_drv->tx_buff  = data;
-    uart_drv->tx_count = size;
-    uart_drv->tx_size  = size;
     /* NOTE:
      * STM32 HAL poorly handles const pointers, so an explicit cast is needed
      * here.
@@ -277,7 +279,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef * huart)
         drv->reader(
                 drv,
                 NERROR_DEVICE_FAIL,
-                drv->rx_buff,
+                huart->pRxBuffPtr,
                 huart->RxXferSize - huart->RxXferCount);
     }
 }
@@ -300,7 +302,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef * huart)
     drv = CONTAINER_OF(huart, struct nuart_drv, ctx.huart);
 
     if (drv->reader) {
-        drv->reader(drv, NERROR_NONE, drv->rx_buff, drv->rx_size);
+        drv->reader(drv, NERROR_NONE, huart->pRxBuffPtr, huart->RxXferSize);
     }
 }
 
@@ -313,7 +315,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef * huart)
     drv = CONTAINER_OF(huart, struct nuart_drv, ctx.huart);
 
     if (drv->writer) {
-        drv->writer(drv, NERROR_NONE, drv->tx_buff, drv->tx_size);
+        drv->writer(drv, NERROR_NONE, huart->pTxBuffPtr, huart->TxXferSize);
     }
 }
 
@@ -358,7 +360,8 @@ void USART6_IRQHandler(void)
 #endif /* (NP_EN_UART & NP_EN_MAJOR(6)) */
 
 #endif /* (NPROFILE_EN_UART) */
+
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/
-/** @endcond *//** @} *//** @} *//*********************************************
+/** @endcond *//** @} *//******************************************************
  * END of uart_device.c
  ******************************************************************************/

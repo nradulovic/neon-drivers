@@ -1,50 +1,52 @@
 /*
- * This file is part of neon-test.
+ * This file is part of Neon.
  *
- * Copyright (C) 2010 - 2015 nenad
+ * Copyright (C) 2010 - 2015 Nenad Radulovic
  *
- * neon-test is free software: you can redistribute it and/or modify
+ * Neon is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * neon-test is distributed in the hope that it will be useful,
+ * Neon is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with neon-test.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Neon.  If not, see <http://www.gnu.org/licenses/>.
  *
- * web site:    
- * e-mail  :    
+ * web site:    http://github.com/nradulovic
+ * e-mail  :    nenad.b.radulovic@gmail.com
  *//***********************************************************************//**
  * @file
- * @author      nenad
- * @brief       Brief description
+ * @author      Nenad Radulovic
+ * @brief       Profile data for STM32Fxxx port
  *********************************************************************//** @{ */
-/**@defgroup    def_impl Implementation
- * @brief       Default Implementation
- * @{ *//*--------------------------------------------------------------------*/
+
+/* NOTE 1:
+ * Because of specific nature of this source file it does not follow the
+ * standard source code file template.
+ *
+ * NOTE 2:
+ * Each microcontroller family has its own if/endif block of static structures
+ * which contains individual peripheral data to describe the peripherals.
+ * Each peripheral's data is then exported by a global structure.
+ */
 
 /*=========================================================  INCLUDE FILES  ==*/
 
 #include "mcu/peripheral.h"
 #include "mcu/profile.h"
-
-#if (NPROFILE_EN_UART)
 #include "mcu/uart.h"
-#endif
-
-#if (NPROFILE_EN_GPIO)
 #include "mcu/gpio.h"
-#endif
 
-/*=========================================================  LOCAL MACRO's  ==*/
-/*======================================================  LOCAL DATA TYPES  ==*/
-/*=============================================  LOCAL FUNCTION PROTOTYPES  ==*/
-/*=======================================================  LOCAL VARIABLES  ==*/
+/*================================================  PERIPHERAL DESCIPTIONS  ==*/
 
+/* NOTE:
+ * Static structures for STM32F411xE
+ */
+#if defined(STM32F411xE)
 /*-- GPIOA  ------------------------------------------------------------------*/
 #if (NPROFILE_EN_GPIO & NP_EN_MAJOR(1))
 static struct ngpio_driver              g_gpioa_driver;
@@ -213,44 +215,8 @@ const struct np_dev                     g_uart6 =
 };
 #endif /* (NPROFILE_EN_UART & NP_EN_MAJOR(6)) */
 
-/*======================================================  GLOBAL VARIABLES  ==*/
+#endif /* defined(STM32F411xE) */
 
-#if (NPROFILE_EN_GPIO)
-const struct np_dev *                   g_gpios[] =
-{
-#if (NPROFILE_EN_GPIO & NP_EN_MAJOR(1))
-    &g_gpioa,
-#endif
-#if (NPROFILE_EN_GPIO & NP_EN_MAJOR(2))
-    &g_gpiob,
-#endif
-#if (NPROFILE_EN_GPIO & NP_EN_MAJOR(3))
-    &g_gpioc,
-#endif
-    NULL
-};
-#endif /* NPROFILE_EN_GPIO */
-
-#if (NPROFILE_EN_UART)
-const struct np_dev *                   g_uarts[] =
-{
-#if (NPROFILE_EN_UART & NP_EN_MAJOR(1))
-    &g_uart1,
-#endif
-#if (NPROFILE_EN_UART & NP_EN_MAJOR(2))
-    &g_uart2,
-#endif
-#if (NPROFILE_EN_UART & NP_EN_MAJOR(6))
-    &g_uart6,
-#endif
-    NULL
-};
-#endif /* NPROFILE_EN_UART */
-
-/*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
-/*===================================  GLOBAL PRIVATE FUNCTION DEFINITIONS  ==*/
-/*====================================  GLOBAL PUBLIC FUNCTION DEFINITIONS  ==*/
-/*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/
-/** @endcond *//** @} *//** @} *//*********************************************
- * END of profile.c
+/** @} *//*********************************************************************
+ * END of p_profile_data.c
  ******************************************************************************/

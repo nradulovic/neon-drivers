@@ -21,31 +21,29 @@
  *//***********************************************************************//**
  * @file
  * @author      Nenad Radulovic
- * @brief       Port for stm32f411xe series
+ * @brief       UART header for STM32Fxxx port
  *********************************************************************//** @{ */
 
-#ifndef PORT_FAMILY_P_STM32F411XE_H_
-#define PORT_FAMILY_P_STM32F411XE_H_
+#ifndef FAMILY_P_UART_H_
+#define FAMILY_P_UART_H_
 
 /*=========================================================  INCLUDE FILES  ==*/
 
-#include "stm32f4xx.h"
+#include "mcu/profile.h"
 
 /*===============================================================  MACRO's  ==*/
-
-#define NPROFILE_MAX_CPU_CLOCK          (100ul * 1000000ul)
-#define NPROFILE_RAM_SIZE               (128ul * 1024ul)
-
-#define NPROFILE_AVAILABLE_GPIO         NP_EN_MAJOR_1 | NP_EN_MAJOR_2 | NP_EN_MAJOR_3
-
-#define NPROFILE_AVAILABLE_UART         NP_EN_MAJOR_1 | NP_EN_MAJOR_2 | NP_EN_MAJOR_6
-
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /*============================================================  DATA TYPES  ==*/
+
+struct np_dev_uart
+{
+    UART_HandleTypeDef          huart;
+};
+
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 /*--------------------------------------------------------  C++ extern end  --*/
@@ -55,6 +53,6 @@ extern "C" {
 
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/
 /** @endcond *//** @} *//******************************************************
- * END of p_stm32f411xe.h
+ * END of p_uart.h
  ******************************************************************************/
-#endif /* PORT_FAMILY_P_STM32F411XE_H_ */
+#endif /* FAMILY_P_UART_H_ */

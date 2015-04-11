@@ -21,23 +21,32 @@
  *//***********************************************************************//**
  * @file
  * @author      Nenad Radulovic
- * @brief       Peripheral definitions
- * @defgroup    def_group Name
- * @brief       Brief description
+ * @brief       Peripheral definitions for STM32Fxxx port
  *********************************************************************//** @{ */
 
-#ifndef DEVICE_P_DEV_H_
-#define DEVICE_P_DEV_H_
+#ifndef FAMILY_P_DEV_H_
+#define FAMILY_P_DEV_H_
 
 /*=========================================================  INCLUDE FILES  ==*/
 /*===============================================================  MACRO's  ==*/
 
+/* NOTE:
+ * This port supports:
+ *  - register access by common structure address
+ *  - peripheral dynamic clock enable/disable
+ *  - dynamic ISR enable/disable
+ *  - GPIO mux configuration
+ *  - peripheral reset
+ */
 #define NP_ATTR_ADDRESS                 1
 #define NP_ATTR_CLOCK                   1
 #define NP_ATTR_ISR                     1
 #define NP_ATTR_MUX                     1
-#define NP_ATTR_RESET                   0
+#define NP_ATTR_RESET                   1
 
+/* NOTE:
+ * This port defines some common ARCH_* macros
+ */
 #define ARCH_STM32_APB2                 0
 #define ARCH_STM32_APB1                 1
 #define ARCH_STM32_AHB                  2
@@ -83,6 +92,6 @@ struct np_dev_mux
 
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/
 /** @endcond *//** @} *//******************************************************
- * END of peripheral.h
+ * END of p_dev.h
  ******************************************************************************/
-#endif /* DEVICE_P_DEV_H_ */
+#endif /* FAMILY_P_DEV_H_ */

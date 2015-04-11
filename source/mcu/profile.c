@@ -21,29 +21,54 @@
  *//***********************************************************************//**
  * @file
  * @author      Nenad Radulovic
- * @brief       Port GPIO
+ * @brief       Profile data for STM32Fxxx port
  *********************************************************************//** @{ */
 
-#ifndef NEON_ARCH_P_GPIO_H_
-#define NEON_ARCH_P_GPIO_H_
-
 /*=========================================================  INCLUDE FILES  ==*/
-/*===============================================================  MACRO's  ==*/
-/*-------------------------------------------------------  C++ extern base  --*/
-#ifdef __cplusplus
-extern "C" {
-#endif
 
-/*============================================================  DATA TYPES  ==*/
+#include "mcu/profile.h"
+
+/*=========================================================  LOCAL MACRO's  ==*/
+/*======================================================  LOCAL DATA TYPES  ==*/
+/*=============================================  LOCAL FUNCTION PROTOTYPES  ==*/
+/*=======================================================  LOCAL VARIABLES  ==*/
 /*======================================================  GLOBAL VARIABLES  ==*/
-/*===================================================  FUNCTION PROTOTYPES  ==*/
-/*--------------------------------------------------------  C++ extern end  --*/
-#ifdef __cplusplus
-}
-#endif
 
+#if (NPROFILE_EN_GPIO)
+const struct np_dev *                   g_gpios[] =
+{
+#if (NPROFILE_EN_GPIO & NP_EN_MAJOR(1))
+    &g_gpioa,
+#endif
+#if (NPROFILE_EN_GPIO & NP_EN_MAJOR(2))
+    &g_gpiob,
+#endif
+#if (NPROFILE_EN_GPIO & NP_EN_MAJOR(3))
+    &g_gpioc,
+#endif
+    NULL
+};
+#endif /* NPROFILE_EN_GPIO */
+
+#if (NPROFILE_EN_UART)
+const struct np_dev *                   g_uarts[] =
+{
+#if (NPROFILE_EN_UART & NP_EN_MAJOR(1))
+    &g_uart1,
+#endif
+#if (NPROFILE_EN_UART & NP_EN_MAJOR(2))
+    &g_uart2,
+#endif
+#if (NPROFILE_EN_UART & NP_EN_MAJOR(6))
+    &g_uart6,
+#endif
+    NULL
+};
+#endif /* NPROFILE_EN_UART */
+
+/*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
+/*===========================================  GLOBAL FUNCTION DEFINITIONS  ==*/
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/
 /** @endcond *//** @} *//******************************************************
- * END of p_gpio.h
+ * END of profile.c
  ******************************************************************************/
-#endif /* NEON_ARCH_P_GPIO_H_ */

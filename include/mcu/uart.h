@@ -38,6 +38,11 @@
 #include "base/error.h"
 #include "mcu/peripheral.h"
 #include "mcu/profile.h"
+
+/* NOTE:
+ * Include family port header file. The file defines custom data types which are
+ * needed by the driver.
+ */
 #include "family/p_uart.h"
 
 /*===============================================================  MACRO's  ==*/
@@ -93,19 +98,19 @@ struct nuart_config
     const uint32_t *            gpios;
 };
 
+/**@brief		UART driver structure
+ * @details		The structure is instantiated by profile data source file,
+ * 				one structure per peripheral.
+ */
 struct nuart_drv
 {
-    struct np_drv               p_drv;
-    struct np_dev_uart          ctx;
+    struct np_drv               p_drv;  /**<@brief Generic driver structure   */
+    struct np_dev_uart          ctx;	/**<@brief Custom data type which is
+    									 * defined in family port header file.
+     	 	 	 	 	 	 	 	 	 */
     const uint32_t *            gpios;
     uint32_t                    flags;
     uint32_t                    state;
-    const void *                tx_buff;
-    size_t                      tx_size;
-    size_t                      tx_count;
-    void *                      rx_buff;
-    size_t                      rx_size;
-    size_t                      rx_count;
     void                     (* reader)(struct nuart_drv *, enum nerror, void *, size_t);
     void                     (* writer)(struct nuart_drv *, enum nerror, const void *, size_t);
 };

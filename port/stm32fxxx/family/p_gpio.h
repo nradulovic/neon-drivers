@@ -21,19 +21,14 @@
  *//***********************************************************************//**
  * @file
  * @author      Nenad Radulovic
- * @brief       Port profile data
+ * @brief       GPIO header for STM32Fxxx port
  *********************************************************************//** @{ */
 
-#ifndef NEON_FAMILY_P_PROFILE_DATA_H_
-#define NEON_FAMILY_P_PROFILE_DATA_H_
+#ifndef FAMILY_P_GPIO_H_
+#define FAMILY_P_GPIO_H_
 
 /*=========================================================  INCLUDE FILES  ==*/
 /*===============================================================  MACRO's  ==*/
-
-#if defined(STM32F411xE)
-# include "family/p_stm32f411xe.h"
-#endif
-
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
 extern "C" {
@@ -49,6 +44,6 @@ extern "C" {
 
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/
 /** @endcond *//** @} *//******************************************************
- * END of p_profile_data.h
+ * END of p_gpio.h
  ******************************************************************************/
-#endif /* NEON_FAMILY_P_PROFILE_DATA_H_ */
+#endif /* FAMILY_P_GPIO_H_ */

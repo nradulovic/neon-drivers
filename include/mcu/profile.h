@@ -98,8 +98,8 @@ extern "C" {
 /*============================================================  DATA TYPES  ==*/
 /*======================================================  GLOBAL VARIABLES  ==*/
 
-/*
- * Individual peripheral data
+/* NOTE:
+ * Individual peripheral data is defined in `p_profile_data.c` port source file.
  */
 #if (NPROFILE_EN_GPIO & NP_EN_MAJOR(1))
 extern const struct np_dev      g_gpioa;
@@ -125,8 +125,8 @@ extern const struct np_dev      g_uart2;
 extern const struct np_dev      g_uart6;
 #endif
 
-/*
- * Group peripheral data
+/* NOTE:
+ * Group peripheral data is defined in `profile.c` source file.
  */
 #if (NPROFILE_EN_GPIO)
 extern const struct np_dev *    g_gpios[];
