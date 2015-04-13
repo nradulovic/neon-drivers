@@ -24,8 +24,8 @@
  * @brief       Peripheral definitions for STM32Fxxx port
  *********************************************************************//** @{ */
 
-#ifndef FAMILY_P_DEV_H_
-#define FAMILY_P_DEV_H_
+#ifndef FAMILY_P_PERIPHERAL_H_
+#define FAMILY_P_PERIPHERAL_H_
 
 /*=========================================================  INCLUDE FILES  ==*/
 /*===============================================================  MACRO's  ==*/
@@ -101,4 +101,4 @@ struct npdev_pwr
 /** @endcond *//** @} *//******************************************************
  * END of p_dev.h
  ******************************************************************************/
-#endif /* FAMILY_P_DEV_H_ */
+#endif /* FAMILY_P_PERIPHERAL_H_ */
