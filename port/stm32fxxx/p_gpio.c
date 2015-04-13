@@ -46,13 +46,97 @@
 /*======================================================  LOCAL DATA TYPES  ==*/
 /*=============================================  LOCAL FUNCTION PROTOTYPES  ==*/
 /*=======================================================  LOCAL VARIABLES  ==*/
+
+static const NCOMPONENT_DEFINE("STM32Fxxx GPIO driver", "Nenad Radulovic");
+
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
-/*===================================  GLOBAL PRIVATE FUNCTION DEFINITIONS  ==*/
-/*====================================  GLOBAL PUBLIC FUNCTION DEFINITIONS  ==*/
+/*===========================================  GLOBAL FUNCTION DEFINITIONS  ==*/
+
+void ngpio_init(uint32_t gpio_id, uint32_t config)
+{
+	GPIO_InitTypeDef			gpio_init;
+	const struct npdev *		pdev;
+	struct npdrv *				pdrv;
+	uint32_t					port;
+	uint32_t					pin;
+
+	pdrv = npdrv_request(gpio_id);
+
+	if (!pdrv) {
+
+	}
+	port = NP_DEV_ID_TO_MAJOR(gpio_id);
+	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
+
+	gpio_init.Pin = (0x1u << pin);
+	gpio_init.Speed = GPIO_SPEED_FAST;
+
+	switch (config & NGPIO_MODE) {
+		case NGPIO_INPUT: {
+			gpio_init.Mode = GPIO_MODE_INPUT;
+			break;
+		}
+		case NGPIO_OUTPUT_HIGH:
+		case NGPIO_OUTPUT_LOW: {
+			gpio_init.Mode = GPIO_MODE_OUTPUT_PP;
+			break;
+		}
+		case NGPIO_OUTPUT_OPEN_DRAIN_FLOAT:
+		case NGPIO_OUTPUT_OPEN_DRAIN_LOW: {
+			gpio_init.Mode = GPIO_MODE_OUTPUT_OD;
+			break;
+		}
+		default: {
+			NASSERT_ALWAYS(NAPI_USAGE " Invalid mode argument.");
+
+			return;
+		}
+	}
+
+	switch (config & NGPIO_PULL) {
+		case NGPIO_PULL_NONE : {
+			gpio_init.Pull = GPIO_NOPULL;
+			break;
+		}
+		case NGPIO_PULL_DOWN : {
+			gpio_init.Pull = GPIO_PULLDOWN;
+			break;
+		}
+		case NGPIO_PULL_UP: {
+			gpio_init.Pull = GPIO_PULLUP;
+			break;
+		}
+		default: {
+			NASSERT_ALWAYS(NAPI_USAGE " Invalid mode argument.");
+
+			return;
+		}
+	}
+
+}
+
+void ngpio_term(uint32_t gpio_id);
+bool ngpio_get(uint32_t gpio_id);
+void ngpio_set(uint32_t gpio_id);
+void ngpio_clear(uint32_t gpio_id);
+bool ngpio_request(uint32_t gpio_id);
+void ngpio_release(uint32_t gpio_id);
+bool ngpio_change_notice_request(uint32_t gpio_id, ngpio_change_handler * change_handler);
+bool ngpio_change_notice_release(uint32_t gpio_id);
+
+bool ngpio_is_id_valid(uint32_t gpio_id)
+{
+	if ((NP_DEV_ID_TO_CLASS(gpio_id) == NPROFILE_CLASS_GPIO) &&
+	    (nprofile_pdev(gpio_id) != NULL)) {
+		return (true);
+	} else {
+		return (false);
+	}
+}
 
 #endif /* NPROFILE_EN_GPIO */
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/
 /** @endcond *//** @} *//** @} *//*********************************************
- * END of gpio_device.c
+ * END of p_gpio.c
  ******************************************************************************/

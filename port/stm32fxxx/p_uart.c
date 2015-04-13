@@ -51,11 +51,15 @@
 #include "mcu/uart.h"
 
 /*=========================================================  LOCAL MACRO's  ==*/
+
+#define pdrv_to_uartdrv(ptr_pdrv)		PORT_C_CONTAINER_OF(ptr_pdrv, struct nuart_drv, pdrv)
+#define uartdrv_to_pdrv(ptr_uartdrv)	&((ptr_uartdrv)->pdrv)
+
 /*======================================================  LOCAL DATA TYPES  ==*/
 /*=============================================  LOCAL FUNCTION PROTOTYPES  ==*/
 /*=======================================================  LOCAL VARIABLES  ==*/
 
-static const NCOMPONENT_DEFINE("UART device driver", "Nenad Radulovic");
+static const NCOMPONENT_DEFINE("STM32Fxxx UART device driver", "Nenad Radulovic");
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
@@ -63,14 +67,23 @@ static const NCOMPONENT_DEFINE("UART device driver", "Nenad Radulovic");
 /*====================================  GLOBAL PUBLIC FUNCTION DEFINITIONS  ==*/
 
 
-void np_uart_init(struct nuart_drv * uart_drv, const struct nuart_config * config)
+nerror nuart_init(uint32_t uart_id, const struct nuart_config * config)
 {
-    UART_HandleTypeDef *        huart;
-    struct np_drv *             p_drv;
+	UART_HandleTypeDef *        huart;
+	struct nuart_drv *			uart_drv;
+    struct npdrv *              pdrv;
 
-    p_drv = &uart_drv->p_drv;
-    huart = &uart_drv->ctx.huart;
-    huart->Instance          = (USART_TypeDef *)np_dev_address(np_drv_dev(p_drv));
+    if (NP_DEV_ID_TO_CLASS(uart_id) != NPROFILE_CLASS_UART) {
+    	return (NERROR_ARG_INVALID);
+    }
+    pdrv = npdrv_request(uart_id);
+
+    if (!pdrv) {
+    	return (NERROR_OBJECT_NFOUND);
+    }
+    uart_drv = pdrv_to_uartdrv(pdrv);
+    huart 	 = &uart_drv->ctx.huart;
+    huart->Instance          = (USART_TypeDef *)npdrv_address(pdrv);
     huart->Init.BaudRate     = config->baud_rate;
     huart->Init.HwFlowCtl    = UART_HWCONTROL_NONE;
     huart->Init.OverSampling = UART_OVERSAMPLING_16;
@@ -85,7 +98,7 @@ void np_uart_init(struct nuart_drv * uart_drv, const struct nuart_config * confi
             break;
         }
         default : {
-            return;
+        	goto NUART_INIT_ARG_FAIL;
         }
     }
     switch (config->flags & NUART_STOPBITS) {
@@ -98,8 +111,7 @@ void np_uart_init(struct nuart_drv * uart_drv, const struct nuart_config * confi
             break;
         }
         default: {
-            NASSERT_ALWAYS(NAPI_USAGE);
-            return;
+        	goto NUART_INIT_ARG_FAIL;
         }
     }
     switch (config->flags & NUART_PARITY) {
@@ -116,8 +128,7 @@ void np_uart_init(struct nuart_drv * uart_drv, const struct nuart_config * confi
             break;
         }
         default: {
-            NASSERT_ALWAYS(NAPI_USAGE);
-            return;
+        	goto NUART_INIT_ARG_FAIL;
         }
     }
     switch (config->flags & NUART_MODE) {
@@ -134,79 +145,83 @@ void np_uart_init(struct nuart_drv * uart_drv, const struct nuart_config * confi
             break;
         }
         default: {
-            NASSERT_ALWAYS(NAPI_USAGE);
-            return;
+        	goto NUART_INIT_ARG_FAIL;
         }
     }
-    np_drv_ref_up(p_drv);
-    np_drv_pwr_enable(p_drv, 0);
+    npdrv_pwr_enable(pdrv, 0);
     uart_drv->gpios = config->gpios;
     uart_drv->flags = config->flags;
 
     if (config->flags & NUART_MODE_RX) {
-        np_drv_mux_enable(p_drv, 0, uart_drv->gpios[NUART_MUX_FN_RX]);
+        npdrv_mux_setup(pdrv, 0, uart_drv->gpios[NUART_MUX_FN_RX]);
     }
 
     if (config->flags & NUART_MODE_TX) {
-        np_drv_mux_enable(p_drv, 0, uart_drv->gpios[NUART_MUX_FN_TX]);
+    	npdrv_mux_setup(pdrv, 0, uart_drv->gpios[NUART_MUX_FN_TX]);
     }
 
     if (config->flags & NUART_SET_ISR_PRIO) {
-        np_drv_isr_set_prio(&uart_drv->p_drv, 0, config->isr_prio);
+        npdrv_isr_set_prio(pdrv, 0, config->isr_prio);
     } else {
-        np_drv_isr_set_prio(&uart_drv->p_drv, 0, CONFIG_CORE_LOCK_MAX_LEVEL);
+        npdrv_isr_set_prio(pdrv, 0, CONFIG_CORE_LOCK_MAX_LEVEL);
     }
-    np_drv_isr_clear_flag(&uart_drv->p_drv, 0);
-    np_drv_isr_enable(&uart_drv->p_drv, 0);
+    npdrv_isr_clear(pdrv, 0);
+    npdrv_isr_enable(pdrv, 0);
     HAL_UART_Init(huart);
+
+    return (NERROR_NONE);
+NUART_INIT_ARG_FAIL:
+	npdrv_release(pdrv);
+
+	return (NERROR_ARG_INVALID);
 }
 
 
 
-void np_uart_term(
+void nuart_term(
     struct nuart_drv *          uart_drv)
 {
     UART_HandleTypeDef *        huart = &uart_drv->ctx.huart;
-    struct np_drv *             p_drv = &uart_drv->p_drv;
+    struct npdrv *              pdrv  = &uart_drv->pdrv;
 
-    np_drv_isr_disable(&uart_drv->p_drv, 0);
+    npdrv_isr_disable(pdrv, 0);
     HAL_UART_DeInit(huart);
 
     if (uart_drv->flags & NUART_MODE_RX) {
-        np_drv_mux_disable(p_drv, 0, uart_drv->gpios[NUART_MUX_FN_RX]);
+        npdrv_mux_reset(uart_drv->gpios[NUART_MUX_FN_RX]);
     }
 
     if (uart_drv->flags & NUART_MODE_TX) {
-        np_drv_mux_disable(p_drv, 0, uart_drv->gpios[NUART_MUX_FN_TX]);
+        npdrv_mux_reset(uart_drv->gpios[NUART_MUX_FN_TX]);
     }
-    np_drv_pwr_disable(&uart_drv->p_drv, 0);
-    np_drv_ref_down(&uart_drv->p_drv);
+    npdrv_pwr_disable(pdrv, 0);
+    npdrv_release(pdrv);
 }
 
 
 
-void np_uart_rx_start(
+void nuart_rx_start(
     struct nuart_drv *          uart_drv,
     void *                      data,
     size_t                      size)
 {
     UART_HandleTypeDef *        huart = &uart_drv->ctx.huart;
-    struct np_drv *             p_drv = &uart_drv->p_drv;
+    struct npdrv *              pdrv  = &uart_drv->pdrv;
 
-    np_drv_isr_disable(p_drv, 0);
+    npdrv_isr_disable(pdrv, 0);
     HAL_UART_Receive_IT(huart, data, size);
-    np_drv_isr_enable(p_drv, 0);
+    npdrv_isr_enable(pdrv, 0);
 }
 
 
 
-void np_uart_rx_stop(
+void nuart_rx_stop(
     struct nuart_drv *          uart_drv)
 {
     UART_HandleTypeDef *        huart = &uart_drv->ctx.huart;
-    struct np_drv *             p_drv = &uart_drv->p_drv;
+    struct npdrv *              pdrv  = &uart_drv->pdrv;
 
-    np_drv_isr_disable(p_drv, 0);
+    npdrv_isr_disable(pdrv, 0);
     __HAL_UART_DISABLE_IT(huart, UART_IT_RXNE);
     if(huart->State != HAL_UART_STATE_BUSY_TX) {
         if (huart->State == HAL_UART_STATE_BUSY_TX_RX) {
@@ -218,42 +233,45 @@ void np_uart_rx_stop(
         }
     }
     __HAL_UNLOCK(huart);
-    np_drv_isr_enable(p_drv, 0);
+    npdrv_isr_enable(pdrv, 0);
 }
 
 
 
-void np_uart_tx_start(
+void nuart_tx_start(
     struct nuart_drv *          uart_drv,
     const void *                data,
     size_t                      size)
 {
     UART_HandleTypeDef *        huart = &uart_drv->ctx.huart;
-    struct np_drv *             p_drv = &uart_drv->p_drv;
+    struct npdrv *              pdrv  = &uart_drv->pdrv;
 
-    np_drv_isr_disable(p_drv, 0);
+    npdrv_isr_disable(pdrv, 0);
     /* NOTE:
      * STM32 HAL poorly handles const pointers, so an explicit cast is needed
      * here.
      */
     HAL_UART_Transmit_IT(huart, (uint8_t *)data, size);
-    np_drv_isr_enable(p_drv, 0);
+    npdrv_isr_enable(pdrv, 0);
 }
 
 
 
-void np_uart_tx_stop(
+void nuart_tx_stop(
     struct nuart_drv *          uart_drv)
 {
     UART_HandleTypeDef *        huart = &uart_drv->ctx.huart;
-    struct np_drv *             p_drv = &uart_drv->p_drv;
+    struct npdrv *              pdrv  = &uart_drv->pdrv;
 
     /* NOTE:
      * STM32 HAL uses __HAL_LOCK()/__HAL_UNLOCK() macro pair to protect its
      * critical code sections. These macros can't be used in here since they
      * are returning a value, but this function returns void.
+     *
+     * To protect critical code sections this driver temporary disables UART
+     * interrupts.
      */
-    np_drv_isr_disable(p_drv, 0);
+    npdrv_isr_disable(pdrv, 0);
     __HAL_UART_DISABLE_IT(huart, UART_IT_RXNE);
 
     if(huart->State != HAL_UART_STATE_BUSY_TX) {
@@ -265,7 +283,7 @@ void np_uart_tx_stop(
             huart->State = HAL_UART_STATE_READY;
         }
     }
-    np_drv_isr_enable(p_drv, 0);
+    npdrv_isr_enable(pdrv, 0);
 }
 
 
@@ -274,7 +292,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef * huart)
 {
     struct nuart_drv *          drv;
 
-    drv = CONTAINER_OF(huart, struct nuart_drv, ctx.huart);
+    drv = PORT_C_CONTAINER_OF(huart, struct nuart_drv, ctx.huart);
 
     if (drv->reader) {
         drv->reader(
@@ -287,20 +305,11 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef * huart)
 
 
 
-void HAL_UART_RxFirstCallback(UART_HandleTypeDef * huart)
-{
-    struct nuart_drv *          drv;
-
-    drv = CONTAINER_OF(huart, struct nuart_drv, ctx.huart);
-}
-
-
-
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef * huart)
 {
     struct nuart_drv *          drv;
 
-    drv = CONTAINER_OF(huart, struct nuart_drv, ctx.huart);
+    drv = PORT_C_CONTAINER_OF(huart, struct nuart_drv, ctx.huart);
 
     if (drv->reader) {
         drv->reader(drv, NERROR_NONE, huart->pRxBuffPtr, huart->RxXferSize);
@@ -313,7 +322,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef * huart)
 {
     struct nuart_drv *          drv;
 
-    drv = CONTAINER_OF(huart, struct nuart_drv, ctx.huart);
+    drv = PORT_C_CONTAINER_OF(huart, struct nuart_drv, ctx.huart);
 
     if (drv->writer) {
         drv->writer(drv, NERROR_NONE, huart->pTxBuffPtr, huart->TxXferSize);
@@ -329,7 +338,7 @@ void USART1_IRQHandler(void)
 {
     struct nuart_drv *          drv;
 
-    drv = CONTAINER_OF(np_dev_driver(&g_uart1), struct nuart_drv, p_drv);
+    drv = pdrv_to_uartdrv(npdev_to_pdrv(&g_uart1));
     HAL_UART_IRQHandler(&drv->ctx.huart);
 }
 #endif /* (NP_EN_UART & NPROFILE_EN(1)) */
@@ -343,10 +352,12 @@ void USART2_IRQHandler(void)
 {
     struct nuart_drv *          drv;
 
-    drv = CONTAINER_OF(np_dev_driver(&g_uart2), struct nuart_drv, p_drv);
+    drv = pdrv_to_uartdrv(npdev_to_pdrv(&g_uart2));
     HAL_UART_IRQHandler(&drv->ctx.huart);
 }
 #endif /* (NP_EN_UART & NPROFILE_EN(2)) */
+
+
 
 #if (NPROFILE_EN_UART & NPROFILE_EN(6))
 void USART6_IRQHandler(void);
@@ -355,7 +366,7 @@ void USART6_IRQHandler(void)
 {
     struct nuart_drv *          drv;
 
-    drv = CONTAINER_OF(np_dev_driver(&g_uart6), struct nuart_drv, p_drv);
+    drv = pdrv_to_uartdrv(npdev_to_pdrv(&g_uart6));
     HAL_UART_IRQHandler(&drv->ctx.huart);
 }
 #endif /* (NP_EN_UART & NPROFILE_EN(6)) */
@@ -364,5 +375,5 @@ void USART6_IRQHandler(void)
 
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/
 /** @endcond *//** @} *//******************************************************
- * END of uart_device.c
+ * END of p_uart.c
  ******************************************************************************/

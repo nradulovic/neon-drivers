@@ -37,51 +37,51 @@
 /*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
 /*===========================================  GLOBAL FUNCTION DEFINITIONS  ==*/
 
-void np_pwr_enable(const struct np_dev_pwr * pwr)
+void np_pwr_enable(const struct npdev_pwr * pwr)
 {
     *(volatile uint32_t *)pwr->reg |= pwr->mask;
 }
 
-void np_pwr_disable(const struct np_dev_pwr * pwr)
+void np_pwr_disable(const struct npdev_pwr * pwr)
 {
     *(volatile uint32_t *)pwr->reg &= ~pwr->mask;
 }
 
-void np_isr_enable(const struct np_dev_isr * isr)
+void np_isr_enable(const struct npdev_isr * isr)
 {
     NVIC_EnableIRQ(isr->irqn);
 }
 
-void np_isr_disable(const struct np_dev_isr * isr)
+void np_isr_disable(const struct npdev_isr * isr)
 {
     NVIC_DisableIRQ(isr->irqn);
 }
 
-void np_isr_clear_flag(const struct np_dev_isr * isr)
+void np_isr_clear_flag(const struct npdev_isr * isr)
 {
     NVIC_ClearPendingIRQ(isr->irqn);
 }
 
-void np_isr_set_flag(const struct np_dev_isr * isr)
+void np_isr_set_flag(const struct npdev_isr * isr)
 {
     NVIC_SetPendingIRQ(isr->irqn);
 }
 
-void np_isr_set_prio(const struct np_dev_isr * isr, uint32_t prio)
+void np_isr_set_prio(const struct npdev_isr * isr, uint32_t prio)
 {
     NVIC_SetPriority(isr->irqn, prio);
 }
 
-uint32_t np_isr_get_prio(const struct np_dev_isr * isr)
+uint32_t np_isr_get_prio(const struct npdev_isr * isr)
 {
     return (NVIC_GetPriority(isr->irqn));
 }
 
-void np_mux_enable(const struct np_dev_mux * mux, uint32_t pin_id)
+void np_mux_enable(const struct npdev_mux * mux, uint32_t pin_id)
 {
 }
 
-void np_mux_disable(const struct np_dev_mux * mux, uint32_t pin_id)
+void np_mux_disable(uint32_t pin_id)
 {
 }
 

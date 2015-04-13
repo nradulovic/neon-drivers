@@ -38,10 +38,10 @@
 /*===============================================================  MACRO's  ==*/
 
 #define NPROFILE_CLASS_MAGIC            ((uint16_t)0xde00u)
-#define NPROFILE_CLASS_GPIO             (NPROFILE_CLASS_MAGIC | 1)
-#define NPROFILE_CLASS_UART             (NPROFILE_CLASS_MAGIC | 2)
-#define NPROFILE_CLASS_SPI              (NPROFILE_CLASS_MAGIC | 3)
-#define NPROFILE_CLASS_I2C              (NPROFILE_CLASS_MAGIC | 4)
+#define NPROFILE_CLASS_GPIO             (NPROFILE_CLASS_MAGIC | 0)
+#define NPROFILE_CLASS_UART             (NPROFILE_CLASS_MAGIC | 1)
+#define NPROFILE_CLASS_SPI              (NPROFILE_CLASS_MAGIC | 2)
+#define NPROFILE_CLASS_I2C              (NPROFILE_CLASS_MAGIC | 3)
 
 #define N_IS_PROFILE_CLASS(class)		(((class) & 0xff00u) == NPROFILE_CLASS_MAGIC)
 
@@ -128,61 +128,56 @@ extern "C" {
  * Individual peripheral data is defined in `p_profile_data.c` port source file.
  */
 #if (NPROFILE_EN_GPIO & NPROFILE_EN(1))
-extern const struct np_dev      g_gpioa;
+extern const struct npdev      g_gpioa;
 #endif
 
 #if (NPROFILE_EN_GPIO & NPROFILE_EN(2))
-extern const struct np_dev      g_gpiob;
+extern const struct npdev      g_gpiob;
 #endif
 
 #if (NPROFILE_EN_GPIO & NPROFILE_EN(3))
-extern const struct np_dev      g_gpioc;
+extern const struct npdev      g_gpioc;
 #endif
 
 #if (NPROFILE_EN_UART & NPROFILE_EN(1))
-extern const struct np_dev      g_uart1;
+extern const struct npdev      g_uart1;
 #endif
 
 #if (NPROFILE_EN_UART & NPROFILE_EN(2))
-extern const struct np_dev      g_uart2;
+extern const struct npdev      g_uart2;
 #endif
 
 #if (NPROFILE_EN_UART & NPROFILE_EN(3))
-extern const struct np_dev      g_uart3;
+extern const struct npdev      g_uart3;
 #endif
 
 #if (NPROFILE_EN_UART & NPROFILE_EN(4))
-extern const struct np_dev      g_uart4;
+extern const struct npdev      g_uart4;
 #endif
 
 #if (NPROFILE_EN_UART & NPROFILE_EN(5))
-extern const struct np_dev      g_uart5;
+extern const struct npdev      g_uart5;
 #endif
 
 #if (NPROFILE_EN_UART & NPROFILE_EN(6))
-extern const struct np_dev      g_uart6;
+extern const struct npdev      g_uart6;
 #endif
 
 /* NOTE:
  * Group peripheral data is defined in `profile.c` source file.
  */
-#if (NPROFILE_EN_GPIO)
-extern const struct np_dev *    g_gpios[];
-#endif
+extern const struct npdev *    g_gpios[];
 
-#if (NPROFILE_EN_UART)
-extern const struct np_dev *    g_uarts[];
-#endif
+extern const struct npdev *    g_uarts[];
 
-#if (NPROFILE_EN_SPI)
-extern const struct np_dev *    g_spis[];
-#endif
+extern const struct npdev *    g_spis[];
 
-#if (NPROFILE_EN_I2C)
-extern const struct np_dev *    g_i2cs[];
-#endif
+extern const struct npdev *    g_i2cs[];
 
 /*===================================================  FUNCTION PROTOTYPES  ==*/
+
+const struct npdev * nprofile_pdev(uint32_t dev_id);
+
 /*--------------------------------------------------------  C++ extern end  --*/
 #ifdef __cplusplus
 }

@@ -60,31 +60,31 @@ extern "C" {
 
 /*============================================================  DATA TYPES  ==*/
 
-struct np_dev_clk
+struct npdev_clk
 {
     unsigned int                clk_bus;
 };
 
-struct np_dev_isr
+struct npdev_isr
 {
     unsigned int                irqn;
     unsigned int                flags;
 };
 
-struct np_dev_mux
+struct npdev_mux
 {
     unsigned int                af;
     unsigned int                mode;
     unsigned int                pull;
 };
 
-struct np_dev_rst
+struct npdev_rst
 {
     volatile void *             reg;
     unsigned int                mask;
 };
 
-struct np_dev_pwr
+struct npdev_pwr
 {
 	volatile void *             reg;
 	unsigned int                mask;

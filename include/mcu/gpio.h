@@ -79,9 +79,17 @@
 #define NGPIO_OUTPUT_LOW                (0x1ul << 1)
 #define NGPIO_OUTPUT_HIGH               (0x1ul << 2)
 #define NGPIO_OUTPUT_OPEN_DRAIN_LOW     (0x1ul << 3)
-#define NGPIO_OUTPUT_OPEN_DRAIN_FLOAT   (0x1ul << 4)
+#define NGPIO_OUTPUT_OPEN_DRAIN_FLOAT 	(0x1ul << 4)
+#define NGPIO_PULL_NONE					(0)
 #define NGPIO_PULL_UP                   (0x1ul << 5)
 #define NGPIO_PULL_DOWN                 (0x1ul << 6)
+
+#define NGPIO_MODE                                                              \
+    (NGPIO_INPUT | NGPIO_OUTPUT_LOW | NGPIO_OUTPUT_HIGH | 						\
+	 NGPIO_OUTPUT_OPEN_DRAIN_LOW    | NGPIO_OUTPUT_OPEN_DRAIN_FLOAT)
+
+#define NGPIO_PULL																\
+	(NGPIO_PULL_UP | NGPIO_PULL_DOWN)
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
@@ -94,7 +102,7 @@ extern "C" {
  */
 struct ngpio_driver
 {
-    struct np_drv               p_drv;
+    struct npdrv               pdrv;
 };
 
 typedef void (ngpio_change_handler)(uint32_t gpio_id);

@@ -28,7 +28,7 @@ struct i2c_master_bus_config
 
 struct i2c_bus
 {
-    const struct np_dev *  periph;
+    const struct npdev *  periph;
     struct i2c_regs *           regs;
 };
 
@@ -65,7 +65,7 @@ void i2c_driver_init(void);
 
 
 nerror i2c_bus_init(
-    const struct np_dev *  periph,
+    const struct npdev *  periph,
     struct i2c_bus *            bus,
     const struct i2c_master_bus_config * config);
 

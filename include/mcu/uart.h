@@ -104,7 +104,9 @@ struct nuart_config
  */
 struct nuart_drv
 {
-    struct np_drv               p_drv;  /**<@brief Generic driver structure   */
+    struct npdrv                pdrv;  /**<@brief Generic peripheral driver
+    									 * structure
+    									 */
     struct np_dev_uart          ctx;	/**<@brief Custom data type which is
     									 * defined in family port header file.
      	 	 	 	 	 	 	 	 	 */
@@ -118,18 +120,15 @@ struct nuart_drv
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 
-void np_uart_init(
-    struct nuart_drv *          drv,
-    const struct nuart_config * config);
+nerror nuart_init(uint32_t uart_id, const struct nuart_config * config);
 
 
-
-void np_uart_term(
+void nuart_term(
     struct nuart_drv *          drv);
 
 
 
-void np_uart_rx_start(
+void nuart_rx_start(
     struct nuart_drv *          drv,
     void *                      data,
     size_t                      size);
@@ -141,12 +140,12 @@ void np_uart_rx_restart(
 
 
 
-void np_uart_rx_stop(
+void nuart_rx_stop(
     struct nuart_drv *          drv);
 
 
 
-void np_uart_tx_start(
+void nuart_tx_start(
     struct nuart_drv *          uart_drv,
     const void *                data,
     size_t                      size);
@@ -158,7 +157,7 @@ void np_uart_tx_restart(
 
 
 
-void np_uart_tx_stop(
+void nuart_tx_stop(
     struct nuart_drv *          drv);
 
 /*--------------------------------------------------------  C++ extern end  --*/

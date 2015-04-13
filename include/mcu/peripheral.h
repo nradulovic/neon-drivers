@@ -26,13 +26,15 @@
  * @brief       Peripheral management
  *********************************************************************//** @{ */
 
-#ifndef NEON_PORT_PERIPHERAL_H_
-#define NEON_PORT_PERIPHERAL_H_
+#ifndef NEON_MCU_PERIPHERAL_H_
+#define NEON_MCU_PERIPHERAL_H_
 
 /*=========================================================  INCLUDE FILES  ==*/
 
 #include <stdint.h>
 
+#include "port/compiler.h"
+#include "port/core.h"
 #include "mcu/profile.h"
 
 #include "family/p_dev.h"
@@ -59,160 +61,119 @@ extern "C" {
 
 /*============================================================  DATA TYPES  ==*/
 
-struct np_drv;
-struct np_dev_isr;
-struct np_dev_rst;
-struct np_dev_clk;
-struct np_dev_mux;
+struct npdrv;
+struct npdev_isr;
+struct npdev_rst;
+struct npdev_clk;
+struct npdev_mux;
 
-struct np_drv
+/**@brief		Peripheral driver
+ */
+struct npdrv
 {
-    const struct np_dev *       p_dev;
-    uint32_t                    ref;
+    const struct npdev *        pdev;
+    ncore_atomic				ref;
     void *                      data;
 };
 
-struct np_drv_id
+/**@brief		Peripheral device
+ */
+struct npdev
 {
-    const struct np_dev *       p_dev;
-    struct np_drv *             p_drv;
-};
-
-struct np_dev
-{
-    struct np_dev_recognition
+    struct npdev_recognition
     {
         uint16_t                    dev_class;
         uint16_t                    dev_instance;
     }                           recognition;
     uint32_t                    flags;
-    struct np_drv *             p_drv;
+    uint32_t					max_ref;
+    struct npdrv *             	pdrv;
 #if (NP_ATTR_ADDRESS == 1)
     volatile void *             address;
 #endif
 #if (NP_ATTR_ISR == 1)
-    const struct np_dev_isr *   isr;
+    const struct npdev_isr *    isr;
 #endif
 #if (NP_ATTR_RST == 1)
-    const struct np_dev_rst *   rst;
+    const struct npdev_rst *    rst;
 #endif
 #if (NP_ATTR_PWR == 1)
-    const struct np_dev_pwr *	pwr;
+    const struct npdev_pwr *  	pwr;
 #endif
 #if (NP_ATTR_CLK == 1)
-    const struct np_dev_clk * 	clk;
+    const struct npdev_clk * 	clk;
 #endif
 #if (NP_ATTR_MUX == 1)
-    const struct np_dev_mux *   mux;
+    const struct npdev_mux *    mux;
 #endif
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 
+#define npdev_to_pdrv(pdev)				(pdev)->pdrv
+#define npdev_instance(pdev) 			((pdev)->recognition.dev_intance)
+#define npdev_class(pdev)               ((pdev)->recognition.dev_class)
+#define npdev_flags(pdev)             	(pdev)->flags
+#define npdev_address(pdev)           	(pdev)->address
+#define npdev_isr(pdev, no)			    &((pdev)->isr[no])
+#define npdev_rst(pdev, no)			    &((pdev)->rst[no])
+#define npdev_pwr(pdev, no)		        &((pdev)->pwr[no])
+#define npdev_clk(pdev, no)		    	&((pdev)->clk[no])
+#define npdev_mux(pdev, no)             &((pdev)->mux[no])
 
-#define np_dev_id(device)                                                       \
-    (((device)->id >> 0u) & 0xffu)
+#define npdrv_to_pdev(pdrv)             (pdrv)->pdev
+#define npdrv_instance(pdrv)			npdev_instance(npdrv_to_pdev(pdrv))
+#define npdrv_class(pdrv)				npdev_class(npdrv_to_pdev(pdrv))
+#define npdrv_flags(pdrv)				npdev_flags(npdrv_to_pdev(pdrv))
+#define npdrv_address(pdrv)				npdev_address(npdrv_to_pdev(pdrv))
+#define npdrv_isr(pdrv, no)				npdev_isr(npdrv_to_pdev(pdrv), (no))
+#define npdrv_rst(pdrv, no)				npdev_rst(npdrv_to_pdev(pdrv), (no))
+#define npdrv_pwr(pdrv, no)				npdev_pwr(npdrv_to_pdev(pdrv), (no))
+#define npdrv_clk(pdrv, no)				npdev_clk(npdrv_to_pdev(pdrv), (no))
+#define npdrv_mux(pdrv, no)				npdev_mux(npdrv_to_pdev(pdrv), (no))
 
-#define np_dev_class_id(device)                                                 \
-    ((device)->recognition.dev_class)
+#define npdrv_isr_enable(pdrv, no)      np_isr_enable(npdrv_isr((pdrv), (no)))
 
-#define np_dev_flags(device)                                                    \
-    (device)->flags
+#define npdrv_isr_disable(pdrv, no)     np_isr_disable(npdrv_isr((pdrv), (no)))
 
-#define np_dev_driver(device)                                                   \
-    (device)->p_drv
+#define npdrv_isr_clear(pdrv, no)       np_isr_clear_flag(npdrv_isr((pdrv), (no)))
 
-#define np_dev_address(device)                                                  \
-    (device)->address
+#define npdrv_isr_set(pdrv, no)         np_isr_set_flag(npdrv_isr((pdrv), (no)))
 
-#define np_dev_mux(device)                                                      \
-    (device)->mux
+#define npdrv_isr_set_prio(pdrv, no, prio)                                      \
+    np_isr_set_prio(npdrv_isr((pdrv), (no)), prio)
 
-static inline
-const struct np_dev * np_dev_find_by_major(const struct np_dev * dev_class[], uint32_t id)
-{
-    const struct np_dev *       dev;
-    uint32_t                    major;
+#define npdrv_isr_get_prio(pdrv, no)    np_isr_get_prio(npdrv_isr((pdrv), (no)))
 
-    major = NP_DEV_ID_TO_MAJOR(id);
-    dev   = dev_class[major];
+#define npdrv_pwr_enable(pdrv, no)      np_pwr_enable(npdrv_pwr((pdrv), (no)))
 
-    if (dev) {
+#define npdrv_pwr_disable(pdrv, no)     np_pwr_disable(npdrv_pwr((pdrv), (no)))
 
-        if (dev->recognition.dev_instance != major) {
+#define npdrv_mux_setup(pdrv, no, pin_id)                                       \
+    np_mux_enable(npdrv_mux((pdrv), (no)), (pin_id))
 
-        }
-    }
+#define npdrv_mux_reset(pin_id)                                     			\
+    np_mux_disable(pin_id)
 
-    return (dev);
-}
+struct npdrv * npdrv_request(uint32_t dev_id);
 
-#define np_drv_dev(drv)                 (drv)->p_dev
+void npdrv_release(struct npdrv * pdrv);
 
-struct np_drv * np_drv_get(
-    const struct np_dev *       dev);
+#define npdrv_set_data(pdrv, priv_data) (pdrv)->data = (priv_data)
 
-void np_drv_put(
-    struct np_drv *             drv);
+#define npdrv_get_data(pdrv)            (pdrv)->data
 
-#define np_drv_set_data(drv, priv_data)                                         \
-    (drv)->data = (priv_data)
-
-#define np_drv_get_data(drv)                                                    \
-    (drv)->data
-
-#define np_drv_ref_up(drv)                                                      \
-    (++(drv)->ref)
-
-#define np_drv_ref_down(drv)                                                    \
-    (--(drv)->ref)
-
-#define np_dev_clock(dev, num)          &((dev)->clock[num])
-
-#define np_drv_pwr_enable(drv, num)                                             \
-    np_pwr_enable(&(drv)->p_dev->pwr[num])
-
-#define np_drv_pwr_disable(drv, num)                                            \
-    np_pwr_disable(&(drv)->p_dev->pwr[num])
-
-#define np_drv_isr_enable(drv, num)                                             \
-    np_isr_enable(&(drv)->p_dev->isr[num])
-
-#define np_drv_isr_disable(drv, num)                                            \
-    np_isr_disable(&(drv)->p_dev->isr[num])
-
-#define np_drv_isr_clear_flag(drv, num)                                         \
-    np_isr_clear_flag(&(drv)->p_dev->isr[num])
-
-#define np_drv_isr_set_flag(drv, num)                                           \
-    np_isr_set_flag(&(drv)->p_dev->isr[num])
-
-#define np_drv_isr_set_prio(drv, num, prio)                                     \
-    np_isr_set_prio(&(drv)->p_dev->isr[num], prio)
-
-#define np_drv_isr_get_prio(drv, num)                                           \
-    np_isr_get_prio(&(drv)->p_dev->isr[num])
-
-#define np_drv_mux_enable(drv, num, pin_id)                                     \
-    np_mux_enable(&(drv)->p_dev->mux[num], pin_id)
-
-#define np_drv_mux_find_by_function(drv, pin_function)                          \
-    np_mux_find_by_function
-
-#define np_drv_mux_disable(drv, num, pin_id)                                    \
-    np_mux_disable(&(drv)->p_dev->mux[num], pin_id)
-
-void np_pwr_enable(const struct np_dev_pwr * pwr);
-void np_pwr_disable(const struct np_dev_pwr * pwr);
-void np_isr_enable(const struct np_dev_isr * isr);
-void np_isr_disable(const struct np_dev_isr * isr);
-void np_isr_clear_flag(const struct np_dev_isr * isr);
-void np_isr_set_flag(const struct np_dev_isr * isr);
-void np_isr_set_prio(const struct np_dev_isr * isr, uint32_t prio);
-uint32_t np_isr_get_prio(const struct np_dev_isr * isr);
-void np_mux_enable(const struct np_dev_mux * mux, uint32_t pin_id);
-void np_mux_disable(const struct np_dev_mux * mux, uint32_t pin_id);
+void np_pwr_enable(const struct npdev_pwr * pwr);
+void np_pwr_disable(const struct npdev_pwr * pwr);
+void np_isr_enable(const struct npdev_isr * isr);
+void np_isr_disable(const struct npdev_isr * isr);
+void np_isr_clear_flag(const struct npdev_isr * isr);
+void np_isr_set_flag(const struct npdev_isr * isr);
+void np_isr_set_prio(const struct npdev_isr * isr, uint32_t prio);
+uint32_t np_isr_get_prio(const struct npdev_isr * isr);
+void np_mux_enable(const struct npdev_mux * mux, uint32_t pin_id);
+void np_mux_disable(uint32_t pin_id);
 
 /*--------------------------------------------------------  C++ extern end  --*/
 #ifdef __cplusplus
@@ -223,5 +184,5 @@ void np_mux_disable(const struct np_dev_mux * mux, uint32_t pin_id);
 /** @endcond *//** @} *//******************************************************
  * END of peripheral.h
  ******************************************************************************/
-#endif  /* NEON_PORT_PERIPHERAL_H_ */
+#endif  /* NEON_MCU_PERIPHERAL_H_ */
 
