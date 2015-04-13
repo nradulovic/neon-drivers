@@ -36,8 +36,7 @@
 #include "port/compiler.h"
 #include "port/core.h"
 #include "mcu/profile.h"
-
-#include "family/p_dev.h"
+#include "family/p_peripheral.h"
 
 /*===============================================================  MACRO's  ==*/
 
@@ -52,8 +51,6 @@
      (((uint32_t)(major) &   0xffu) <<  8u) |                                   \
      (((uint32_t)(minor) &   0xffu) <<  0u))
 
-
-
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
 extern "C" {
@@ -61,20 +58,30 @@ extern "C" {
 
 /*============================================================  DATA TYPES  ==*/
 
-struct npdrv;
-struct npdev_isr;
-struct npdev_rst;
-struct npdev_clk;
-struct npdev_mux;
-
-/**@brief		Peripheral driver
+/* NOTE:
+ * Forward declaration of peripheral driver structure
  */
-struct npdrv
-{
-    const struct npdev *        pdev;
-    ncore_atomic				ref;
-    void *                      data;
-};
+struct npdrv;
+
+/**@brief       Peripheral device ISR structure
+ * @note        This structure is defined in port `p_peripheral.h` file.
+ */
+struct npdev_isr;
+
+/**@brief       Peripheral device RST structure
+ * @note        This structure is defined in port `p_peripheral.h` file.
+ */
+struct npdev_rst;
+
+/**@brief       Peripheral device CLK structure
+ * @note        This structure is defined in port `p_peripheral.h` file.
+ */
+struct npdev_clk;
+
+/**@brief       Peripheral device MUX structure
+ * @note        This structure is defined in port `p_peripheral.h` file.
+ */
+struct npdev_mux;
 
 /**@brief		Peripheral device
  */
@@ -85,9 +92,13 @@ struct npdev
         uint16_t                    dev_class;
         uint16_t                    dev_instance;
     }                           recognition;
-    uint32_t                    flags;
-    uint32_t					max_ref;
-    struct npdrv *             	pdrv;
+    uint32_t                    flags;  /**<@brief Device flags               */
+    uint32_t					max_ref;/**<@brief Maximum reference counter
+                                          * value.
+                                          */
+    struct npdrv *             	pdrv;   /**<@brief Peripheral driver for this
+                                          * device.
+                                          */
 #if (NP_ATTR_ADDRESS == 1)
     volatile void *             address;
 #endif
@@ -108,22 +119,140 @@ struct npdev
 #endif
 };
 
+/**@brief       Peripheral driver
+ */
+struct npdrv
+{
+    const struct npdev *        pdev;   /**<@brief Peripheral device.         */
+    ncore_atomic                ref;    /**<@brief Reference counter.         */
+    void *                      data;   /**<@brief Custom user data attached to
+                                          * this driver.
+                                          */
+};
+
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 
+/*------------------------------------------------------------------------*//**
+ * @name        Peripheral device methods
+ * @{ *//*--------------------------------------------------------------------*/
+
+/**@brief       Get the peripheral driver for @c pdev peripheral device
+ * @param       pdev
+ *              Pointer to peripheral device
+ * @return      Pointer to peripheral driver
+ * @api
+ */
 #define npdev_to_pdrv(pdev)				(pdev)->pdrv
+
+/**@brief       Get the peripheral instance number
+ * @param       pdev
+ *              Pointer to peripheral device
+ * @return      Instance number value
+ * @api
+ */
 #define npdev_instance(pdev) 			((pdev)->recognition.dev_intance)
+
+/**@brief       Get the peripheral class number
+ * @param       pdev
+ *              Pointer to peripheral device
+ * @return      Class number value
+ * @api
+ */
 #define npdev_class(pdev)               ((pdev)->recognition.dev_class)
+
+/**@brief       Get the peripheral device flags
+ * @param       pdev
+ *              Pointer to peripheral device
+ * @return      Flags value
+ * @api
+ */
 #define npdev_flags(pdev)             	(pdev)->flags
+
+/**@brief       Get the peripheral register address
+ * @param       pdev
+ *              Pointer to peripheral device
+ * @return      Register address
+ * @api
+ */
 #define npdev_address(pdev)           	(pdev)->address
+
+/**@brief       Get the peripheral ISR structures
+ * @param       pdev
+ *              Pointer to peripheral device
+ * @param       no
+ *              ISR structure ordinal number
+ * @return      Pointer to the ISR structure
+ * @api
+ */
 #define npdev_isr(pdev, no)			    &((pdev)->isr[no])
+
+/**@brief       Get the peripheral RST structures
+ * @param       pdev
+ *              Pointer to peripheral device
+ * @param       no
+ *              RST structure ordinal number
+ * @return      Pointer to the RST structure
+ * @api
+ */
 #define npdev_rst(pdev, no)			    &((pdev)->rst[no])
+
+/**@brief       Get the peripheral PWR structures
+ * @param       pdev
+ *              Pointer to peripheral device
+ * @param       no
+ *              PWR structure ordinal number
+ * @return      Pointer to the PWR structure
+ * @api
+ */
 #define npdev_pwr(pdev, no)		        &((pdev)->pwr[no])
+
+/**@brief       Get the peripheral CLK structures
+ * @param       pdev
+ *              Pointer to peripheral device
+ * @param       no
+ *              CLK structure ordinal number
+ * @return      Pointer to the CLK structure
+ * @api
+ */
 #define npdev_clk(pdev, no)		    	&((pdev)->clk[no])
+
+/**@brief       Get the peripheral MUX structures
+ * @param       pdev
+ *              Pointer to peripheral device
+ * @param       no
+ *              MUX structure ordinal number
+ * @return      Pointer to the MUX structure
+ * @api
+ */
 #define npdev_mux(pdev, no)             &((pdev)->mux[no])
 
+/**@} *//*----------------------------------------------------------------*//**
+ * @name        Peripheral driver methods
+ * @{ *//*--------------------------------------------------------------------*/
+
+/**@brief       Get the peripheral device from @c pdrv peripheral driver
+ * @param       pdrv
+ *              Pointer to peripheral driver
+ * @return      Pointer to peripheral device
+ * @api
+ */
 #define npdrv_to_pdev(pdrv)             (pdrv)->pdev
+
+/**@brief       Get the peripheral driver instance number
+ * @param       pdrv
+ *              Pointer to peripheral driver
+ * @return      Instance number value
+ * @api
+ */
 #define npdrv_instance(pdrv)			npdev_instance(npdrv_to_pdev(pdrv))
+
+/**@brief       Get the peripheral driver class number
+ * @param       pdrv
+ *              Pointer to peripheral driver
+ * @return      Class number value
+ * @api
+ */
 #define npdrv_class(pdrv)				npdev_class(npdrv_to_pdev(pdrv))
 #define npdrv_flags(pdrv)				npdev_flags(npdrv_to_pdev(pdrv))
 #define npdrv_address(pdrv)				npdev_address(npdrv_to_pdev(pdrv))
