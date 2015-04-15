@@ -29,6 +29,7 @@
 #include "mcu/profile.h"
 #include "mcu/peripheral.h"
 #include "base/bitop.h"
+#include <stddef.h>
 
 /*=========================================================  LOCAL MACRO's  ==*/
 /*======================================================  LOCAL DATA TYPES  ==*/
