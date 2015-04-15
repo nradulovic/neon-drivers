@@ -69,6 +69,8 @@ void np_isr_set_flag(const struct npdev_isr * isr)
 
 void np_isr_set_prio(const struct npdev_isr * isr, uint32_t prio)
 {
+	prio = NCORE_LOCK_TO_CODE(prio);
+
     NVIC_SetPriority(isr->irqn, prio);
 }
 
