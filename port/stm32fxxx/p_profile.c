@@ -63,7 +63,7 @@ const struct npdev              g_gpioa =
     .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 1),
 	.max_ref			= 16,
     .pdrv               = &g_gpioa_driver.pdrv,
-    .address            = (volatile void *)GPIOA_BASE,
+    .address            = (volatile void *)GPIOA,
     .pwr                = &g_gpioa_pwr
 };
 #endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_1) */
@@ -82,7 +82,7 @@ const struct npdev              g_gpiob =
     .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 2),
 	.max_ref			= 16,
     .pdrv               = &g_gpiob_driver.pdrv,
-    .address            = (volatile void *)GPIOB_BASE,
+    .address            = (volatile void *)GPIOB,
     .pwr                = &g_gpiob_pwr
 };
 #endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_2) */
@@ -102,7 +102,7 @@ const struct npdev              g_gpioc =
     .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 3),
 	.max_ref			= 16,
     .pdrv               = &g_gpioc_driver.pdrv,
-    .address            = (volatile void *)GPIOC_BASE,
+    .address            = (volatile void *)GPIOC,
     .pwr                = &g_gpioc_pwr
 };
 #endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_3) */
