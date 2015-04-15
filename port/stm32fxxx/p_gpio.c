@@ -63,9 +63,8 @@ void ngpio_init(uint32_t gpio_id, uint32_t config)
 
 	pdrv = npdrv_request(gpio_id);
 
-	if (!pdrv) {
+	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdev != NULL);
 
-	}
 	port = NP_DEV_ID_TO_MAJOR(gpio_id);
 	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
 
@@ -88,7 +87,7 @@ void ngpio_init(uint32_t gpio_id, uint32_t config)
 			break;
 		}
 		default: {
-			NASSERT_ALWAYS(NAPI_USAGE " Invalid mode argument.");
+			NASSERT_ALWAYS(NAPI_USAGE "Invalid mode argument.");
 
 			return;
 		}
@@ -108,7 +107,7 @@ void ngpio_init(uint32_t gpio_id, uint32_t config)
 			break;
 		}
 		default: {
-			NASSERT_ALWAYS(NAPI_USAGE " Invalid mode argument.");
+			NASSERT_ALWAYS(NAPI_USAGE "Invalid pull argument.");
 
 			return;
 		}
@@ -116,14 +115,109 @@ void ngpio_init(uint32_t gpio_id, uint32_t config)
 
 }
 
-void ngpio_term(uint32_t gpio_id);
-bool ngpio_get(uint32_t gpio_id);
-void ngpio_set(uint32_t gpio_id);
-void ngpio_clear(uint32_t gpio_id);
+
+
+void ngpio_term(uint32_t gpio_id)
+{
+	const struct npdev * 		pdev;
+	uint32_t					pin;
+
+	pdev = nprofile_pdev(gpio_id);
+
+	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdev != NULL);
+
+	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
+
+	HAL_GPIO_DeInit((GPIO_TypeDef *)npdev_address(pdev), 0x1 << pin);
+	npdrv_release(npdev_to_pdrv(pdev));
+}
+
+
+
+bool ngpio_is_set(uint32_t gpio_id)
+{
+	const struct npdev * 		pdev;
+	uint32_t					pin;
+
+	pdev = nprofile_pdev(gpio_id);
+
+	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdev != NULL);
+
+	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
+
+	if (HAL_GPIO_ReadPin((GPIO_TypeDef *)npdev_address(pdev), 0x1 << pin) == GPIO_PIN_SET) {
+
+		return (true);
+	}
+
+	return (false);
+}
+
+
+
+void ngpio_set(uint32_t gpio_id)
+{
+	const struct npdev * 		pdev;
+	uint32_t					pin;
+
+	pdev = nprofile_pdev(gpio_id);
+
+	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdev != NULL);
+
+	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
+
+	HAL_GPIO_WritePin((GPIO_TypeDef *)npdev_address(pdev), 0x1 << pin, GPIO_PIN_SET);
+}
+
+
+
+void ngpio_clear(uint32_t gpio_id)
+{
+	const struct npdev * 		pdev;
+	uint32_t					pin;
+
+	pdev = nprofile_pdev(gpio_id);
+
+	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdev != NULL);
+
+	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
+
+	HAL_GPIO_WritePin((GPIO_TypeDef *)npdev_address(pdev), 0x1 << pin, GPIO_PIN_RESET);
+}
+
+
+
+void ngpio_toggle(uint32_t gpio_id)
+{
+	const struct npdev * 		pdev;
+	uint32_t					pin;
+
+	pdev = nprofile_pdev(gpio_id);
+
+	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdev != NULL);
+
+	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
+
+	HAL_GPIO_TogglePin((GPIO_TypeDef *)npdev_address(pdev), 0x1 << pin);
+}
+
+
+
 bool ngpio_request(uint32_t gpio_id);
 void ngpio_release(uint32_t gpio_id);
-bool ngpio_change_notice_request(uint32_t gpio_id, ngpio_change_handler * change_handler);
-bool ngpio_change_notice_release(uint32_t gpio_id);
+bool ngpio_change_notice_request(uint32_t gpio_id, enum ngpio_trigger trigger, ngpio_change_handler * change_handler)
+{
+
+}
+
+
+
+bool ngpio_change_notice_release(uint32_t gpio_id)
+{
+
+}
+
+
 
 bool ngpio_is_id_valid(uint32_t gpio_id)
 {

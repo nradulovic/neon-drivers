@@ -107,17 +107,26 @@ struct ngpio_driver
 
 typedef void (ngpio_change_handler)(uint32_t gpio_id);
 
+/**@brief 		Change notice type
+ */
+enum ngpio_trigger {
+	NGPIO_FALLING,
+	NGPIO_RISING,
+	NGPIO_TOGGLE
+};
+
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 
 void ngpio_init(uint32_t gpio_id, uint32_t config);
 void ngpio_term(uint32_t gpio_id);
-bool ngpio_get(uint32_t gpio_id);
+bool ngpio_is_set(uint32_t gpio_id);
 void ngpio_set(uint32_t gpio_id);
 void ngpio_clear(uint32_t gpio_id);
+void ngpio_toggle(uint32_t gpio_id);
 bool ngpio_request(uint32_t gpio_id);
 void ngpio_release(uint32_t gpio_id);
-bool ngpio_change_notice_request(uint32_t gpio_id, ngpio_change_handler * change_handler);
+bool ngpio_change_notice_request(uint32_t gpio_id, enum ngpio_trigger trigger, ngpio_change_handler * change_handler);
 bool ngpio_change_notice_release(uint32_t gpio_id);
 bool ngpio_is_id_valid(uint32_t gpio_id);
 
