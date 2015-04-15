@@ -7,6 +7,7 @@
 
 
 #include "mcu/peripheral.h"
+#include <stddef.h>
 
 struct npdrv * npdrv_request(uint32_t dev_id)
 {
