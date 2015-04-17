@@ -44,10 +44,17 @@
 
 /*=========================================================  LOCAL MACRO's  ==*/
 /*======================================================  LOCAL DATA TYPES  ==*/
+
+struct notify_info {
+	void 		(* notify_handle)(uint32_t gpio_id);
+	uint32_t	gpio_id;
+};
+
 /*=============================================  LOCAL FUNCTION PROTOTYPES  ==*/
 /*=======================================================  LOCAL VARIABLES  ==*/
 
 static const NCOMPONENT_DEFINE("STM32Fxxx GPIO driver", "Nenad Radulovic");
+static struct notify_info g_notify_info[16];
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
@@ -56,14 +63,13 @@ static const NCOMPONENT_DEFINE("STM32Fxxx GPIO driver", "Nenad Radulovic");
 void ngpio_init(uint32_t gpio_id, uint32_t config)
 {
 	GPIO_InitTypeDef			gpio_init;
-	const struct npdev *		pdev;
 	struct npdrv *				pdrv;
 	uint32_t					port;
 	uint32_t					pin;
 
 	pdrv = npdrv_request(gpio_id);
 
-	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdev != NULL);
+	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdrv != NULL);
 
 	port = NP_DEV_ID_TO_MAJOR(gpio_id);
 	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
@@ -112,7 +118,8 @@ void ngpio_init(uint32_t gpio_id, uint32_t config)
 			return;
 		}
 	}
-
+	npdrv_pwr_enable(pdrv, 0);
+	HAL_GPIO_Init((GPIO_TypeDef *)npdrv_address(pdrv), &gpio_init);
 }
 
 
@@ -203,18 +210,85 @@ void ngpio_toggle(uint32_t gpio_id)
 
 
 
-bool ngpio_request(uint32_t gpio_id);
-void ngpio_release(uint32_t gpio_id);
-bool ngpio_change_notice_request(uint32_t gpio_id, enum ngpio_trigger trigger, ngpio_change_handler * change_handler)
+void ngpio_change_notice_request(uint32_t gpio_id, uint32_t config, ngpio_change_handler * change_handler)
 {
+	GPIO_InitTypeDef			gpio_init;
+	struct npdrv *				pdrv;
+	uint32_t					port;
+	uint32_t					pin;
 
+	pdrv = npdrv_request(gpio_id);
+
+	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdrv != NULL);
+	NREQUIRE(NAPI_USAGE "Exti line is already in use.", g_notify_info[NP_DEV_ID_TO_MINOR(gpio_id)].notify_handle != NULL);
+
+	g_notify_info[NP_DEV_ID_TO_MINOR(gpio_id)].notify_handle = change_handler;
+	g_notify_info[NP_DEV_ID_TO_MINOR(gpio_id)].gpio_id = gpio_id;
+
+	port = NP_DEV_ID_TO_MAJOR(gpio_id);
+	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
+
+	gpio_init.Pin = (0x1u << pin);
+	gpio_init.Speed = GPIO_SPEED_FAST;
+
+	switch (config & NGPIO_TRIGGER) {
+		case NGPIO_TRIGGER_FALLING: {
+			gpio_init.Mode = GPIO_MODE_IT_FALLING;
+			break;
+		}
+		case NGPIO_TRIGGER_RISING: {
+			gpio_init.Mode = GPIO_MODE_IT_RISING;
+			break;
+		}
+		case NGPIO_TRIGGER_TOGGLE: {
+			gpio_init.Mode = GPIO_MODE_IT_RISING_FALLING;
+			break;
+		}
+		default: {
+			NASSERT_ALWAYS(NAPI_USAGE "Invalid trigger argument.");
+		}
+	}
+
+	switch (config & NGPIO_PULL) {
+		case NGPIO_PULL_NONE : {
+			gpio_init.Pull = GPIO_NOPULL;
+			break;
+		}
+		case NGPIO_PULL_DOWN : {
+			gpio_init.Pull = GPIO_PULLDOWN;
+			break;
+		}
+		case NGPIO_PULL_UP: {
+			gpio_init.Pull = GPIO_PULLUP;
+			break;
+		}
+		default: {
+			NASSERT_ALWAYS(NAPI_USAGE "Invalid pull argument.");
+
+			return;
+		}
+	}
+	npdrv_pwr_enable(pdrv, 0);
+	HAL_GPIO_Init((GPIO_TypeDef *)npdrv_address(pdrv), &gpio_init);
 }
 
 
 
-bool ngpio_change_notice_release(uint32_t gpio_id)
+void ngpio_change_notice_release(uint32_t gpio_id)
 {
+	const struct npdev * 		pdev;
+	uint32_t					pin;
 
+	pdev = nprofile_pdev(gpio_id);
+
+	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdev != NULL);
+
+	g_notify_info[NP_DEV_ID_TO_MINOR(gpio_id)].notify_handle = NULL;
+
+	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
+
+	HAL_GPIO_DeInit((GPIO_TypeDef *)npdev_address(pdev), 0x1 << pin);
+	npdrv_release(npdev_to_pdrv(pdev));
 }
 
 
@@ -226,6 +300,22 @@ bool ngpio_is_id_valid(uint32_t gpio_id)
 		return (true);
 	} else {
 		return (false);
+	}
+}
+
+
+
+void ngpio_isr(void)
+{
+	uint32_t exti_line;
+
+	for (exti_line = 0;  exti_line < 16; exti_line++)  {
+		if (EXTI->PR & (1u << exti_line)) {
+			if (g_notify_info[exti_line].notify_handle != NULL) {
+				g_notify_info[exti_line].notify_handle(g_notify_info[exti_line].gpio_id);
+				EXTI->PR |= 1u << exti_line;
+			}
+		}
 	}
 }
 

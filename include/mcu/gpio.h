@@ -64,16 +64,17 @@
  */
 #define NGPIO_ID_TO_PIN(id)             NP_DEV_ID_TO_MINOR(id)
 
-#define NGPIOA                          1
-#define NGPIOB                          2
-#define NGPIOC                          3
-#define NGPIOD                          4
-#define NGPIOE                          5
-#define NGPIOF                          6
-#define NGPIOG                          7
-#define NGPIOH                          8
-#define NGPIOI                          9
-#define NGPIOJ                          10
+#define NGPIOA                          0
+#define NGPIOB                          1
+#define NGPIOC                          2
+#define NGPIOD                          3
+#define NGPIOE                          4
+#define NGPIOF                          5
+#define NGPIOG                          6
+#define NGPIOH                          7
+#define NGPIOI                          8
+#define NGPIOJ                          9
+#define NGPIOK                          10
 
 #define NGPIO_INPUT                     (0x1ul << 0)
 #define NGPIO_OUTPUT_LOW                (0x1ul << 1)
@@ -84,12 +85,19 @@
 #define NGPIO_PULL_UP                   (0x1ul << 5)
 #define NGPIO_PULL_DOWN                 (0x1ul << 6)
 
+#define NGPIO_TRIGGER_FALLING			(0x1ul << 7)
+#define NGPIO_TRIGGER_RISING			(0x1ul << 8)
+#define NGPIO_TRIGGER_TOGGLE			(0x1ul << 9)
+
 #define NGPIO_MODE                                                              \
     (NGPIO_INPUT | NGPIO_OUTPUT_LOW | NGPIO_OUTPUT_HIGH | 						\
 	 NGPIO_OUTPUT_OPEN_DRAIN_LOW    | NGPIO_OUTPUT_OPEN_DRAIN_FLOAT)
 
 #define NGPIO_PULL																\
 	(NGPIO_PULL_UP | NGPIO_PULL_DOWN)
+
+#define NGPIO_TRIGGER															\
+	(NGPIO_TRIGGER_FALLING | NGPIO_TRIGGER_RISING | NGPIO_TRIGGER_TOGGLE)
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
@@ -107,14 +115,6 @@ struct ngpio_driver
 
 typedef void (ngpio_change_handler)(uint32_t gpio_id);
 
-/**@brief 		Change notice type
- */
-enum ngpio_trigger {
-	NGPIO_FALLING,
-	NGPIO_RISING,
-	NGPIO_TOGGLE
-};
-
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 
@@ -124,11 +124,11 @@ bool ngpio_is_set(uint32_t gpio_id);
 void ngpio_set(uint32_t gpio_id);
 void ngpio_clear(uint32_t gpio_id);
 void ngpio_toggle(uint32_t gpio_id);
-bool ngpio_request(uint32_t gpio_id);
-void ngpio_release(uint32_t gpio_id);
-bool ngpio_change_notice_request(uint32_t gpio_id, enum ngpio_trigger trigger, ngpio_change_handler * change_handler);
-bool ngpio_change_notice_release(uint32_t gpio_id);
+void ngpio_change_notice_request(uint32_t gpio_id, uint32_t config, ngpio_change_handler * change_handler);
+void ngpio_change_notice_release(uint32_t gpio_id);
 bool ngpio_is_id_valid(uint32_t gpio_id);
+void ngpio_isr(void);
+
 
 /*--------------------------------------------------------  C++ extern end  --*/
 #ifdef __cplusplus
