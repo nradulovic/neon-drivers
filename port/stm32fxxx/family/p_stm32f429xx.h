@@ -21,22 +21,27 @@
  *//***********************************************************************//**
  * @file
  * @author      Nenad Radulovic
- * @brief       Profile data for STM32Fxxx port
+ * @brief       Profile data for STM32F411XE
  *********************************************************************//** @{ */
 
-#ifndef FAMILY_P_PROFILE_DATA_H_
-#define FAMILY_P_PROFILE_DATA_H_
+#ifndef FAMILY_STM32F429XX_H_
+#define FAMILY_STM32F429XX_H_
 
 /*=========================================================  INCLUDE FILES  ==*/
+
+#include "stm32f4xx.h"
+
 /*===============================================================  MACRO's  ==*/
 
-#if defined(STM32F411xE)
-# include "family/p_stm32f411xe.h"
-#elif defined(STM32F429xx)
-# include "family/p_stm32f429xx.h"
-#else
-# error "NEON::drivers::port: No defined port microprocessor"
-#endif
+#define NPROFILE_MAX_CPU_CLOCK          (180ul * 1000000ul)
+#define NPROFILE_RAM_SIZE               (192ul * 1024ul)
+
+#define NPROFILE_AVAILABLE_GPIO         NPROFILE_EN_1 | NPROFILE_EN_2 | NPROFILE_EN_3 | NPROFILE_EN_4 | NPROFILE_EN_5 | 		\
+										NPROFILE_EN_6 | NPROFILE_EN_7 | NPROFILE_EN_8 | NPROFILE_EN_9 |							\
+										NPROFILE_EN_10 | NPROFILE_EN_11
+#define NPROFILE_AVAILABLE_UART         NPROFILE_EN_1 | NPROFILE_EN_2 | NPROFILE_EN_6
+#define NPROFILE_AVAILABLE_SPI			0
+#define NPROFILE_AVAILABLE_I2C			0
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
@@ -53,6 +58,6 @@ extern "C" {
 
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/
 /** @endcond *//** @} *//******************************************************
- * END of p_profile_data.h
+ * END of p_stm32f411xe.h
  ******************************************************************************/
-#endif /* FAMILY_P_PROFILE_DATA_H_ */
+#endif /* FAMILY_STM32F411XE_H_ */

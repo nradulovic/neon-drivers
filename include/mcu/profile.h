@@ -75,7 +75,7 @@
  *              Likewise, you can write 'if (NPROFILE_EN_GPIO)' which will
  *              evaluate to TRUE if any GPIO port is enabled.
  */
-#define NPROFILE_EN_GPIO                (CONFIG_GPIO & NPROFILE_AVAILABLE_GPIO)
+#define NPROFILE_EN_GPIO                (CONFIG_GPIO & (NPROFILE_AVAILABLE_GPIO))
 
 /**@brief       This macro checks if an UART is enabled.
  * @details     In order to check if particular UART port is enabled then do a
@@ -88,7 +88,7 @@
  *              Likewise, you can write 'if (NPROFILE_EN_UART)' which will
  *              evaluate to TRUE if any UART peripheral is enabled.
  */
-#define NPROFILE_EN_UART                (CONFIG_UART & NPROFILE_AVAILABLE_UART)
+#define NPROFILE_EN_UART                (CONFIG_UART & (NPROFILE_AVAILABLE_UART))
 
 /**@brief       This macro checks if an I2C peripheral is enabled.
  * @details     In order to check if particular I2C port is enabled then do a
@@ -101,7 +101,7 @@
  *              Likewise, you can write 'if (NPROFILE_EN_I2C)' which will
  *              evaluate to TRUE if any I2C peripheral is enabled.
  */
-#define NPROFILE_EN_I2C                 (CONFIG_I2C &  NPROFILE_AVAILABLE_I2C)
+#define NPROFILE_EN_I2C                 (CONFIG_I2C &  (NPROFILE_AVAILABLE_I2C))
 
 /**@brief       This macro checks if an SPI peripheral is enabled.
  * @details     In order to check if particular SPI port is enabled then do a
@@ -114,7 +114,7 @@
  *              Likewise, you can write 'if (NPROFILE_EN_SPI)' which will
  *              evaluate to TRUE if any SPI peripheral is enabled.
  */
-#define NPROFILE_EN_SPI                 (CONFIG_SPI &  NPROFILE_AVAILABLE_SPI)
+#define NPROFILE_EN_SPI                 (CONFIG_SPI &  (NPROFILE_AVAILABLE_SPI))
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
@@ -137,6 +137,38 @@ extern const struct npdev      g_gpiob;
 
 #if (NPROFILE_EN_GPIO & NPROFILE_EN(3))
 extern const struct npdev      g_gpioc;
+#endif
+
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(4))
+extern const struct npdev      g_gpiod;
+#endif
+
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(5))
+extern const struct npdev      g_gpioe;
+#endif
+
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(6))
+extern const struct npdev      g_gpiof;
+#endif
+
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(7))
+extern const struct npdev      g_gpiog;
+#endif
+
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(8))
+extern const struct npdev      g_gpioh;
+#endif
+
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(9))
+extern const struct npdev      g_gpioi;
+#endif
+
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(10))
+extern const struct npdev      g_gpioj;
+#endif
+
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(11))
+extern const struct npdev      g_gpiok;
 #endif
 
 #if (NPROFILE_EN_UART & NPROFILE_EN(1))

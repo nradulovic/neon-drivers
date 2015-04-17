@@ -90,7 +90,7 @@ static const struct npdev *     g_devices[64] =
 	NULL,
 #endif
 #if (NPROFILE_EN_GPIO & NPROFILE_EN(11))
-    &g_gpioj,
+    &g_gpiok,
 #else
 	NULL,
 #endif
