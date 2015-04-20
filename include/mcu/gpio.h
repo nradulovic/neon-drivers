@@ -26,8 +26,8 @@
  * @brief       GPIO operations
  *********************************************************************//** @{ */
 
-#ifndef NEON_PORT_GPIO_H_
-#define NEON_PORT_GPIO_H_
+#ifndef NEON_MCU_GPIO_H_
+#define NEON_MCU_GPIO_H_
 
 /*=========================================================  INCLUDE FILES  ==*/
 
@@ -124,6 +124,8 @@ bool ngpio_is_set(uint32_t gpio_id);
 void ngpio_set(uint32_t gpio_id);
 void ngpio_clear(uint32_t gpio_id);
 void ngpio_toggle(uint32_t gpio_id);
+void ngpio_request(uint32_t gpio_id);
+void ngpio_release(uint32_t gpio_id);
 void ngpio_change_notice_request(uint32_t gpio_id, uint32_t config, ngpio_change_handler * change_handler);
 void ngpio_change_notice_release(uint32_t gpio_id);
 bool ngpio_is_id_valid(uint32_t gpio_id);
@@ -139,4 +141,4 @@ void ngpio_isr(void);
 /** @endcond *//** @} *//******************************************************
  * END of gpio.h
  ******************************************************************************/
-#endif /* NEON_PORT_GPIO_H_ */
+#endif /* NEON_MCU_GPIO_H_ */

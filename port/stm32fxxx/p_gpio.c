@@ -126,17 +126,20 @@ void ngpio_init(uint32_t gpio_id, uint32_t config)
 
 void ngpio_term(uint32_t gpio_id)
 {
-	const struct npdev * 		pdev;
+	struct npdrv * 				pdrv;
 	uint32_t					pin;
 
-	pdev = nprofile_pdev(gpio_id);
+	pdrv = npdrv_from_id(gpio_id);
 
-	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdev != NULL);
+	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdrv != NULL);
 
 	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
 
-	HAL_GPIO_DeInit((GPIO_TypeDef *)npdev_address(pdev), 0x1 << pin);
-	npdrv_release(npdev_to_pdrv(pdev));
+	HAL_GPIO_DeInit((GPIO_TypeDef *)npdrv_address(pdrv), 0x1 << pin);
+
+	if (npdrv_ref(pdrv) == 0) {
+		npdrv_pwr_disable(pdrv, 0);
+	}
 }
 
 
@@ -210,6 +213,33 @@ void ngpio_toggle(uint32_t gpio_id)
 
 
 
+void ngpio_request(uint32_t gpio_id)
+{
+	struct npdrv * 				pdrv;
+
+	pdrv = npdrv_from_id(gpio_id);
+
+	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdrv != NULL);
+	npdrv_pwr_enable(pdrv, 0);
+}
+
+
+
+void ngpio_release(uint32_t gpio_id)
+{
+	struct npdrv * 				pdrv;
+
+	pdrv = npdrv_from_id(gpio_id);
+
+	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdrv != NULL);
+
+	if (npdrv_ref(pdrv) == 0) {
+		npdrv_pwr_disable(pdrv, 0);
+	}
+}
+
+
+
 void ngpio_change_notice_request(uint32_t gpio_id, uint32_t config, ngpio_change_handler * change_handler)
 {
 	GPIO_InitTypeDef			gpio_init;
@@ -276,19 +306,23 @@ void ngpio_change_notice_request(uint32_t gpio_id, uint32_t config, ngpio_change
 
 void ngpio_change_notice_release(uint32_t gpio_id)
 {
-	const struct npdev * 		pdev;
+	struct npdrv * 				pdrv;
 	uint32_t					pin;
 
-	pdev = nprofile_pdev(gpio_id);
+	pdrv = npdrv_from_id(gpio_id);
 
-	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdev != NULL);
+	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdrv != NULL);
 
 	g_notify_info[NP_DEV_ID_TO_MINOR(gpio_id)].notify_handle = NULL;
 
 	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
 
-	HAL_GPIO_DeInit((GPIO_TypeDef *)npdev_address(pdev), 0x1 << pin);
-	npdrv_release(npdev_to_pdrv(pdev));
+	HAL_GPIO_DeInit((GPIO_TypeDef *)npdrv_address(pdrv), 0x1 << pin);
+	npdrv_release(pdrv);
+
+	if (npdrv_ref(pdrv) == 0) {
+		npdrv_pwr_disable(pdrv, 0);
+	}
 }
 
 
