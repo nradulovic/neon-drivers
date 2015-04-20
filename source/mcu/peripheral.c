@@ -45,10 +45,30 @@ struct npdrv * npdrv_request(uint32_t dev_id)
 	return (NULL);
 }
 
+
+
 void npdrv_release(struct npdrv * pdrv)
 {
 	/* NOTE 1:
 	 * Remove one user for this driver.
 	 */
 	ncore_atomic_dec(&pdrv->ref);
+}
+
+
+
+struct npdrv * npdrv_from_id(uint32_t dev_id)
+{
+	const struct npdev *		pdev;
+	struct npdrv *				pdrv;
+
+	pdev = nprofile_pdev(dev_id);
+
+	if (pdev) {
+		pdrv = npdev_to_pdrv(pdev);
+
+		return (pdrv);
+	}
+
+	return (NULL);
 }

@@ -256,6 +256,7 @@ struct npdrv
 #define npdrv_class(pdrv)				npdev_class(npdrv_to_pdev(pdrv))
 #define npdrv_flags(pdrv)				npdev_flags(npdrv_to_pdev(pdrv))
 #define npdrv_address(pdrv)				npdev_address(npdrv_to_pdev(pdrv))
+#define npdrv_ref(pdrv)					ncore_atomic_read(&(pdrv)->ref)
 #define npdrv_isr(pdrv, no)				npdev_isr(npdrv_to_pdev(pdrv), (no))
 #define npdrv_rst(pdrv, no)				npdev_rst(npdrv_to_pdev(pdrv), (no))
 #define npdrv_pwr(pdrv, no)				npdev_pwr(npdrv_to_pdev(pdrv), (no))
@@ -288,6 +289,8 @@ struct npdrv
 struct npdrv * npdrv_request(uint32_t dev_id);
 
 void npdrv_release(struct npdrv * pdrv);
+
+struct npdrv * npdrv_from_id(uint32_t dev_id);
 
 #define npdrv_set_data(pdrv, priv_data) (pdrv)->data = (priv_data)
 
