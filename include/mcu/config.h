@@ -35,20 +35,24 @@
 
 /*===============================================================  MACRO's  ==*/
 
+/*
+ * NOTE: All peripheral is by default turned on.
+ */
+
 #if !defined(CONFIG_GPIO)
-# define CONFIG_GPIO                    0
+# define CONFIG_GPIO                    0xffffu
 #endif
 
 #if !defined(CONFIG_UART)
-# define CONFIG_UART                    0
+# define CONFIG_UART                    0xffffu
 #endif
 
 #if !defined(CONFIG_I2C)
-# define CONFIG_I2C                     0
+# define CONFIG_I2C                     0xffffu
 #endif
 
 #if !defined(CONFIG_SPI)
-# define CONFIG_SPI                     0
+# define CONFIG_SPI                     0xffffu
 #endif
 
 /*-------------------------------------------------------  C++ extern base  --*/
