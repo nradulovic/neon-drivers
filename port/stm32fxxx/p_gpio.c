@@ -250,7 +250,7 @@ void ngpio_change_notice_request(uint32_t gpio_id, uint32_t config, ngpio_change
 	pdrv = npdrv_request(gpio_id);
 
 	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdrv != NULL);
-	NREQUIRE(NAPI_USAGE "Exti line is already in use.", g_notify_info[NP_DEV_ID_TO_MINOR(gpio_id)].notify_handle != NULL);
+	NREQUIRE(NAPI_USAGE "Exti line is already in use.", g_notify_info[NP_DEV_ID_TO_MINOR(gpio_id)].notify_handle == NULL);
 
 	g_notify_info[NP_DEV_ID_TO_MINOR(gpio_id)].notify_handle = change_handler;
 	g_notify_info[NP_DEV_ID_TO_MINOR(gpio_id)].gpio_id = gpio_id;
@@ -300,6 +300,8 @@ void ngpio_change_notice_request(uint32_t gpio_id, uint32_t config, ngpio_change
 	}
 	npdrv_pwr_enable(pdrv, 0);
 	HAL_GPIO_Init((GPIO_TypeDef *)npdrv_address(pdrv), &gpio_init);
+	npdrv_isr_set_prio(pdrv, NP_DEV_ID_TO_MINOR(gpio_id), CONFIG_CORE_LOCK_MAX_LEVEL);
+	npdrv_isr_enable(pdrv, NP_DEV_ID_TO_MINOR(gpio_id));
 }
 
 

@@ -48,8 +48,61 @@
  * Static structures for STM32F411xE
  * -------------------------------------------------------------------------- */
 #if defined(STM32F411xE)
+#if (NPROFILE_EN_GPIO)
+struct npdev_isr				g_exti_isr[16] =
+{
+	{
+		.irqn = EXTI0_IRQn,
+	},
+	{
+		.irqn = EXTI1_IRQn,
+	},
+	{
+		.irqn = EXTI2_IRQn,
+	},
+	{
+		.irqn = EXTI3_IRQn,
+	},
+	{
+		.irqn = EXTI4_IRQn,
+	},
+	{
+		.irqn = EXTI9_5_IRQn,
+	},
+	{
+		.irqn = EXTI9_5_IRQn,
+	},
+	{
+		.irqn = EXTI9_5_IRQn,
+	},
+	{
+		.irqn = EXTI9_5_IRQn,
+	},
+	{
+		.irqn = EXTI9_5_IRQn,
+	},
+	{
+		.irqn = EXTI15_10_IRQn,
+	},
+	{
+		.irqn = EXTI15_10_IRQn,
+	},
+	{
+		.irqn = EXTI15_10_IRQn,
+	},
+	{
+		.irqn = EXTI15_10_IRQn,
+	},
+	{
+		.irqn = EXTI15_10_IRQn,
+	},
+	{
+		.irqn = EXTI15_10_IRQn,
+	},
+};
+#endif /* NPROFILE_EN_GPIO */
 /*-- GPIOA  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(1))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(0))
 static struct ngpio_driver      g_gpioa_driver;
 
 static const struct npdev_pwr   g_gpioa_pwr =
@@ -60,16 +113,17 @@ static const struct npdev_pwr   g_gpioa_pwr =
 
 const struct npdev              g_gpioa =
 {
-    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 1),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 0),
 	.max_ref			= 16,
     .pdrv               = &g_gpioa_driver.pdrv,
     .address            = (volatile void *)GPIOA,
+	.isr				= g_exti_isr,
     .pwr                = &g_gpioa_pwr
 };
 #endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_1) */
 
 /*-- GPIOB  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(2))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(1))
 static struct ngpio_driver      g_gpiob_driver;
 static const struct npdev_pwr   g_gpiob_pwr =
 {
@@ -79,16 +133,17 @@ static const struct npdev_pwr   g_gpiob_pwr =
 
 const struct npdev              g_gpiob =
 {
-    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 2),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 1),
 	.max_ref			= 16,
     .pdrv               = &g_gpiob_driver.pdrv,
     .address            = (volatile void *)GPIOB,
+	.isr				= g_exti_isr,
     .pwr                = &g_gpiob_pwr
 };
 #endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_2) */
 
 /*-- GPIOC  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(3))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(2))
 static struct ngpio_driver      g_gpioc_driver;
 
 static const struct npdev_pwr   g_gpioc_pwr =
@@ -99,16 +154,17 @@ static const struct npdev_pwr   g_gpioc_pwr =
 
 const struct npdev              g_gpioc =
 {
-    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 3),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 2),
 	.max_ref			= 16,
     .pdrv               = &g_gpioc_driver.pdrv,
     .address            = (volatile void *)GPIOC,
+	.isr				= g_exti_isr,
     .pwr                = &g_gpioc_pwr
 };
 #endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_3) */
 
 /*-- UART1  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_UART & NPROFILE_EN(1))
+#if (NPROFILE_EN_UART & NPROFILE_EN(0))
 static struct nuart_drv         g_uart1_driver;
 
 static const struct npdev_isr   g_uart1_isr =
@@ -136,7 +192,7 @@ static const struct npdev_mux   g_uart1_mux =
 
 const struct npdev              g_uart1 =
 {
-    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_UART, 1),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_UART, 0),
     .flags              = NUART_MODE_RX    | NUART_MODE_TX      | NUART_PARITY_EVEN |
                           NUART_PARITY_ODD | NUART_PARITY_NONE  | NUART_STOPBITS_1  |
                           NUART_STOPBITS_2 | NUART_WORDLENGTH_8 | NUART_WORDLENGTH_9,
@@ -152,7 +208,7 @@ const struct npdev              g_uart1 =
 #endif /* (NPROFILE_EN_UART & NPROFILE_EN(1)) */
 
 /*-- UART2  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_UART & NPROFILE_EN(2))
+#if (NPROFILE_EN_UART & NPROFILE_EN(1))
 static struct nuart_drv         g_uart2_driver;
 
 static const struct npdev_isr   g_uart2_isr =
@@ -180,7 +236,7 @@ static const struct npdev_mux   g_uart2_mux =
 
 const struct npdev              g_uart2 =
 {
-    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_UART, 2),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_UART, 1),
     .flags              = NUART_MODE_RX    | NUART_MODE_TX      | NUART_PARITY_EVEN |
                           NUART_PARITY_ODD | NUART_PARITY_NONE  | NUART_STOPBITS_1  |
                           NUART_STOPBITS_2 | NUART_WORDLENGTH_8 | NUART_WORDLENGTH_9,
@@ -195,7 +251,7 @@ const struct npdev              g_uart2 =
 #endif /* (NPROFILE_EN_UART & NPROFILE_EN(2)) */
 
 /*-- UART6  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_UART & NPROFILE_EN(6))
+#if (NPROFILE_EN_UART & NPROFILE_EN(5))
 static struct nuart_drv         g_uart6_driver;
 
 static const struct npdev_isr   g_uart6_isr =
@@ -223,7 +279,7 @@ static const struct npdev_mux   g_uart6_mux =
 
 const struct npdev              g_uart6 =
 {
-    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_UART, 6),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_UART, 5),
     .flags              = NUART_MODE_RX    | NUART_MODE_TX      | NUART_PARITY_EVEN |
                           NUART_PARITY_ODD | NUART_PARITY_NONE  | NUART_STOPBITS_1  |
                           NUART_STOPBITS_2 | NUART_WORDLENGTH_8 | NUART_WORDLENGTH_9,
@@ -240,10 +296,63 @@ const struct npdev              g_uart6 =
 #endif /* defined(STM32F411xE) */
 
 #if defined(STM32F429xx)
-/*-- GPIOA  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(1))
-static struct ngpio_driver      g_gpioa_driver;
+#if (NPROFILE_EN_GPIO)
+struct npdev_isr				g_exti_isr[16] =
+{
+	{
+		.irqn = EXTI0_IRQn,
+	},
+	{
+		.irqn = EXTI1_IRQn,
+	},
+	{
+		.irqn = EXTI2_IRQn,
+	},
+	{
+		.irqn = EXTI3_IRQn,
+	},
+	{
+		.irqn = EXTI4_IRQn,
+	},
+	{
+		.irqn = EXTI9_5_IRQn,
+	},
+	{
+		.irqn = EXTI9_5_IRQn,
+	},
+	{
+		.irqn = EXTI9_5_IRQn,
+	},
+	{
+		.irqn = EXTI9_5_IRQn,
+	},
+	{
+		.irqn = EXTI9_5_IRQn,
+	},
+	{
+		.irqn = EXTI15_10_IRQn,
+	},
+	{
+		.irqn = EXTI15_10_IRQn,
+	},
+	{
+		.irqn = EXTI15_10_IRQn,
+	},
+	{
+		.irqn = EXTI15_10_IRQn,
+	},
+	{
+		.irqn = EXTI15_10_IRQn,
+	},
+	{
+		.irqn = EXTI15_10_IRQn,
+	},
+};
+#endif /* NPROFILE_EN_GPIO */
 
+/*-- GPIOA  ------------------------------------------------------------------*/
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(0))
+static struct ngpio_driver      g_gpioa_driver;
 static const struct npdev_pwr   g_gpioa_pwr =
 {
     .reg                = &RCC->AHB1ENR,
@@ -252,16 +361,17 @@ static const struct npdev_pwr   g_gpioa_pwr =
 
 const struct npdev              g_gpioa =
 {
-    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 1),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 0),
 	.max_ref			= 16,
     .pdrv               = &g_gpioa_driver.pdrv,
     .address            = (volatile void *)GPIOA,
+	.isr				= g_exti_isr,
     .pwr                = &g_gpioa_pwr
 };
-#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_1) */
+#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_0) */
 
 /*-- GPIOB  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(2))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(1))
 static struct ngpio_driver      g_gpiob_driver;
 static const struct npdev_pwr   g_gpiob_pwr =
 {
@@ -271,16 +381,17 @@ static const struct npdev_pwr   g_gpiob_pwr =
 
 const struct npdev              g_gpiob =
 {
-    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 2),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 1),
 	.max_ref			= 16,
     .pdrv               = &g_gpiob_driver.pdrv,
     .address            = (volatile void *)GPIOB,
+	.isr				= g_exti_isr,
     .pwr                = &g_gpiob_pwr
 };
-#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_2) */
+#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_1) */
 
 /*-- GPIOC  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(3))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(2))
 static struct ngpio_driver      g_gpioc_driver;
 
 static const struct npdev_pwr   g_gpioc_pwr =
@@ -291,16 +402,17 @@ static const struct npdev_pwr   g_gpioc_pwr =
 
 const struct npdev              g_gpioc =
 {
-    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 3),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 2),
 	.max_ref			= 16,
     .pdrv               = &g_gpioc_driver.pdrv,
     .address            = (volatile void *)GPIOC,
+	.isr				= g_exti_isr,
     .pwr                = &g_gpioc_pwr
 };
-#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_3) */
+#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_2) */
 
 /*-- GPIOD  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(4))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(3))
 static struct ngpio_driver      g_gpiod_driver;
 
 static const struct npdev_pwr   g_gpiod_pwr =
@@ -311,16 +423,17 @@ static const struct npdev_pwr   g_gpiod_pwr =
 
 const struct npdev              g_gpiod =
 {
-    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 4),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 3),
 	.max_ref			= 16,
     .pdrv               = &g_gpiod_driver.pdrv,
     .address            = (volatile void *)GPIOD,
+	.isr				= g_exti_isr,
     .pwr                = &g_gpiod_pwr
 };
-#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_4) */
+#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_3) */
 
 /*-- GPIOE  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(5))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(4))
 static struct ngpio_driver      g_gpioe_driver;
 
 static const struct npdev_pwr   g_gpioe_pwr =
@@ -331,18 +444,19 @@ static const struct npdev_pwr   g_gpioe_pwr =
 
 const struct npdev              g_gpioe =
 {
-    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 5),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 4),
 	.max_ref			= 16,
     .pdrv               = &g_gpioe_driver.pdrv,
     .address            = (volatile void *)GPIOE,
+	.isr				= g_exti_isr,
     .pwr                = &g_gpioe_pwr
 };
 
 
-#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_5) */
+#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_4) */
 
 /*-- GPIOF  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(6))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(5))
 static struct ngpio_driver      g_gpiof_driver;
 
 static const struct npdev_pwr   g_gpiof_pwr =
@@ -353,13 +467,14 @@ static const struct npdev_pwr   g_gpiof_pwr =
 
 const struct npdev              g_gpiof =
 {
-    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 6),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 5),
 	.max_ref			= 16,
     .pdrv               = &g_gpiof_driver.pdrv,
     .address            = (volatile void *)GPIOF,
+	.isr				= g_exti_isr,
     .pwr                = &g_gpiof_pwr
 };
-#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_6) */
+#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_5) */
 
 /*-- GPIOG  ------------------------------------------------------------------*/
 #if (NPROFILE_EN_GPIO & NPROFILE_EN(6))
@@ -377,12 +492,13 @@ const struct npdev              g_gpiog =
 	.max_ref			= 16,
     .pdrv               = &g_gpiog_driver.pdrv,
     .address            = (volatile void *)GPIOG,
+	.isr				= g_exti_isr,
     .pwr                = &g_gpiog_pwr
 };
 #endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_6) */
 
 /*-- GPIOH  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(8))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(7))
 static struct ngpio_driver      g_gpioh_driver;
 
 static const struct npdev_pwr   g_gpioh_pwr =
@@ -393,16 +509,17 @@ static const struct npdev_pwr   g_gpioh_pwr =
 
 const struct npdev              g_gpioh =
 {
-    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 8),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 7),
 	.max_ref			= 16,
     .pdrv               = &g_gpioh_driver.pdrv,
     .address            = (volatile void *)GPIOH,
+	.isr				= g_exti_isr,
     .pwr                = &g_gpioh_pwr
 };
-#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_8) */
+#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_7) */
 
 /*-- GPIOI  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(9))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(8))
 static struct ngpio_driver      g_gpioi_driver;
 
 static const struct npdev_pwr   g_gpioi_pwr =
@@ -413,16 +530,17 @@ static const struct npdev_pwr   g_gpioi_pwr =
 
 const struct npdev              g_gpioi =
 {
-    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 9),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 8),
 	.max_ref			= 16,
     .pdrv               = &g_gpioi_driver.pdrv,
     .address            = (volatile void *)GPIOI,
+	.isr				= g_exti_isr,
     .pwr                = &g_gpioi_pwr
 };
-#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_9) */
+#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_8) */
 
 /*-- GPIOJ  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(10))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(9))
 static struct ngpio_driver      g_gpioj_driver;
 
 static const struct npdev_pwr   g_gpioj_pwr =
@@ -433,16 +551,17 @@ static const struct npdev_pwr   g_gpioj_pwr =
 
 const struct npdev              g_gpioj =
 {
-    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 10),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 9),
 	.max_ref			= 16,
     .pdrv               = &g_gpioj_driver.pdrv,
     .address            = (volatile void *)GPIOJ,
+	.isr				= g_exti_isr,
     .pwr                = &g_gpioj_pwr
 };
-#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_10) */
+#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_9) */
 
 /*-- GPIOK  ------------------------------------------------------------------*/
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(11))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(10))
 static struct ngpio_driver      g_gpiok_driver;
 
 static const struct npdev_pwr   g_gpiok_pwr =
@@ -453,13 +572,14 @@ static const struct npdev_pwr   g_gpiok_pwr =
 
 const struct npdev              g_gpiok =
 {
-    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 11),
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_GPIO, 10),
 	.max_ref			= 16,
     .pdrv               = &g_gpiok_driver.pdrv,
     .address            = (volatile void *)GPIOK,
+	.isr				= g_exti_isr,
     .pwr                = &g_gpiok_pwr
 };
-#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_11) */
+#endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_10) */
 
 #endif /* defined(STM32F429xx) */
 

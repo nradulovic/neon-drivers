@@ -278,7 +278,11 @@ struct npdrv
 
 #define npdrv_pwr_enable(pdrv, no)      np_pwr_enable(npdrv_pwr((pdrv), (no)))
 
+#if (CONFIG_DRIVERS_PM_ENABLE == 1)
 #define npdrv_pwr_disable(pdrv, no)     np_pwr_disable(npdrv_pwr((pdrv), (no)))
+#else
+#define npdrv_pwr_disable(pdrv, no)
+#endif
 
 #define npdrv_mux_setup(pdrv, no, pin_id)                                       \
     np_mux_enable(npdrv_mux((pdrv), (no)), (pin_id))

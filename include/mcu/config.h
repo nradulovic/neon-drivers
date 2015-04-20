@@ -55,6 +55,10 @@
 # define CONFIG_SPI                     0xffffu
 #endif
 
+#if !defined(CONFIG_DRIVERS_PM_ENABLE)
+# define CONFIG_DRIVERS_PM_ENABLE		0
+#endif
+
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
 extern "C" {
