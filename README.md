@@ -6,9 +6,8 @@ Neon is a collection of software components for real-time applications.
 
 ## Configuration
 
-Configuration is done in `neon_app_config.h` header file. The file is included
-by `base/include/shared/config.h` file, which is in included in all other Neon
-components.
+Configuration is done in `neon_drivers_app_config.h` header file. The file is included
+by `mcu/config.h` file, which is in included in other Neon Drivers components.
 
 ## Building
 
@@ -28,7 +27,5 @@ used.
 ### Project dependencies
 
 Neon Eds does depend on the following components:
-- base
-- kernel
 - eds
 
