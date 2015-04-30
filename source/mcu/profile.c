@@ -39,82 +39,82 @@
 
 static const struct npdev *     g_devices[64] =
 {
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(1))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(0))
     &g_gpioa,
 #else
 	NULL,
 #endif
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(2))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(1))
     &g_gpiob,
 #else
 	NULL,
 #endif
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(3))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(2))
     &g_gpioc,
 #else
 	NULL,
 #endif
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(4))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(3))
     &g_gpiod,
 #else
 	NULL,
 #endif
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(5))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(4))
     &g_gpioe,
 #else
 	NULL,
 #endif
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(6))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(5))
     &g_gpiof,
 #else
 	NULL,
 #endif
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(7))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(6))
     &g_gpiog,
 #else
 	NULL,
 #endif
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(8))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(7))
     &g_gpioh,
 #else
 	NULL,
 #endif
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(9))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(8))
     &g_gpioi,
 #else
 	NULL,
 #endif
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(10))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(9))
     &g_gpioj,
 #else
 	NULL,
 #endif
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(11))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(10))
     &g_gpiok,
 #else
 	NULL,
 #endif
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(12))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(11))
     &g_gpiol,
 #else
 	NULL,
 #endif
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(13))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(12))
     &g_gpiom,
 #else
 	NULL,
 #endif
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(14))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(13))
     &g_gpion,
 #else
 	NULL,
 #endif
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(15))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(14))
     &g_gpioo,
 #else
 	NULL,
 #endif
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(16))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(15))
     &g_gpiop,
 #else
 	NULL,

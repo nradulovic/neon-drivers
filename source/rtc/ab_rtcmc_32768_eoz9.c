@@ -1,10 +1,12 @@
 
+#if (0)
+
 #include "lib/string/num_conv.h"
 #include <string.h>
 
 #include "port/compiler.h"
 #include "base/error.h"
-#include "mcu/i2c.h"
+#include "mcu/i2c_bus.h"
 #include "rtc/ab_rtcmc_32768_eoz9.h"
 #include "rtc/rtc_class.h"
 
@@ -288,3 +290,5 @@ const struct nrtc_state * ab_rtcmc_state(void)
 {
     return (&g_context.state);
 }
+
+#endif

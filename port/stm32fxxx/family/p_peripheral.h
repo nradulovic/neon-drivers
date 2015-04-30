@@ -73,6 +73,7 @@ struct npdev_isr
 
 struct npdev_mux
 {
+	unsigned int				gpio_id;
     unsigned int                af;
     unsigned int                mode;
     unsigned int                pull;

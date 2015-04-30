@@ -40,6 +40,7 @@
 #include "mcu/profile.h"
 #include "mcu/uart.h"
 #include "mcu/gpio.h"
+#include "mcu/i2c_bus.h"
 
 /*================================================  PERIPHERAL DESCIPTIONS  ==*/
 
@@ -581,8 +582,136 @@ const struct npdev              g_gpiok =
 };
 #endif /* (NPROFILE_EN_GPIO & NP_MASK_MAJOR_10) */
 
-#endif /* defined(STM32F429xx) */
+/*-- I2C1 ------------------------------------------------------------------*/
+#if (NPROFILE_EN_I2C & NPROFILE_EN(1))
+static struct ni2c_driver       g_i2c1_driver;
 
+static const struct npdev_isr   g_i2c1_isr[2] =
+{
+	{
+		.irqn           = I2C1_EV_IRQn,
+	},
+	{
+		.irqn           = I2C1_ER_IRQn,
+	}
+};
+
+static const struct npdev_pwr   g_i2c1_pwr =
+{
+    .reg                = &RCC->APB1ENR,
+    .mask               = RCC_APB1ENR_I2C1EN
+};
+
+static const struct npdev_clk	g_i2c1_clk =
+{
+	.clk_bus			= ARCH_STM32_APB1
+};
+
+const struct npdev              g_i2c1 =
+{
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_I2C, 1),
+    .flags              = NI2C_BUS_MODE_MASTER | NI2C_BUS_MODE_SLAVE | NI2C_BUS_ADDRESS_7BIT |
+						  NI2C_BUS_ADDRESS_10BIT | NI2C_BUS_SPEED_100 | NI2C_BUS_SPEED_400  |
+						  NI2C_BUS_SPEED_1700 | NI2C_BUS_SPEED_3400 | NI2C_BUS_HANDLING_IT |
+						  NI2C_BUS_HANDLING_DMA,
+
+	.max_ref			= 1,
+    .pdrv               = &g_i2c1_driver.pdrv,
+    .address            = (volatile void *)I2C1_BASE,
+    .isr                = g_i2c1_isr,
+    .pwr                = &g_i2c1_pwr,
+	.clk				= &g_i2c1_clk
+};
+
+#endif /* (NPROFILE_EN_I2C & NPROFILE_EN(1)) */
+
+/*-- I2C2 ------------------------------------------------------------------*/
+#if (NPROFILE_EN_I2C & NPROFILE_EN(2))
+static struct ni2c_driver       g_i2c2_driver;
+
+static const struct npdev_isr   g_i2c2_isr[2] =
+{
+	{
+		.irqn           = I2C2_EV_IRQn,
+	},
+	{
+		.irqn           = I2C2_ER_IRQn,
+	}
+};
+
+static const struct npdev_pwr   g_i2c2_pwr =
+{
+    .reg                = &RCC->APB1ENR,
+    .mask               = RCC_APB1ENR_I2C2EN
+};
+
+static const struct npdev_clk	g_i2c2_clk =
+{
+	.clk_bus			= ARCH_STM32_APB1
+};
+
+const struct npdev              g_i2c2 =
+{
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_I2C, 2),
+    .flags              = NI2C_BUS_MODE_MASTER | NI2C_BUS_MODE_SLAVE | NI2C_BUS_ADDRESS_7BIT |
+						  NI2C_BUS_ADDRESS_10BIT | NI2C_BUS_SPEED_100 | NI2C_BUS_SPEED_400  |
+						  NI2C_BUS_SPEED_1700 | NI2C_BUS_SPEED_3400 | NI2C_BUS_HANDLING_IT |
+						  NI2C_BUS_HANDLING_DMA,
+
+	.max_ref			= 1,
+    .pdrv               = &g_i2c2_driver.pdrv,
+    .address            = (volatile void *)I2C2_BASE,
+    .isr                = g_i2c2_isr,
+    .pwr                = &g_i2c2_pwr,
+	.clk				= &g_i2c2_clk
+};
+
+#endif /* (NPROFILE_EN_I2C & NPROFILE_EN(2)) */
+
+/*-- I2C3 ------------------------------------------------------------------*/
+#if (NPROFILE_EN_I2C & NPROFILE_EN(3))
+static struct ni2c_driver       g_i2c3_driver;
+
+static const struct npdev_isr   g_i2c3_isr[2] =
+{
+	{
+		.irqn           = I2C3_EV_IRQn,
+	},
+	{
+		.irqn           = I2C3_ER_IRQn,
+	}
+};
+
+static const struct npdev_pwr   g_i2c3_pwr =
+{
+    .reg                = &RCC->APB1ENR,
+    .mask               = RCC_APB1ENR_I2C3EN
+};
+
+static const struct npdev_clk	g_i2c3_clk =
+{
+	.clk_bus			= ARCH_STM32_APB1
+};
+
+const struct npdev              g_i2c3 =
+{
+    .recognition        = NP_DEV_RECOGNITION(NPROFILE_CLASS_I2C, 3),
+    .flags              = NI2C_BUS_MODE_MASTER | NI2C_BUS_MODE_SLAVE | NI2C_BUS_ADDRESS_7BIT |
+						  NI2C_BUS_ADDRESS_10BIT | NI2C_BUS_SPEED_100 | NI2C_BUS_SPEED_400  |
+						  NI2C_BUS_SPEED_1700 | NI2C_BUS_SPEED_3400 | NI2C_BUS_HANDLING_IT |
+						  NI2C_BUS_HANDLING_DMA,
+
+	.max_ref			= 1,
+    .pdrv               = &g_i2c3_driver.pdrv,
+    .address            = (volatile void *)I2C3_BASE,
+    .isr                = g_i2c3_isr,
+    .pwr                = &g_i2c3_pwr,
+	.clk				= &g_i2c3_clk
+};
+
+#endif /* (NPROFILE_EN_I2C & NPROFILE_EN(3)) */
+
+#endif /* defined(STM32F429xx) */
 /** @} *//*********************************************************************
  * END of p_profile.c
  ******************************************************************************/

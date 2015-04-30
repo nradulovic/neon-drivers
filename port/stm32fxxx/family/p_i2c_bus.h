@@ -21,27 +21,34 @@
  *//***********************************************************************//**
  * @file
  * @author      Nenad Radulovic
- * @brief       Profile data for STM32F411XE
+ * @brief       I2C header for STM32Fxxx port
  *********************************************************************//** @{ */
 
-#ifndef FAMILY_STM32F429XX_H_
-#define FAMILY_STM32F429XX_H_
+#ifndef FAMILY_P_I2C_BUS_H_
+#define FAMILY_P_I2C_BUS_H_
 
 /*=========================================================  INCLUDE FILES  ==*/
 
-#include "stm32f4xx.h"
+#include "mcu/profile.h"
 
 /*===============================================================  MACRO's  ==*/
 
-#define NPROFILE_MAX_CPU_CLOCK          (180ul * 1000000ul)
-#define NPROFILE_RAM_SIZE               (192ul * 1024ul)
+#define	NI2C_DUALADDRESS_DISABLE		(0u << 0)
+#define	NI2C_DUALADDRESS_ENABLE			(1u << 0)
+#define	NI2C_FM_DUTYCYCLE_2				(0u << 1)
+#define NI2C_FM_DUTYCYCLE_16_9			(1u << 1)
+#define NI2C_NOSTRETCH_DISABLE			(0u << 2)
+#define NI2C_NOSTRETCH_ENABLE			(1u << 2)
+#define NI2C_OWN_ADDRESS_2(x)			((x) << 8)
 
-#define NPROFILE_AVAILABLE_GPIO         NPROFILE_EN_0 | NPROFILE_EN_1 | NPROFILE_EN_2 | NPROFILE_EN_3 | NPROFILE_EN_4 | 		\
-										NPROFILE_EN_5 | NPROFILE_EN_6 | NPROFILE_EN_7 | NPROFILE_EN_8 |							\
-										NPROFILE_EN_9 | NPROFILE_EN_10
-#define NPROFILE_AVAILABLE_UART         NPROFILE_EN_1 | NPROFILE_EN_2 | NPROFILE_EN_6
-#define NPROFILE_AVAILABLE_SPI			0
-#define NPROFILE_AVAILABLE_I2C			NPROFILE_EN_1 | NPROFILE_EN_2 | NPROFILE_EN_3
+#define I2C_DUAL_ADDRESS														\
+	(NI2C_DUALADDRESS_DISABLE | NI2C_DUALADDRESS_ENABLE)
+
+#define I2C_FM_DUTYCYCLE														\
+	(NI2C_FM_DUTYCYCLE_2 | NI2C_FM_DUTYCYCLE_16_9)
+
+#define I2C_NOSTRETCH															\
+	(NI2C_NOSTRETCH_DISABLE | NI2C_NOSTRETCH_ENABLE)
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
@@ -50,6 +57,23 @@ extern "C" {
 
 /*============================================================  DATA TYPES  ==*/
 /*======================================================  GLOBAL VARIABLES  ==*/
+
+void ni2c_port_config(
+	uint32_t 					bus_id,
+	uint32_t 					config);
+
+
+
+void ni2c_port_analog_filter_config(
+	uint32_t 					bus_id,
+	uint32_t 					config);
+
+
+
+void ni2c_port_digital_filter_config(
+	uint32_t 					bus_id,
+	uint32_t 					config);
+
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 /*--------------------------------------------------------  C++ extern end  --*/
 #ifdef __cplusplus
@@ -58,6 +82,6 @@ extern "C" {
 
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/
 /** @endcond *//** @} *//******************************************************
- * END of p_stm32f411xe.h
+ * END of p_i2c.h
  ******************************************************************************/
-#endif /* FAMILY_STM32F411XE_H_ */
+#endif /* FAMILY_P_I2C_H_ */

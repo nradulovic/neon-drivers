@@ -10,33 +10,42 @@
  *
  * Neon is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Neon.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Neon. If not, see <http://www.gnu.org/licenses/>.
  *
- * web site:    http://github.com/nradulovic
- * e-mail  :    nenad.b.radulovic@gmail.com
+ * web site: http://github.com/nradulovic
+ * e-mail : nenad.b.radulovic@gmail.com
  *//***********************************************************************//**
  * @file
- * @author      Nenad Radulovic
- * @brief       I2C header for STM32Fxxx port
+ * @author dejan
+ * @brief 
+ * @defgroup 
+ * @brief 
  *********************************************************************//** @{ */
 
-#ifndef FAMILY_P_I2C_H_
-#define FAMILY_P_I2C_H_
+#ifndef PLATFORM_NEON_DRIVERS_INCLUDE_MCU_MUX_H_
+#define PLATFORM_NEON_DRIVERS_INCLUDE_MCU_MUX_H_
 
 /*=========================================================  INCLUDE FILES  ==*/
 /*===============================================================  MACRO's  ==*/
-/*-------------------------------------------------------  C++ extern base  --*/
+/*------------------------------------------------------  C++ extern begin  --*/
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /*============================================================  DATA TYPES  ==*/
+
+struct nmux;
+
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*===================================================  FUNCTION PROTOTYPES  ==*/
+
+void nmux_setup(const struct nmux * mux_array, size_t size);
+void nmux_reset(uint32_t gpio_id);
+
 /*--------------------------------------------------------  C++ extern end  --*/
 #ifdef __cplusplus
 }
@@ -44,6 +53,6 @@ extern "C" {
 
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/
 /** @endcond *//** @} *//******************************************************
- * END of p_i2c.h
+ * END of mux.h
  ******************************************************************************/
-#endif /* FAMILY_P_I2C_H_ */
+#endif /* PLATFORM_NEON_DRIVERS_INCLUDE_MCU_MUX_H_ */

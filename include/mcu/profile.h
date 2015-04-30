@@ -45,22 +45,23 @@
 
 #define N_IS_PROFILE_CLASS(class)		(((class) & 0xff00u) == NPROFILE_CLASS_MAGIC)
 
-#define NPROFILE_EN_1             		NPROFILE_EN( 0)
-#define NPROFILE_EN_2             		NPROFILE_EN( 1)
-#define NPROFILE_EN_3             		NPROFILE_EN( 2)
-#define NPROFILE_EN_4             		NPROFILE_EN( 3)
-#define NPROFILE_EN_5             		NPROFILE_EN( 4)
-#define NPROFILE_EN_6             		NPROFILE_EN( 5)
-#define NPROFILE_EN_7             		NPROFILE_EN( 6)
-#define NPROFILE_EN_8             		NPROFILE_EN( 7)
-#define NPROFILE_EN_9             		NPROFILE_EN( 8)
-#define NPROFILE_EN_10            		NPROFILE_EN(9)
-#define NPROFILE_EN_11            		NPROFILE_EN(10)
-#define NPROFILE_EN_12            		NPROFILE_EN(11)
-#define NPROFILE_EN_13            		NPROFILE_EN(12)
-#define NPROFILE_EN_14            		NPROFILE_EN(13)
-#define NPROFILE_EN_15            		NPROFILE_EN(14)
-#define NPROFILE_EN_16            		NPROFILE_EN(15)
+#define NPROFILE_EN_0             		NPROFILE_EN(0)
+#define NPROFILE_EN_1             		NPROFILE_EN(1)
+#define NPROFILE_EN_2             		NPROFILE_EN(2)
+#define NPROFILE_EN_3             		NPROFILE_EN(3)
+#define NPROFILE_EN_4             		NPROFILE_EN(4)
+#define NPROFILE_EN_5             		NPROFILE_EN(5)
+#define NPROFILE_EN_6             		NPROFILE_EN(6)
+#define NPROFILE_EN_7             		NPROFILE_EN(7)
+#define NPROFILE_EN_8             		NPROFILE_EN(8)
+#define NPROFILE_EN_9             		NPROFILE_EN(9)
+#define NPROFILE_EN_10            		NPROFILE_EN(10)
+#define NPROFILE_EN_11            		NPROFILE_EN(11)
+#define NPROFILE_EN_12            		NPROFILE_EN(12)
+#define NPROFILE_EN_13            		NPROFILE_EN(13)
+#define NPROFILE_EN_14            		NPROFILE_EN(14)
+#define NPROFILE_EN_15            		NPROFILE_EN(15)
+#define NPROFILE_EN_16            		NPROFILE_EN(16)
 
 #define NPROFILE_EN(major)        		(0x1u << major)
 
@@ -127,47 +128,47 @@ extern "C" {
 /* NOTE:
  * Individual peripheral data is defined in `p_profile_data.c` port source file.
  */
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(1))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(0))
 extern const struct npdev      g_gpioa;
 #endif
 
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(2))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(1))
 extern const struct npdev      g_gpiob;
 #endif
 
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(3))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(2))
 extern const struct npdev      g_gpioc;
 #endif
 
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(4))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(3))
 extern const struct npdev      g_gpiod;
 #endif
 
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(5))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(4))
 extern const struct npdev      g_gpioe;
 #endif
 
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(6))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(5))
 extern const struct npdev      g_gpiof;
 #endif
 
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(7))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(6))
 extern const struct npdev      g_gpiog;
 #endif
 
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(8))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(7))
 extern const struct npdev      g_gpioh;
 #endif
 
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(9))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(8))
 extern const struct npdev      g_gpioi;
 #endif
 
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(10))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(9))
 extern const struct npdev      g_gpioj;
 #endif
 
-#if (NPROFILE_EN_GPIO & NPROFILE_EN(11))
+#if (NPROFILE_EN_GPIO & NPROFILE_EN(10))
 extern const struct npdev      g_gpiok;
 #endif
 
@@ -193,6 +194,70 @@ extern const struct npdev      g_uart5;
 
 #if (NPROFILE_EN_UART & NPROFILE_EN(6))
 extern const struct npdev      g_uart6;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(1))
+extern const struct npdev      g_i2c1;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(2))
+extern const struct npdev      g_i2c2;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(3))
+extern const struct npdev      g_i2c3;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(4))
+extern const struct npdev      g_i2c4;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(5))
+extern const struct npdev      g_i2c5;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(6))
+extern const struct npdev      g_i2c6;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(7))
+extern const struct npdev      g_i2c7;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(8))
+extern const struct npdev      g_i2c8;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(9))
+extern const struct npdev      g_i2c9;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(10))
+extern const struct npdev      g_i2c10;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(11))
+extern const struct npdev      g_i2c11;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(12))
+extern const struct npdev      g_i2c12;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(13))
+extern const struct npdev      g_i2c13;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(14))
+extern const struct npdev      g_i2c4;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(15))
+extern const struct npdev      g_i2c15;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(16))
+extern const struct npdev      g_i2c16;
 #endif
 
 /* NOTE:
