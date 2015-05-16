@@ -89,8 +89,8 @@ struct npdev
 {
     struct npdev_recognition
     {
-        uint16_t                    dev_class;
-        uint16_t                    dev_instance;
+        uint16_t                dev_class;
+        uint16_t                dev_instance;
     }                           recognition;
     uint32_t                    flags;  /**<@brief Device flags               */
     uint32_t					max_ref;/**<@brief Maximum reference counter

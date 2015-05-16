@@ -36,7 +36,7 @@
 
 #include "base/error.h"
 
-#include "../../port/stm32fxxx/family/p_i2c_bus.h"
+#include "family/p_i2c_bus.h"
 #include "mcu/peripheral.h"
 #include "mcu/profile.h"
 
@@ -48,57 +48,45 @@
  * @return      Returns valid I2C bus ID number which can be used with other
  *              functions and macros.
  */
-#define NI2C_ID(bus)             		NP_DEV_CREATE_ID(NPROFILE_CLASS_I2C, bus, 0)
+#define NI2C_ID(bus)            NP_DEV_CREATE_ID(NPROFILE_CLASS_I2C, bus, 0)
 
 /**@brief       Convenience wrapper macro around @ref NP_DEV_ID_TO_MAJOR().
  * @param       id
  *              Valid I2C bus ID
  * @return      Returns I2C bus number
  */
-#define NI2C_ID_TO_BUS(id)            	NP_DEV_ID_TO_MAJOR(id)
+#define NI2C_ID_TO_BUS(id)      NP_DEV_ID_TO_MAJOR(id)
 
-#define NI2C1							1
-#define NI2C2							2
-#define NI2C3							3
-#define NI2C4							4
-#define NI2C5							5
-#define NI2C6							6
+#define NI2C0					0
+#define NI2C1					1
+#define NI2C2					2
+#define NI2C3					3
+#define NI2C4					4
+#define NI2C5					5
+#define NI2C6					6
+#define NI2C7					7
+#define NI2C8					8
+#define NI2C9					9
+#define NI2C10					10
+#define NI2C11					11
+#define NI2C12					12
+#define NI2C13					13
+#define NI2C14					14
+#define NI2C15					15
 
-#define NI2C_BUS_MODE_MASTER             (0x0u << 0)
-#define NI2C_BUS_MODE_SLAVE              (0x1u << 0)
-#define NI2C_BUS_ADDRESS_7BIT            (0x0u << 1)
-#define NI2C_BUS_ADDRESS_10BIT           (0x1u << 1)
-#define NI2C_BUS_ADDRESS(x)              ((x) << 16)
+#define NI2C_BUS_MODE_MASTER	(0x0u << 0)
+#define NI2C_BUS_MODE_SLAVE		(0x1u << 0)
+#define NI2C_BUS_ADDRESS_7BIT   (0x0u << 1)
+#define NI2C_BUS_ADDRESS_10BIT  (0x1u << 1)
+#define NI2C_BUS_SPEED_100		(0x0u << 4)
+#define NI2C_BUS_SPEED_400		(0x1u << 4)
+#define NI2C_BUS_SPEED_1700		(0x2u << 4)
+#define NI2C_BUS_SPEED_3400		(0x3u << 4)
+#define NI2C_BUS_HANDLING_IT	(0x0u << 6)
+#define NI2C_BUS_HANDLING_DMA	(0x1u << 6)
 
-#define NI2C_SLAVE_RD_NACK               (0x1u << 2)
-#define NI2C_SLAVE_RD_START_STOP         (0x1u << 2)
-#define NI2C_SLAVE_RD_REPEAT             (0x2u << 2)
-
-#define NI2C_BUS_SPEED_100				(0x0u <<  4)
-#define NI2C_BUS_SPEED_400				(0x1u <<  4)
-#define NI2C_BUS_SPEED_1700				(0x2u <<  4)
-#define NI2C_BUS_SPEED_3400				(0x3u <<  4)
-
-#define NI2C_BUS_HANDLING_IT			(0x0u <<  6)
-#define NI2C_BUS_HANDLING_DMA			(0x1u <<  6)
-
-#define NI2C_BUS_ADDRESSING_MODE												\
-	(NI2C_BUS_ADDRESS_7BIT | NI2C_BUS_ADDRESS_10BIT)
-
-#define NI2C_BUS_SPEED															\
-	(NI2C_BUS_SPEED_100 | NI2C_BUS_SPEED_400 | NI2C_BUS_SPEED_1700 | 			\
-	NI2C_BUS_SPEED_3400)
-
-#define NI2C_BUS_HANDLING														\
-	(NI2C_BUS_HANDLING_IT | NI2C_BUS_HANDLING_DMA)
-
-#define NI2C_ERROR_NONE       ((uint32_t)0x00000000)    /*!< No error           */
-#define NI2C_ERROR_BERR       ((uint32_t)0x00000001)    /*!< BERR error         */
-#define NI2C_ERROR_ARLO       ((uint32_t)0x00000002)    /*!< ARLO error         */
-#define NI2C_ERROR_AF         ((uint32_t)0x00000004)    /*!< AF error           */
-#define NI2C_ERROR_OVR        ((uint32_t)0x00000008)    /*!< OVR error          */
-#define NI2C_ERROR_DMA        ((uint32_t)0x00000010)    /*!< DMA transfer error */
-#define NI2C_ERROR_TIMEOUT    ((uint32_t)0x00000020)    /*!< Timeout Error      */
+#define NI2C_TRANSFER_NORMAL    (0x1u << 0)
+#define NI2C_TRANSFER_COMBINED  (0x2u << 0)
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
@@ -107,19 +95,70 @@ extern "C" {
 
 /*============================================================  DATA TYPES  ==*/
 
-struct ni2c_driver
+enum ni2c_evt_id
 {
-    struct npdrv               pdrv;
-    I2C_HandleTypeDef 		   handle;
-    uint32_t				   bus_handling;
+	EVT_NI2C_WRITE_COMPLETED =  CONFIG_I2C_EVENT_BASE_ID,
+	EVT_NI2C_READ_COMPLETED,
+	EVT_NI2C_BUSY,
+	EVT_NI2C_ERROR,
+	EVT_NI2C_TIMEOUT
 };
 
-typedef void (i2c_action_handler)(uint32_t bus_id);
+
+
+enum ni2c_error_type
+{
+	NI2C_BUS_ERROR,
+	NI2C_ACKNOWLEDGE_FAILURE,
+	NI2C_ARBITRATION_LOST,
+	NI2C_BUS_OVERFLOW
+};
+
+
+
+enum basic_genral_call_commands
+{
+	NI2C_GENERAL_RESET = 		0x06,
+	NI2C_LATCH_ITS_ADDRESS =	0x04
+};
+
+
+
+struct ni2c_error_event
+{
+	nevent   					event;
+	enum ni2c_error_type		type;
+};
+
+struct np_dev_i2c			    ctx;
+
+struct ni2c_bus_driver
+{
+    struct npdrv               	pdrv;
+    struct np_dev_i2c		   	ctx;
+    uint32_t				   	bus_handling;
+    void *					   	data;
+    size_t					   	size;
+    struct ni2c_slave *			slave;
+	struct nepa *               client;
+	struct netimer				timeout;
+};
+
+
+
+struct nepa;
+struct ni2c_slave
+{
+	uint32_t				   	address;
+	uint32_t				   	flags;
+	struct ni2c_bus_driver *   	bus;
+	bool						require_stop;
+};
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 
-void i2c_bus_init(
+struct ni2c_bus_driver * i2c_bus_init(
     uint32_t              		bus_id,
     uint32_t					config);
 
@@ -130,59 +169,41 @@ void i2c_bus_term(
 
 
 
-nerror i2c_bus_master_write(
-	uint32_t					bus_id,
-	const void	* 				data,
-	uint32_t					size,
-	i2c_action_handler *		action);
+void i2c_open_slave(
+	struct ni2c_slave *			slave,
+	struct ni2c_bus_driver *	bus,
+	uint32_t					flags,
+	uint32_t					address);
 
 
 
-nerror i2c_bus_master_read(
-	uint32_t					bus_id,
-	void	* 					data,
-	uint32_t					size,
-	i2c_action_handler *		action);
+void i2c_write_slave(
+	struct ni2c_slave *			slave,
+	void *						data,
+	size_t						size);
 
 
 
-nerror i2c_bus_slave_write(
-	uint32_t					bus_id,
-	const void	* 				data,
-	uint32_t					size,
-	i2c_action_handler *		action);
+void i2c_read_slave(
+	struct ni2c_slave *			slave,
+	void *						data,
+	size_t						size);
 
 
 
-nerror i2c_bus_slave_read(
-	uint32_t					bus_id,
-	void	* 					data,
-	uint32_t					size,
-	i2c_action_handler *		action);
+void i2c_general_call(
+	struct ni2c_bus_driver *	bus,
+	uint8_t						command);
 
 
 
-void i2c_bus_start(
-	uint32_t 					bus_id,
-	i2c_action_handler *		action);
+void ni2c_event_isr(
+	struct ni2c_bus_driver *	bus);
 
 
 
-void i2c_bus_stop(
-	uint32_t 					bus_id,
-	i2c_action_handler *		action);
-
-
-
-void i2c_bus_ack(
-	uint32_t 					bus_id);
-
-
-
-void i2c_bus_nack(
-	uint32_t 					bus_id);
-
-
+void ni2c_error_isr(
+	struct ni2c_bus_driver *	bus);
 
 /*--------------------------------------------------------  C++ extern end  --*/
 #ifdef __cplusplus

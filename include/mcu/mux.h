@@ -30,6 +30,9 @@
 #define PLATFORM_NEON_DRIVERS_INCLUDE_MCU_MUX_H_
 
 /*=========================================================  INCLUDE FILES  ==*/
+
+#include "neon-drivers/port/stm32fxxx/family/p_mux.h"
+
 /*===============================================================  MACRO's  ==*/
 /*------------------------------------------------------  C++ extern begin  --*/
 #ifdef __cplusplus

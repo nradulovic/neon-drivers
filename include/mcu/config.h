@@ -59,6 +59,10 @@
 # define CONFIG_DRIVERS_PM_ENABLE		0
 #endif
 
+#if !defined(CONFIG_I2C_EVENT_BASE_ID)
+# define CONFIG_I2C_EVENT_BASE_ID		1000	/* todo naci mesto gde treba da stoji vrednost id za sistem i drajvere */
+#endif
+
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
 extern "C" {
