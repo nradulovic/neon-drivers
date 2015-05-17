@@ -151,7 +151,7 @@ struct npdrv
  * @return      Instance number value
  * @api
  */
-#define npdev_instance(pdev) 			((pdev)->recognition.dev_intance)
+#define npdev_instance(pdev) 			((pdev)->recognition.dev_instance)
 
 /**@brief       Get the peripheral class number
  * @param       pdev
@@ -245,7 +245,7 @@ struct npdrv
  * @return      Instance number value
  * @api
  */
-#define npdrv_instance(pdrv)			npdev_instance(npdrv_to_pdev(pdrv))
+#define npdrv_get_id(pdrv)			npdev_instance(npdrv_to_pdev(pdrv))
 
 /**@brief       Get the peripheral driver class number
  * @param       pdrv
