@@ -88,6 +88,16 @@
 #define NI2C_TRANSFER_NORMAL    (0x1u << 0)
 #define NI2C_TRANSFER_COMBINED  (0x2u << 0)
 
+#define NI2C_BUS_ADDRESSING_MODE												\
+	(NI2C_BUS_ADDRESS_7BIT | NI2C_BUS_ADDRESS_10BIT)
+
+#define NI2C_BUS_SPEED															\
+	(NI2C_BUS_SPEED_100 | NI2C_BUS_SPEED_400 | NI2C_BUS_SPEED_1700 | 			\
+	NI2C_BUS_SPEED_3400)
+
+#define NI2C_BUS_HANDLING														\
+	(NI2C_BUS_HANDLING_IT | NI2C_BUS_HANDLING_DMA)
+
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
 extern "C" {
@@ -95,42 +105,19 @@ extern "C" {
 
 /*============================================================  DATA TYPES  ==*/
 
-enum ni2c_evt_id
+enum ni2c_bus_error
 {
-	EVT_NI2C_WRITE_COMPLETED =  CONFIG_I2C_EVENT_BASE_ID,
-	EVT_NI2C_READ_COMPLETED,
-	EVT_NI2C_BUSY,
-	EVT_NI2C_ERROR,
-	EVT_NI2C_TIMEOUT
-};
-
-
-
-enum ni2c_error_type
-{
-	NI2C_BUS_ERROR,
-	NI2C_ACKNOWLEDGE_FAILURE,
-	NI2C_ARBITRATION_LOST,
+	NI2C_BUS_COLISION_ERROR,
+	NI2C_BUS_ACKNOWLEDGE_FAILURE,
+	NI2C_BUS_ARBITRATION_LOST,
 	NI2C_BUS_OVERFLOW
 };
 
 
 
-enum basic_genral_call_commands
-{
-	NI2C_GENERAL_RESET = 		0x06,
-	NI2C_LATCH_ITS_ADDRESS =	0x04
-};
-
-
-
-struct ni2c_error_event
-{
-	nevent   					event;
-	enum ni2c_error_type		type;
-};
-
 struct np_dev_i2c			    ctx;
+
+
 
 struct ni2c_bus_driver
 {
@@ -140,60 +127,55 @@ struct ni2c_bus_driver
     void *					   	data;
     size_t					   	size;
     struct ni2c_slave *			slave;
-	struct nepa *               client;
-	struct netimer				timeout;
 };
 
+struct ni2c_slave;
 
-
-struct nepa;
 struct ni2c_slave
 {
 	uint32_t				   	address;
 	uint32_t				   	flags;
 	struct ni2c_bus_driver *   	bus;
 	bool						require_stop;
+	void                        (* transfer)(struct ni2c_slave * slave);
+	void                        (* error)(struct ni2c_slave * slave, enum ni2c_bus_error error);
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 
-struct ni2c_bus_driver * i2c_bus_init(
+struct ni2c_bus_driver * ni2c_bus_init(
     uint32_t              		bus_id,
     uint32_t					config);
 
 
 
-void i2c_bus_term(
+void ni2c_bus_term(
 	uint32_t              		bus_id);
 
 
 
-void i2c_open_slave(
+void ni2c_open_slave(
 	struct ni2c_slave *			slave,
 	struct ni2c_bus_driver *	bus,
 	uint32_t					flags,
-	uint32_t					address);
+	uint32_t					address,
+	void						(* transfer)(struct ni2c_slave * slave),
+	void						(* error)(struct ni2c_slave * slave, enum ni2c_bus_error id));
 
 
 
-void i2c_write_slave(
+void ni2c_write_slave(
 	struct ni2c_slave *			slave,
 	void *						data,
 	size_t						size);
 
 
 
-void i2c_read_slave(
+void ni2c_read_slave(
 	struct ni2c_slave *			slave,
 	void *						data,
 	size_t						size);
-
-
-
-void i2c_general_call(
-	struct ni2c_bus_driver *	bus,
-	uint8_t						command);
 
 
 

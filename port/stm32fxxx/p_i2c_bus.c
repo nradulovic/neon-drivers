@@ -40,15 +40,6 @@
 #include "neon-drivers/port/stm32fxxx/family/p_i2c_bus.h"
 
 /*=========================================================  LOCAL MACRO's  ==*/
-#define NI2C_BUS_ADDRESSING_MODE												\
-	(NI2C_BUS_ADDRESS_7BIT | NI2C_BUS_ADDRESS_10BIT)
-
-#define NI2C_BUS_SPEED															\
-	(NI2C_BUS_SPEED_100 | NI2C_BUS_SPEED_400 | NI2C_BUS_SPEED_1700 | 			\
-	NI2C_BUS_SPEED_3400)
-
-#define NI2C_BUS_HANDLING														\
-	(NI2C_BUS_HANDLING_IT | NI2C_BUS_HANDLING_DMA)
 
 #define get_flag(handle, flag)													\
 		__HAL_I2C_GET_FLAG(handle, flag)
@@ -127,37 +118,6 @@ static const NCOMPONENT_DEFINE("STM32Fxxx GPIO driver", "Nenad Radulovic");
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
-
-static inline void notify_error(struct ni2c_bus_driver * bus, enum ni2c_error_type error)
-{
-//	nevent * event;
-//
-//	event = nevent_create_i(sizeof(struct ni2c_error_event), EVT_NI2C_WRITE_COMPLETED);
-//	((struct ni2c_error_event *)event)->type = error;
-//	nepa_send_event_i(bus->client, event);
-}
-
-
-
-static inline void notify_write_complete(struct ni2c_bus_driver * bus)
-{
-//	nevent * event;
-//
-//	event = nevent_create_i(sizeof(event), EVT_NI2C_WRITE_COMPLETED);
-//	nepa_send_event_i(bus->client, event);
-}
-
-
-
-static inline void notify_read_complete(struct ni2c_bus_driver * bus)
-{
-//	nevent * event;
-//
-//	event = nevent_create_i(sizeof(event), EVT_NI2C_READ_COMPLETED);
-//	nepa_send_event_i(bus->client, event);
-}
-
-
 
 static inline struct ni2c_bus_driver * pdrv_to_ni2c_driver(
  	struct npdrv * 				pdrv)
@@ -241,7 +201,7 @@ static inline void master_transmit(struct ni2c_bus_driver * bus)
         	terminate_trnsmission(bus);
         	handle->State = HAL_I2C_STATE_BUSY;
 
-        	notify_write_complete(bus);
+        	bus->slave->transfer(bus->slave);
     	}
     }
 }
@@ -282,14 +242,14 @@ static inline void master_receive(struct ni2c_bus_driver * bus)
 			disable_it(handle, I2C_IT_EVT | I2C_IT_BUF | I2C_IT_ERR);
 			handle->State = HAL_I2C_STATE_BUSY;
 
-		   notify_read_complete(bus);
+			bus->slave->transfer(bus->slave);
 		}
 	}
 }
 
 /*===========================================  GLOBAL FUNCTION DEFINITIONS  ==*/
 
-struct ni2c_bus_driver * i2c_bus_init(
+struct ni2c_bus_driver * ni2c_bus_init(
     uint32_t              		bus_id,
     uint32_t					config)
 {
@@ -351,7 +311,7 @@ struct ni2c_bus_driver * i2c_bus_init(
 
 
 
-void i2c_bus_term(
+void ni2c_bus_term(
 	uint32_t              		bus_id)
 {
 	struct ni2c_bus_driver *	ndrv;
@@ -370,24 +330,30 @@ void i2c_bus_term(
 
 
 
-void i2c_open_slave(
+void ni2c_open_slave(
 	struct ni2c_slave *			slave,
 	struct ni2c_bus_driver *	bus,
 	uint32_t					flags,
-	uint32_t					address)
+	uint32_t					address,
+	void						(* transfer)(struct ni2c_slave * slave),
+	void						(* error)(struct ni2c_slave * slave, enum ni2c_bus_error id))
 {
 	NREQUIRE(NAPI_USAGE "Invalid slave.", slave != NULL);
 	NREQUIRE(NAPI_USAGE "Invalid bus.", bus != NULL);
+	NREQUIRE(NAPI_USAGE "Invalid writer.", transfer != NULL);
+	NREQUIRE(NAPI_USAGE "Invalid error.", error != NULL);
 
 	slave->bus = bus;
 	slave->flags = flags;
 	slave->address = address;
 	slave->require_stop = false;
+	slave->transfer = transfer;
+	slave->error = error;
 }
 
 
 
-void i2c_write_slave(
+void ni2c_write_slave(
 	struct ni2c_slave *			slave,
 	void *						data,
 	size_t						size)
@@ -399,15 +365,7 @@ void i2c_write_slave(
 	NREQUIRE(NAPI_USAGE "Invalid size.", size != 0u);
 
 	handle = &slave->bus->ctx.handle;
-	slave->bus->client = nepa_get_current();
 
-    if ((get_flag(handle, I2C_FLAG_BUSY) == SET) || handle->State == HAL_I2C_STATE_BUSY) {
-    	if (slave->require_stop != true) {
-    		/* todo poslji event EVT_NI2C_BUSY */
-
-    		return;
-    	}
-    }
     handle->State = HAL_I2C_STATE_BUSY;
     handle->pBuffPtr = (uint8_t *)data;
     handle->XferSize = size;
@@ -416,7 +374,6 @@ void i2c_write_slave(
     slave->bus->size = size;
     slave->bus->slave = slave;
     slave->address = I2C_7BIT_ADD_WRITE(slave->address);
-//    netimer_after(&slave->bus->timeout, 1, EVT_NI2C_TIMEOUT);
 
 	if (slave->bus->bus_handling == NI2C_BUS_HANDLING_IT) {
 		enable_it(handle, I2C_IT_EVT | I2C_IT_BUF | I2C_IT_ERR);
@@ -426,7 +383,7 @@ void i2c_write_slave(
 
 
 
-void i2c_read_slave(
+void ni2c_read_slave(
 	struct ni2c_slave *			slave,
 	void *						data,
 	size_t						size)
@@ -438,15 +395,7 @@ void i2c_read_slave(
 	NREQUIRE(NAPI_USAGE "Invalid size.", size != 0u);
 
 	handle = &slave->bus->ctx.handle;
-	slave->bus->client = nepa_get_current();
 
-    if ((get_flag(handle, I2C_FLAG_BUSY) == SET) || handle->State == HAL_I2C_STATE_BUSY) {
-    	if (slave->require_stop != true) {
-    		/* todo poslji event EVT_NI2C_BUSY */
-
-    		return;
-    	}
-    }
     handle->State = HAL_I2C_STATE_BUSY;
     handle->pBuffPtr = (uint8_t *)data;
     handle->XferSize = size;
@@ -455,47 +404,6 @@ void i2c_read_slave(
     slave->bus->size = size;
     slave->bus->slave = slave;
     slave->address = I2C_7BIT_ADD_READ(slave->address);
-    slave->bus->client = nepa_get_current();
-//    netimer_after(&slave->bus->timeout, 1, EVT_NI2C_TIMEOUT);
-
-	if (slave->bus->bus_handling == NI2C_BUS_HANDLING_IT) {
-		enable_it(handle, I2C_IT_EVT | I2C_IT_BUF | I2C_IT_ERR);
-		generate_start(handle);
-	}
-}
-
-
-void i2c_general_call(
-	struct ni2c_bus_driver *	bus,
-	uint8_t						command)
-{
-	NREQUIRE(NAPI_USAGE "Invalid command.", command != 0u);
-
-	static struct ni2c_slave 	slave_struct;
-	I2C_HandleTypeDef  *  		handle;
-	struct ni2c_slave *			slave;
-
-	slave = &slave_struct;
-	handle = &slave->bus->ctx.handle;
-	slave->bus->client = nepa_get_current();
-
-	i2c_open_slave(slave, bus, NI2C_TRANSFER_NORMAL, 0);
-
-    if ((get_flag(handle, I2C_FLAG_BUSY) == SET) || handle->State == HAL_I2C_STATE_BUSY) {
-    	if (slave->require_stop != true) {
-    		/* todo poslji event EVT_NI2C_BUSY */
-
-    		return;
-    	}
-    }
-    handle->State = HAL_I2C_STATE_BUSY;
-    handle->pBuffPtr = (uint8_t *)&command;
-    handle->XferSize = 1;
-    handle->XferCount = 1;
-    slave->bus->data = &command;
-    slave->bus->size = 1;
-    slave->bus->slave = slave;
-//    netimer_after(&slave->bus->timeout, 1, EVT_NI2C_TIMEOUT);
 
 	if (slave->bus->bus_handling == NI2C_BUS_HANDLING_IT) {
 		enable_it(handle, I2C_IT_EVT | I2C_IT_BUF | I2C_IT_ERR);
@@ -541,6 +449,8 @@ ngpio_clear(NGPIO_ID(NGPIOG, 14));
 ngpio_clear(NGPIO_ID(NGPIOG, 14));
 }
 
+
+
 #include "i2c_test.h"
 
 void ni2c_error_isr(
@@ -552,7 +462,6 @@ g_i2c1_error = true;
 
 	handle = &bus->ctx.handle;
 	handle->State = HAL_I2C_STATE_READY;
-//	netimer_cancel(&slave->bus->timeout);
 
 	if (bus->slave->flags == NI2C_TRANSFER_COMBINED) {
 		bus->slave->require_stop = false;
@@ -561,27 +470,27 @@ g_i2c1_error = true;
 	if (is_buss_error(handle) == SET) {
 		clear_flag(handle, I2C_FLAG_BERR);
 		generate_stop(handle);
-		notify_error(bus, NI2C_BUS_ERROR);
+		bus->slave->error(bus->slave, NI2C_BUS_COLISION_ERROR);
 
 		return;
 	}
 	if (is_arbitration_lost(handle) == SET) {
 		clear_flag(handle, I2C_FLAG_ARLO);
-		notify_error(bus, NI2C_ARBITRATION_LOST);
+		bus->slave->error(bus->slave, NI2C_BUS_ARBITRATION_LOST);
 
 		return;
 	}
 	if (is_acknowledge_failure(handle) == SET) {
 		clear_flag(handle, I2C_FLAG_AF);
 		generate_stop(handle);
-		notify_error(bus, NI2C_ACKNOWLEDGE_FAILURE);
+		bus->slave->error(bus->slave, NI2C_BUS_ACKNOWLEDGE_FAILURE);
 
 		return;
 	}
 	if (is_over_under_run(handle) == SET) {
 		clear_flag(handle, I2C_FLAG_OVR);
 		generate_stop(handle);
-		notify_error(bus, NI2C_BUS_OVERFLOW);
+		bus->slave->error(bus->slave, NI2C_BUS_OVERFLOW);
 
 		return;
 

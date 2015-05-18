@@ -51,6 +51,10 @@
 # define CONFIG_I2C                     0xffffu
 #endif
 
+#if !defined(CONFIG_I2C_QUEUE_SIZE)
+# define CONFIG_I2C_QUEUE_SIZE			10
+#endif
+
 #if !defined(CONFIG_SPI)
 # define CONFIG_SPI                     0xffffu
 #endif
