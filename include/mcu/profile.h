@@ -256,10 +256,6 @@ extern const struct npdev      g_i2c4;
 extern const struct npdev      g_i2c15;
 #endif
 
-#if (NPROFILE_EN_I2C & NPROFILE_EN(16))
-extern const struct npdev      g_i2c16;
-#endif
-
 /* NOTE:
  * Group peripheral data is defined in `profile.c` source file.
  */

@@ -85,9 +85,6 @@
 #define NI2C_BUS_HANDLING_IT	(0x0u << 6)
 #define NI2C_BUS_HANDLING_DMA	(0x1u << 6)
 
-#define NI2C_TRANSFER_NORMAL    (0x1u << 0)
-#define NI2C_TRANSFER_COMBINED  (0x2u << 0)
-
 #define NI2C_BUS_ADDRESSING_MODE												\
 	(NI2C_BUS_ADDRESS_7BIT | NI2C_BUS_ADDRESS_10BIT)
 
@@ -115,6 +112,16 @@ enum ni2c_bus_error
 
 
 
+enum combined_transfer_type
+{
+	NI2C_WRITE_THEN_WRITE,
+	NI2C_READ_THEN_READ,
+	NI2C_WRITE_THEN_READ,
+	NI2C_READ_THEN_WRITE
+};
+
+
+
 struct np_dev_i2c			    ctx;
 
 
@@ -126,25 +133,94 @@ struct ni2c_bus_driver
     uint32_t				   	bus_handling;
     void *					   	data;
     size_t					   	size;
+    void *					   	combined_data;
+    size_t					   	combined_size;
+    uint32_t					combined_phase;
+    uint32_t					format;
     struct ni2c_slave *			slave;
 };
 
+
+
 struct ni2c_slave;
+
+
 
 struct ni2c_slave
 {
 	uint32_t				   	address;
 	uint32_t				   	flags;
 	struct ni2c_bus_driver *   	bus;
-	bool						require_stop;
+	enum combined_transfer_type	transfer_type;
 	void                        (* transfer)(struct ni2c_slave * slave);
 	void                        (* error)(struct ni2c_slave * slave, enum ni2c_bus_error error);
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(1))
+extern struct ni2c_bus_driver  g_i2c1_driver;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(2))
+extern struct ni2c_bus_driver  g_i2c2_driver;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(3))
+extern struct ni2c_bus_driver  g_i2c3_driver;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(4))
+extern struct ni2c_bus_driver  g_i2c4_driver;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(5))
+extern struct ni2c_bus_driver  g_i2c5_driver;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(6))
+extern struct ni2c_bus_driver  g_i2c6_driver;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(7))
+extern struct ni2c_bus_driver  g_i2c7_driver;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(8))
+extern struct ni2c_bus_driver  g_i2c8_driver;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(9))
+extern struct ni2c_bus_driver  g_i2c9_driver;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(10))
+extern struct ni2c_bus_driver  g_i2c10_driver;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(11))
+extern struct ni2c_bus_driver  g_i2c11_driver;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(12))
+extern struct ni2c_bus_driver  g_i2c12_driver;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(13))
+extern struct ni2c_bus_driver  g_i2c13_driver;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(14))
+extern struct ni2c_bus_driver  g_i2c14_driver;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(15))
+extern struct ni2c_bus_driver  g_i2c15_driver;
+#endif
+
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 
-struct ni2c_bus_driver * ni2c_bus_init(
+void ni2c_bus_init(
     uint32_t              		bus_id,
     uint32_t					config);
 
@@ -176,6 +252,16 @@ void ni2c_read_slave(
 	struct ni2c_slave *			slave,
 	void *						data,
 	size_t						size);
+
+
+
+void ni2c_combined_transfer(
+	struct ni2c_slave *			slave,
+	enum combined_transfer_type type,
+	void *						first_data,
+	size_t						first_size,
+	void *						second_data,
+	size_t						second_size);
 
 
 

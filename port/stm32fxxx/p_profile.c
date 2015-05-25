@@ -584,7 +584,7 @@ const struct npdev              g_gpiok =
 
 /*-- I2C1 ------------------------------------------------------------------*/
 #if (NPROFILE_EN_I2C & NPROFILE_EN(1))
-static struct ni2c_bus_driver   g_i2c1_driver;
+struct ni2c_bus_driver   g_i2c1_driver;
 
 static const struct npdev_isr   g_i2c1_isr[2] =
 {
@@ -627,7 +627,7 @@ const struct npdev              g_i2c1 =
 
 /*-- I2C2 ------------------------------------------------------------------*/
 #if (NPROFILE_EN_I2C & NPROFILE_EN(2))
-static struct ni2c_bus_driver   g_i2c2_driver;
+ struct ni2c_bus_driver   g_i2c2_driver;
 
 static const struct npdev_isr   g_i2c2_isr[2] =
 {
@@ -670,7 +670,7 @@ const struct npdev              g_i2c2 =
 
 /*-- I2C3 ------------------------------------------------------------------*/
 #if (NPROFILE_EN_I2C & NPROFILE_EN(3))
-static struct ni2c_bus_driver   g_i2c3_driver;
+struct ni2c_bus_driver   g_i2c3_driver;
 
 static const struct npdev_isr   g_i2c3_isr[2] =
 {

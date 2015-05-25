@@ -32,7 +32,7 @@
 #include "mcu/profile.h"
 #include "mcu/peripheral.h"
 #include "mcu/profile.h"
-#include "neon-eds/include/eds_ep.h"
+#include "neon_eds.h"
 
 /*===============================================================  MACRO's  ==*/
 

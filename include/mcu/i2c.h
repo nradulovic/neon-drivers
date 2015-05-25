@@ -54,9 +54,6 @@
 #define NI2C_CONFIG_HANDLING_IT			(0x0u << 6)
 #define NI2C_CONFIG_HANDLING_DMA		(0x1u << 6)
 
-#define NI2C_CONFIG_TRANSFER_NORMAL    	(0x1u << 0)
-#define NI2C_CONFIG_TRANSFER_COMBINED  	(0x2u << 0)
-
 /*------------------------------------------------------  C++ extern begin  --*/
 #ifdef __cplusplus
 extern "C" {
@@ -64,7 +61,7 @@ extern "C" {
 
 /*============================================================  DATA TYPES  ==*/
 
-enum basic_genral_call_commands
+enum ni2c_basic_genral_call_commands
 {
 	NI2C_GENERAL_RESET = 		0x06,
 	NI2C_LATCH_ITS_ADDRESS =	0x04
@@ -72,11 +69,21 @@ enum basic_genral_call_commands
 
 
 
+enum ni2c_transfer_type
+{
+	NI2C_WRITE_THEN_WRITE_TYPE,
+	NI2C_READ_THEN_READ_TYPE,
+	NI2C_WRITE_THEN_READ_TYPE,
+	NI2C_READ_THEN_WRITE_TYPE
+};
+
+
 enum ni2c_evt_id
 {
 	EVT_NI2C_CONFIG =  			CONFIG_I2C_EVENT_BASE_ID,
 	EVT_NI2C_WRITE_SLAVE,
 	EVT_NI2C_READ_SLAVE,
+	EVT_NI2C_COMBINED_TRANSFER,
 	EVT_NI2C_OPEN_SLAVE,
 	EVT_NI2C_GENERAL_CALL,
 	EVT_NI2C_TRANSFER_COMPLETED,
@@ -114,6 +121,19 @@ struct ni2c_transfer_event
 
 
 
+struct ni2c_combined_transfer_event
+{
+	nevent   					event;
+	struct ni2c_slave *			slave;
+	enum ni2c_transfer_type 	type;
+	void *						first_data;
+	size_t						first_size;
+	void *						second_data;
+	size_t						second_size;
+};
+
+
+
 struct ni2c_general_call_event
 {
 	nevent   					event;
@@ -144,23 +164,87 @@ struct ni2c_error_event
 {
 	nevent   					event;
 	uint32_t					retries;
-	enum ni2c_error_id			id;
+	enum ni2c_error_id			error_id;
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/
-extern struct ni2c_bus_driver * g_i2c1_bus;
 
+#if (NPROFILE_EN_I2C & NPROFILE_EN(1))
 extern struct nepa 				g_ni2c1_epa;
 extern const struct nepa_define g_ni2c1_define;
+#endif
 
+#if (NPROFILE_EN_I2C & NPROFILE_EN(2))
 extern const struct nepa_define g_ni2c2_define;
 extern struct nepa 				g_ni2c2_epa;
+#endif
 
+#if (NPROFILE_EN_I2C & NPROFILE_EN(3))
 extern const struct nepa_define g_ni2c3_define;
 extern struct nepa 				g_ni2c3_epa;
+#endif
 
+#if (NPROFILE_EN_I2C & NPROFILE_EN(4))
 extern const struct nepa_define g_ni2c4_define;
 extern struct nepa 				g_ni2c4_epa;
+
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(5))
+extern const struct nepa_define g_ni2c5_define;
+extern struct nepa 				g_ni2c5_epa;
+
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(6))
+extern const struct nepa_define g_ni2c6_define;
+extern struct nepa 				g_ni2c6_epa;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(7))
+extern const struct nepa_define g_ni2c7_define;
+extern struct nepa 				g_ni2c7_epa;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(8))
+extern const struct nepa_define g_ni2c8_define;
+extern struct nepa 				g_ni2c8_epa;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(9))
+extern const struct nepa_define g_ni2c9_define;
+extern struct nepa 				g_ni2c9_epa;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(10))
+extern const struct nepa_define g_ni2c10_define;
+extern struct nepa 				g_ni2c10_epa;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(11))
+extern const struct nepa_define g_ni2c11_define;
+extern struct nepa 				g_ni2c11_epa;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(12))
+extern const struct nepa_define g_ni2c12_define;
+extern struct nepa 				g_ni2c12_epa;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(13))
+extern const struct nepa_define g_ni2c13_define;
+extern struct nepa 				g_ni2c13_epa;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(14))
+extern const struct nepa_define g_ni2c14_define;
+extern struct nepa 				g_ni2c14_epa;
+#endif
+
+#if (NPROFILE_EN_I2C & NPROFILE_EN(15))
+extern const struct nepa_define g_ni2c15_define;
+extern struct nepa 				g_ni2c15_epa;
+#endif
 
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 /*--------------------------------------------------------  C++ extern end  --*/
