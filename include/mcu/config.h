@@ -67,6 +67,10 @@
 # define CONFIG_I2C_EVENT_BASE_ID		1000	/* todo naci mesto gde treba da stoji vrednost id za sistem i drajvere */
 #endif
 
+#if !defined(CONFIG_I2C_EPA_PRIORITY)
+#define CONFIG_I2C_EPA_PRIORITY			NTHREAD_PRIORITY_MAX
+#endif
+
 #if !defined(CONFIG_FRAM_EVENT_BASE_ID)
 # define CONFIG_FRAM_EVENT_BASE_ID		2000	/* todo naci mesto gde treba da stoji vrednost id za sistem i drajvere */
 #endif
