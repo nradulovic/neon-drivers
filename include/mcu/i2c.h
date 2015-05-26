@@ -54,6 +54,12 @@
 #define NI2C_CONFIG_HANDLING_IT			(0x0u << 6)
 #define NI2C_CONFIG_HANDLING_DMA		(0x1u << 6)
 
+#define NI2C_CONFIG_REG_SIZE_0			(0u << 0)
+#define NI2C_CONFIG_REG_SIZE_1			(1u << 0)
+#define NI2C_CONFIG_REG_SIZE_2			(2u << 0)
+#define NI2C_CONFIG_REG_SIZE_3			(3u << 0)
+#define NI2C_CONFIG_REG_SIZE_4			(4u << 0)
+
 /*------------------------------------------------------  C++ extern begin  --*/
 #ifdef __cplusplus
 extern "C" {
@@ -67,15 +73,6 @@ enum ni2c_basic_genral_call_commands
 	NI2C_LATCH_ITS_ADDRESS =	0x04
 };
 
-
-
-enum ni2c_transfer_type
-{
-	NI2C_WRITE_THEN_WRITE_TYPE,
-	NI2C_READ_THEN_READ_TYPE,
-	NI2C_WRITE_THEN_READ_TYPE,
-	NI2C_READ_THEN_WRITE_TYPE
-};
 
 
 enum ni2c_evt_id
@@ -115,21 +112,9 @@ struct ni2c_transfer_event
 {
 	nevent   					event;
 	struct ni2c_slave *			slave;
+	uint32_t					reg;
 	void *						data;
 	size_t						size;
-};
-
-
-
-struct ni2c_combined_transfer_event
-{
-	nevent   					event;
-	struct ni2c_slave *			slave;
-	enum ni2c_transfer_type 	type;
-	void *						first_data;
-	size_t						first_size;
-	void *						second_data;
-	size_t						second_size;
 };
 
 

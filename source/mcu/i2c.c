@@ -51,7 +51,6 @@ enum i2c_action
 {
 	I2C_WRITE,
 	I2C_READ,
-	I2C_COMBINED
 };
 
 
@@ -65,11 +64,9 @@ struct i2c_workspace
 	enum i2c_action				action;
 	void *						data;
 	size_t						size;
-	void *						combined_data;
-	size_t						combined_size;
-	enum ni2c_transfer_type		transfer_type;
 	uint32_t					speed;
 	uint32_t					retries;
+	uint32_t					reg;
 };
 
 /*=============================================  LOCAL FUNCTION PROTOTYPES  ==*/
@@ -240,7 +237,7 @@ const struct nepa_define g_ni2c1_define =
     .sm.type                    = NSM_TYPE_FSM,
     .working_queue.storage      = g_ni2c1_queue_storage,
     .working_queue.size         = sizeof(g_ni2c1_queue_storage),
-    .thread.priority            = 1,
+    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
     .thread.name                = "ni2c1"
 };
 #endif
@@ -254,7 +251,7 @@ const struct nepa_define g_ni2c2_define =
     .sm.type                    = NSM_TYPE_FSM,
     .working_queue.storage      = g_ni2c2_queue_storage,
     .working_queue.size         = sizeof(g_ni2c2_queue_storage),
-    .thread.priority            = 1,
+    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
     .thread.name                = "ni2c2"
 };
 #endif
@@ -268,7 +265,7 @@ const struct nepa_define g_ni2c3_define =
     .sm.type                    = NSM_TYPE_FSM,
     .working_queue.storage      = g_ni2c3_queue_storage,
     .working_queue.size         = sizeof(g_ni2c3_queue_storage),
-    .thread.priority            = 1,
+    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
     .thread.name                = "ni2c3"
 };
 #endif
@@ -282,7 +279,7 @@ const struct nepa_define g_ni2c4_define =
     .sm.type                    = NSM_TYPE_FSM,
     .working_queue.storage      = g_ni2c4_queue_storage,
     .working_queue.size         = sizeof(g_ni2c4_queue_storage),
-    .thread.priority            = 1,
+    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
     .thread.name                = "ni2c4"
 };
 #endif
@@ -296,7 +293,7 @@ const struct nepa_define g_ni2c5_define =
     .sm.type                    = NSM_TYPE_FSM,
     .working_queue.storage      = g_ni2c5_queue_storage,
     .working_queue.size         = sizeof(g_ni2c5_queue_storage),
-    .thread.priority            = 1,
+    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
     .thread.name                = "ni2c5"
 };
 #endif
@@ -310,7 +307,7 @@ const struct nepa_define g_ni2c6_define =
     .sm.type                    = NSM_TYPE_FSM,
     .working_queue.storage      = g_ni2c6_queue_storage,
     .working_queue.size         = sizeof(g_ni2c6_queue_storage),
-    .thread.priority            = 1,
+    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
     .thread.name                = "ni2c6"
 };
 #endif
@@ -324,7 +321,7 @@ const struct nepa_define g_ni2c7_define =
     .sm.type                    = NSM_TYPE_FSM,
     .working_queue.storage      = g_ni2c7_queue_storage,
     .working_queue.size         = sizeof(g_ni2c7_queue_storage),
-    .thread.priority            = 1,
+    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
     .thread.name                = "ni2c7"
 };
 #endif
@@ -338,7 +335,7 @@ const struct nepa_define g_ni2c8_define =
     .sm.type                    = NSM_TYPE_FSM,
     .working_queue.storage      = g_ni2c8_queue_storage,
     .working_queue.size         = sizeof(g_ni2c8_queue_storage),
-    .thread.priority            = 1,
+    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
     .thread.name                = "ni2c8"
 };
 #endif
@@ -352,7 +349,7 @@ const struct nepa_define g_ni2c9_define =
     .sm.type                    = NSM_TYPE_FSM,
     .working_queue.storage      = g_ni2c9_queue_storage,
     .working_queue.size         = sizeof(g_ni2c9_queue_storage),
-    .thread.priority            = 1,
+    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
     .thread.name                = "ni2c9"
 };
 #endif
@@ -366,7 +363,7 @@ const struct nepa_define g_ni2c10_define =
     .sm.type                    = NSM_TYPE_FSM,
     .working_queue.storage      = g_ni2c10_queue_storage,
     .working_queue.size         = sizeof(g_ni2c10_queue_storage),
-    .thread.priority            = 1,
+    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
     .thread.name                = "ni2c10"
 };
 #endif
@@ -380,7 +377,7 @@ const struct nepa_define g_ni2c11_define =
     .sm.type                    = NSM_TYPE_FSM,
     .working_queue.storage      = g_ni2c11_queue_storage,
     .working_queue.size         = sizeof(g_ni2c11_queue_storage),
-    .thread.priority            = 1,
+    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
     .thread.name                = "ni2c11"
 };
 #endif
@@ -394,7 +391,7 @@ const struct nepa_define g_ni2c12_define =
     .sm.type                    = NSM_TYPE_FSM,
     .working_queue.storage      = g_ni2c12_queue_storage,
     .working_queue.size         = sizeof(g_ni2c12_queue_storage),
-    .thread.priority            = 1,
+    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
     .thread.name                = "ni2c12"
 };
 #endif
@@ -408,7 +405,7 @@ const struct nepa_define g_ni2c13_define =
     .sm.type                    = NSM_TYPE_FSM,
     .working_queue.storage      = g_ni2c13_queue_storage,
     .working_queue.size         = sizeof(g_ni2c13_queue_storage),
-    .thread.priority            = 1,
+    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
     .thread.name                = "ni2c13"
 };
 #endif
@@ -422,7 +419,7 @@ const struct nepa_define g_ni2c14_define =
     .sm.type                    = NSM_TYPE_FSM,
     .working_queue.storage      = g_ni2c14_queue_storage,
     .working_queue.size         = sizeof(g_ni2c14_queue_storage),
-    .thread.priority            = 1,
+    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
     .thread.name                = "ni2c14"
 };
 #endif
@@ -436,13 +433,12 @@ const struct nepa_define g_ni2c15_define =
     .sm.type                    = NSM_TYPE_FSM,
     .working_queue.storage      = g_ni2c15_queue_storage,
     .working_queue.size         = sizeof(g_ni2c15_queue_storage),
-    .thread.priority            = 1,
+    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
     .thread.name                = "ni2c15"
 };
 #endif
 
 /*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
-
 
 static inline uint32_t compute_timeout(
 		uint32_t size,
@@ -607,6 +603,7 @@ static naction state_idle(
 			ws->slave = transfer->slave;
 			ws->data = transfer->data;
 			ws->size = transfer->size;
+			ws->reg  = transfer->reg;
 			ws->action = I2C_WRITE;
 			ws->client = event->producer;
 			ws->retries = 0;
@@ -625,30 +622,8 @@ static naction state_idle(
 			ws->slave = transfer->slave;
 			ws->data = transfer->data;
 			ws->size = transfer->size;
+			ws->reg  = transfer->reg;
 			ws->action = I2C_READ;
-			ws->client = event->producer;
-			ws->retries = 0;
-
-			return (naction_transit_to(sm, state_transfer));
-		}
-		case EVT_NI2C_COMBINED_TRANSFER: {
-			struct ni2c_combined_transfer_event * transfer;
-
-			transfer = (struct ni2c_combined_transfer_event *)event;
-
-			NREQUIRE(NAPI_USAGE "Invalid slave.", transfer->slave != NULL);
-			NREQUIRE(NAPI_USAGE "Invalid first_data.", transfer->first_data != NULL);
-			NREQUIRE(NAPI_USAGE "Invalid first_size.", transfer->first_size != 0);
-			NREQUIRE(NAPI_USAGE "Invalid second_data.", transfer->second_data != NULL);
-			NREQUIRE(NAPI_USAGE "Invalid second_size.", transfer->second_size != 0);
-
-			ws->slave = transfer->slave;
-			ws->data = transfer->first_data;
-			ws->size = transfer->first_size;
-			ws->combined_data = transfer->second_data;
-			ws->combined_size = transfer->second_size;
-			ws->transfer_type = transfer->type;
-			ws->action = I2C_COMBINED;
 			ws->client = event->producer;
 			ws->retries = 0;
 
@@ -693,16 +668,11 @@ static naction state_transfer(
 
 			switch (ws->action) {
 				case I2C_WRITE: {
-					ni2c_write_slave(ws->slave, ws->data, ws->size);
+					ni2c_write_slave(ws->slave, ws->reg, ws->data, ws->size);
 					break;
 				}
 				case I2C_READ: {
-					ni2c_read_slave(ws->slave, ws->data, ws->size);
-					break;
-				}
-				case I2C_COMBINED: {
-					ni2c_combined_transfer(ws->slave, ws->transfer_type, ws->data,
-						ws->size, ws->combined_data, ws->combined_size);
+					ni2c_read_slave(ws->slave, ws->reg, ws->data, ws->size);
 					break;
 				}
 				default: {
