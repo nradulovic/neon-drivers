@@ -50,6 +50,9 @@
 #define clear_address_flag(handle)												\
 	__HAL_I2C_CLEAR_ADDRFLAG(handle)
 
+#define is_busy(handle)															\
+	get_flag(handle, I2C_FLAG_BUSY)
+
 #define is_master_mode(handle) 													\
 	get_flag(handle, I2C_FLAG_MSL)
 
@@ -111,6 +114,14 @@
 	handle->Instance->CR1 |= I2C_CR1_SWRST
 
 /*======================================================  LOCAL DATA TYPES  ==*/
+
+enum normal_phase
+{
+	ADDRESS_TRANSFER,
+	DATA_TRANSFER
+};
+
+
 
 enum combined_phase
 {
@@ -193,22 +204,7 @@ static inline void handle_combined_transfer(struct ni2c_bus_driver * bus)
 		handle->pBuffPtr = (uint8_t *)bus->combined_data;
 		handle->XferSize = bus->combined_size;
 		handle->XferCount = bus->combined_size;
-
-		switch (bus->slave->transfer_type) {
-			case NI2C_READ_THEN_WRITE:
-			case NI2C_WRITE_THEN_WRITE: {
-				bus->slave->address = I2C_7BIT_ADD_WRITE(bus->slave->address);
-				break;
-			}
-			case NI2C_WRITE_THEN_READ:
-			case NI2C_READ_THEN_READ: {
-				bus->slave->address = I2C_7BIT_ADD_READ(bus->slave->address);
-				break;
-			}
-			default: {
-				break;
-			}
-		}
+		bus->slave->address = I2C_7BIT_ADD_READ(bus->slave->address);
 		generate_start(handle);
 		while(handle->Instance->CR1 & I2C_CR1_START) {
 			;
@@ -235,9 +231,17 @@ static inline void master_transmit(struct ni2c_bus_driver * bus)
 		handle->XferCount--;
 	} else {
 		if (bus->format == NORMAL_TRANSFER) {
-			disable_it(handle, I2C_IT_BUF);											/* Disable BUF interrupt */
-			if (is_btf(handle) == SET) {
-				disable_it(handle, I2C_IT_EVT | I2C_IT_ERR);						/* Disable EVT and ERR interrupt */
+			if (bus->normal_phase == ADDRESS_TRANSFER) {
+				bus->normal_phase = DATA_TRANSFER;
+				handle->pBuffPtr = (uint8_t *)bus->data;
+				handle->XferSize = bus->size;
+				handle->XferCount = bus->size;
+
+				handle->Instance->DR = (*handle->pBuffPtr++);
+				handle->XferCount--;
+			} else {
+				bus->normal_phase = ADDRESS_TRANSFER;
+				disable_it(handle, I2C_IT_EVT | I2C_IT_BUF | I2C_IT_ERR);
 				generate_stop(handle);
 
 				bus->slave->transfer(bus->slave);
@@ -401,6 +405,7 @@ void ni2c_open_slave(
 
 void ni2c_write_slave(
 	struct ni2c_slave *			slave,
+	uint32_t					reg,
 	void *						data,
 	size_t						size)
 {
@@ -410,15 +415,19 @@ void ni2c_write_slave(
 	NREQUIRE(NAPI_USAGE "Invalid data.", data != NULL);
 	NREQUIRE(NAPI_USAGE "Invalid size.", size != 0u);
 
+	slave->bus->reg = reg;
 	handle = &slave->bus->ctx.handle;
 
-    handle->pBuffPtr = (uint8_t *)data;
-    handle->XferSize = size;
-    handle->XferCount = size;
+	while(is_busy(handle));
+
+    handle->pBuffPtr = (uint8_t *)&slave->bus->reg;
+    handle->XferSize = slave->flags & NI2C_REG_SIZE;
+    handle->XferCount = handle->XferSize;
     slave->bus->data = data;
     slave->bus->size = size;
     slave->bus->slave = slave;
     slave->bus->format = NORMAL_TRANSFER;
+    slave->bus->normal_phase = ADDRESS_TRANSFER;
     slave->address = I2C_7BIT_ADD_WRITE(slave->address);
 
 	if (slave->bus->bus_handling == NI2C_BUS_HANDLING_IT) {
@@ -431,6 +440,7 @@ void ni2c_write_slave(
 
 void ni2c_read_slave(
 	struct ni2c_slave *			slave,
+	uint32_t					reg,
 	void *						data,
 	size_t						size)
 {
@@ -440,69 +450,23 @@ void ni2c_read_slave(
 	NREQUIRE(NAPI_USAGE "Invalid data.", data != NULL);
 	NREQUIRE(NAPI_USAGE "Invalid size.", size != 0u);
 
+	slave->bus->reg = reg;
 	handle = &slave->bus->ctx.handle;
 
-    handle->pBuffPtr = (uint8_t *)data;
-    handle->XferSize = size;
-    handle->XferCount = size;
-    slave->bus->data = data;
-    slave->bus->size = size;
-    slave->bus->slave = slave;
-    slave->bus->format = NORMAL_TRANSFER;
-    slave->address = I2C_7BIT_ADD_READ(slave->address);
+	while(is_busy(handle));
 
-	if (slave->bus->bus_handling == NI2C_BUS_HANDLING_IT) {
-		enable_it(handle, I2C_IT_EVT | I2C_IT_BUF | I2C_IT_ERR);
-		generate_start(handle);
-	}
-}
-
-
-
-void ni2c_combined_transfer(
-	struct ni2c_slave *			slave,
-	enum combined_transfer_type type,
-	void *						first_data,
-	size_t						first_size,
-	void *						second_data,
-	size_t						second_size)
-{
-	I2C_HandleTypeDef  *  		handle;
-
-	NREQUIRE(NAPI_USAGE "Invalid driver.", slave != NULL);
-	NREQUIRE(NAPI_USAGE "Invalid first_data.", first_data != NULL);
-	NREQUIRE(NAPI_USAGE "Invalid first_size.", first_size != 0u);
-	NREQUIRE(NAPI_USAGE "Invalid second_data.", second_data != NULL);
-	NREQUIRE(NAPI_USAGE "Invalid second_size.", second_size != 0u);
-
-	handle = &slave->bus->ctx.handle;
-    handle->pBuffPtr = (uint8_t *)first_data;
-    handle->XferSize = first_size;
-    handle->XferCount = first_size;
-    slave->bus->data = first_data;
-    slave->bus->size = first_size;
-    slave->bus->combined_data = second_data;
-    slave->bus->combined_size = second_size;
+    handle->pBuffPtr = (uint8_t *)&slave->bus->reg;
+    handle->XferSize = slave->flags & NI2C_REG_SIZE;
+    handle->XferCount = handle->XferSize;
+    slave->bus->data = handle->pBuffPtr;
+    slave->bus->size = handle->XferSize;
+    slave->bus->combined_data = data;
+    slave->bus->combined_size = size;
     slave->bus->combined_phase = FIRST_TRANSFER;
-    slave->transfer_type = type;
     slave->bus->slave = slave;
     slave->bus->format = COMBINED_TRANSFER;
+	slave->address = I2C_7BIT_ADD_WRITE(slave->address);
 
-    switch (type) {
-    	case NI2C_WRITE_THEN_WRITE:
-    	case NI2C_WRITE_THEN_READ: {
-			slave->address = I2C_7BIT_ADD_WRITE(slave->address);
-			break;
-		}
-    	case NI2C_READ_THEN_READ:
-		case NI2C_READ_THEN_WRITE: {
-			slave->address = I2C_7BIT_ADD_READ(slave->address);
-			break;
-		}
-		default: {
-			;
-		}
-	}
 	if (slave->bus->bus_handling == NI2C_BUS_HANDLING_IT) {
 		enable_it(handle, I2C_IT_EVT | I2C_IT_BUF | I2C_IT_ERR);
 		generate_start(handle);
@@ -579,7 +543,6 @@ void ni2c_error_isr(
 		bus->slave->error(bus->slave, NI2C_BUS_OVERFLOW);
 
 		return;
-
 	}
 }
 

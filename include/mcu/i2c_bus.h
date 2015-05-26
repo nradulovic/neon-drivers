@@ -85,6 +85,12 @@
 #define NI2C_BUS_HANDLING_IT	(0x0u << 6)
 #define NI2C_BUS_HANDLING_DMA	(0x1u << 6)
 
+#define NI2C_REG_SIZE_0			(0u << 0)
+#define NI2C_REG_SIZE_1			(1u << 0)
+#define NI2C_REG_SIZE_2			(2u << 0)
+#define NI2C_REG_SIZE_3			(3u << 0)
+#define NI2C_REG_SIZE_4			(4u << 0)
+
 #define NI2C_BUS_ADDRESSING_MODE												\
 	(NI2C_BUS_ADDRESS_7BIT | NI2C_BUS_ADDRESS_10BIT)
 
@@ -94,6 +100,23 @@
 
 #define NI2C_BUS_HANDLING														\
 	(NI2C_BUS_HANDLING_IT | NI2C_BUS_HANDLING_DMA)
+
+#define NI2C_REG_SIZE															\
+	(NI2C_REG_SIZE_0 | NI2C_REG_SIZE_1 | NI2C_REG_SIZE_2						\
+	| NI2C_REG_SIZE_3 | NI2C_REG_SIZE_4)
+
+
+#define ni2c_get_reg_size(slave, value)											\
+	((slave)->flags & NI2C_REG_SIZE)
+
+#define ni2c_set_reg_size(slave, value)											\
+	(slave)->flags = (value & NI2C_REG_SIZE)
+
+#define ni2c_get_slave_address(slave)											\
+	(slave)->address
+
+#define ni2c_set_slave_address(slave, slave_address)							\
+	(slave)->address = (slave_address)
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
@@ -112,16 +135,6 @@ enum ni2c_bus_error
 
 
 
-enum combined_transfer_type
-{
-	NI2C_WRITE_THEN_WRITE,
-	NI2C_READ_THEN_READ,
-	NI2C_WRITE_THEN_READ,
-	NI2C_READ_THEN_WRITE
-};
-
-
-
 struct np_dev_i2c			    ctx;
 
 
@@ -131,13 +144,16 @@ struct ni2c_bus_driver
     struct npdrv               	pdrv;
     struct np_dev_i2c		   	ctx;
     uint32_t				   	bus_handling;
+    uint32_t					reg;
     void *					   	data;
     size_t					   	size;
+    uint32_t					normal_phase;
     void *					   	combined_data;
     size_t					   	combined_size;
     uint32_t					combined_phase;
     uint32_t					format;
     struct ni2c_slave *			slave;
+
 };
 
 
@@ -151,7 +167,6 @@ struct ni2c_slave
 	uint32_t				   	address;
 	uint32_t				   	flags;
 	struct ni2c_bus_driver *   	bus;
-	enum combined_transfer_type	transfer_type;
 	void                        (* transfer)(struct ni2c_slave * slave);
 	void                        (* error)(struct ni2c_slave * slave, enum ni2c_bus_error error);
 };
@@ -243,6 +258,7 @@ void ni2c_open_slave(
 
 void ni2c_write_slave(
 	struct ni2c_slave *			slave,
+	uint32_t					reg,
 	void *						data,
 	size_t						size);
 
@@ -250,18 +266,9 @@ void ni2c_write_slave(
 
 void ni2c_read_slave(
 	struct ni2c_slave *			slave,
+	uint32_t					reg,
 	void *						data,
 	size_t						size);
-
-
-
-void ni2c_combined_transfer(
-	struct ni2c_slave *			slave,
-	enum combined_transfer_type type,
-	void *						first_data,
-	size_t						first_size,
-	void *						second_data,
-	size_t						second_size);
 
 
 
