@@ -46,29 +46,31 @@ enum address_space
 struct fram_workspace
 {
 	struct nepa	*				client;
-	uint8_t						memory_address[2];
 };
 
 /*=============================================  LOCAL FUNCTION PROTOTYPES  ==*/
 
-static size_t write_9bit_address(
+static uint32_t write_9bit_address(
 	struct fram_driver * 		fram,
-	uint32_t 					address,
-	uint8_t * 					buff);
+	uint32_t 					address);
 
 
 
-static size_t write_16bit_address(
+static uint32_t write_16bit_address(
 		struct fram_driver * 		fram,
-		uint32_t 					address,
-		uint8_t * 					buff);
+		uint32_t 					address);
 
 
 
-static size_t write_17bit_address(
+static uint32_t write_17bit_address(
 		struct fram_driver * 		fram,
-		uint32_t 					address,
-		uint8_t * 					buff);
+		uint32_t 					address);
+
+
+
+static uint32_t write_memory_addres(
+	struct fram_driver *		fram,
+	uint32_t 					address);
 
 
 
@@ -98,7 +100,7 @@ static const uint32_t g_address_spaces[] =
 
 
 
-static size_t (* g_write_memory_address[3])(struct fram_driver * fram, uint32_t address, uint8_t * buff) =
+static uint32_t (* g_write_memory_address[3])(struct fram_driver * fram, uint32_t address) =
 {
 	write_9bit_address,
 	write_16bit_address,
@@ -112,8 +114,8 @@ static struct fram_workspace  	g_fram_workspace;
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 
-struct nepa    g_fram_epa;
-const struct nepa_define g_fram_define =
+struct nepa    					g_fram_epa;
+const struct nepa_define		g_fram_define =
 {
     .sm.wspace                  = &g_fram_workspace,
     .sm.init_state              = &state_active,
@@ -134,66 +136,66 @@ static inline uint32_t get_address_space(
 
 
 
-static size_t write_9bit_address(
+static uint32_t write_9bit_address(
 		struct fram_driver * 		fram,
-		uint32_t 					address,
-		uint8_t * 					buff)
+		uint32_t 					address)
 {
-	*buff = (uint8_t)address;
+	uint32_t slave_address;
+
+	slave_address = ni2c_get_slave_address(&fram->slave);
+
 	if (address > UINT8_MAX) {
-		fram->slave.address |= 1u << A0_BIT_POSITION;
+		slave_address |= 1u << A0_BIT_POSITION;
 	} else {
-		fram->slave.address &= ~(1u << A0_BIT_POSITION);
+		slave_address &= ~(1u << A0_BIT_POSITION);
 	}
 
-	return (1);
+	ni2c_set_slave_address(&fram->slave, slave_address);
+	ni2c_set_reg_size(&fram->slave, NI2C_CONFIG_REG_SIZE_1);
+
+	return (address & 0x1FF);
 }
 
 
 
-static size_t write_16bit_address(
+static uint32_t write_16bit_address(
 		struct fram_driver * 		fram,
-		uint32_t 					address,
-		uint8_t * 					buff)
+		uint32_t 					address)
 {
-	uint16_t * add;
+	ni2c_set_reg_size(&fram->slave, NI2C_CONFIG_REG_SIZE_2);
 
-	(void *)fram;
-
-	add = (uint16_t *)buff;
-	*add = (uint16_t)address;
-
-	return (2);
+	return (address & 0xFFFF);
 }
 
 
 
-static size_t write_17bit_address(
+static uint32_t write_17bit_address(
 		struct fram_driver * 		fram,
-		uint32_t 					address,
-		uint8_t * 					buff)
+		uint32_t 					address)
 {
-	uint16_t * add;
+	uint32_t slave_address;
 
-	add = (uint16_t *)buff;
-	*add = (uint16_t)address;
+	slave_address = ni2c_get_slave_address(&fram->slave);
+
 	if (address > UINT16_MAX) {
-		fram->slave.address |= 1u << A0_BIT_POSITION;
+		slave_address |= 1u << A0_BIT_POSITION;
 	} else {
-		fram->slave.address &= ~(1u << A0_BIT_POSITION);
+		slave_address &= ~(1u << A0_BIT_POSITION);
 	}
 
-	return (2);
+	ni2c_set_slave_address(&fram->slave, slave_address);
+	ni2c_set_reg_size(&fram->slave, NI2C_CONFIG_REG_SIZE_2);
+
+	return (address & 0x1FFFF);
 }
 
 
 
-static size_t write_memory_addres(
+static uint32_t write_memory_addres(
 	struct fram_driver *		fram,
-	uint32_t 					address,
-	uint8_t	*					buff)
+	uint32_t 					address)
 {
-	return (g_write_memory_address[fram->address_space](fram, address, buff));
+	return (g_write_memory_address[fram->address_space](fram, address));
 }
 
 
@@ -232,72 +234,56 @@ static naction state_active(
 			return (naction_handled());
 		}
 		case EVT_FRAM_WRITE: {
-			struct ni2c_combined_transfer_event * 	combined;
-			struct fram_transfer_event * 			transfer;
+			struct fram_transfer_event * 			fram_transfer;
 			struct fram_driver * 					fram;
-			size_t 									size;
+			struct ni2c_transfer_event	*			i2c_transfer;
 
-			transfer = (struct fram_transfer_event *)event;
-			fram = transfer->fram;
-
+			fram_transfer = (struct fram_transfer_event *)event;
+			fram = fram_transfer->fram;
 			ws->client = event->producer;
 
-			size = write_memory_addres(fram, transfer->address, ws->memory_address);
+			i2c_transfer = (struct ni2c_transfer_event *)nevent_create(
+					sizeof(struct ni2c_transfer_event),
+					EVT_NI2C_WRITE_SLAVE);
 
-			combined = (struct ni2c_combined_transfer_event *)nevent_create(
-					sizeof(struct ni2c_combined_transfer_event),
-					EVT_NI2C_COMBINED_TRANSFER);
+			i2c_transfer->slave = &fram->slave;
+			i2c_transfer->reg = write_memory_addres(fram, fram_transfer->address);
+			i2c_transfer->data = fram_transfer->data;
+			i2c_transfer->size = fram_transfer->size;
 
-			combined->slave = &fram->slave;
-			combined->type = NI2C_WRITE_THEN_WRITE;
-			combined->first_data = ws->memory_address;
-			combined->first_size = size;
-			combined->second_data = transfer->data;
-			combined->second_size = transfer->size;
-
-			nepa_send_event(fram->ni2c_epa, (nevent *)combined);
+			nepa_send_event(fram->ni2c_epa, (nevent *)i2c_transfer);
 
 			return (naction_handled());
 		}
 		case EVT_FRAM_READ: {
-			struct ni2c_combined_transfer_event * 	combined;
-			struct fram_transfer_event * 			transfer;
+			struct fram_transfer_event * 			fram_transfer;
 			struct fram_driver * 					fram;
-			size_t 									size;
+			struct ni2c_transfer_event	*			i2c_transfer;
 
-			transfer = (struct fram_transfer_event *)event;
-			fram = transfer->fram;
-
+			fram_transfer = (struct fram_transfer_event *)event;
+			fram = fram_transfer->fram;
 			ws->client = event->producer;
 
-			size = write_memory_addres(fram, transfer->address, ws->memory_address);
+			i2c_transfer = (struct ni2c_transfer_event *)nevent_create(
+					sizeof(struct ni2c_transfer_event),
+					EVT_NI2C_READ_SLAVE);
 
-			combined = (struct ni2c_combined_transfer_event *)nevent_create(
-					sizeof(struct ni2c_combined_transfer_event),
-					EVT_NI2C_COMBINED_TRANSFER);
+			i2c_transfer->slave = &fram->slave;
+			i2c_transfer->reg = write_memory_addres(fram, fram_transfer->address);
+			i2c_transfer->data = fram_transfer->data;
+			i2c_transfer->size = fram_transfer->size;
 
-			combined->slave = &fram->slave;
-			combined->type = NI2C_WRITE_THEN_READ;
-			combined->first_data = ws->memory_address;
-			combined->first_size = size;
-			combined->second_data = transfer->data;
-			combined->second_size = transfer->size;
-
-			nepa_send_event(fram->ni2c_epa, (nevent *)combined);
+			nepa_send_event(fram->ni2c_epa, (nevent *)i2c_transfer);
 
 			return (naction_handled());
 		}
 		case EVT_NI2C_TRANSFER_COMPLETED: {
-			nepa_send_signal(
-				ws->client,
-				EVT_FRAM_COMPLETED);
+			nepa_send_signal(ws->client, EVT_FRAM_COMPLETED);
 
 			return (naction_handled());
 		}
 		case EVT_NI2C_ERROR: {
-			nepa_send_signal(
-				ws->client,
-				EVT_FRAM_ERROR);
+			nepa_send_signal(ws->client, EVT_FRAM_ERROR);
 
 			return (naction_handled());
 		}
