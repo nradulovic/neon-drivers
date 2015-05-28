@@ -79,6 +79,14 @@
 # define CONFIG_FRAM_QUEUE_SIZE			10
 #endif
 
+#if !defined(CONFIG_RTC_EVENT_BASE_ID)
+# define CONFIG_RTC_EVENT_BASE_ID		3000	/* todo naci mesto gde treba da stoji vrednost id za sistem i drajvere */
+#endif
+
+#if !defined(CONFIG_RTC_QUEUE_SIZE)
+# define CONFIG_RTC_QUEUE_SIZE			10
+#endif
+
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus

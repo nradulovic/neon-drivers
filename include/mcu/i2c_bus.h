@@ -48,48 +48,52 @@
  * @return      Returns valid I2C bus ID number which can be used with other
  *              functions and macros.
  */
-#define NI2C_ID(bus)            NP_DEV_CREATE_ID(NPROFILE_CLASS_I2C, bus, 0)
+#define NI2C_ID(bus)            	NP_DEV_CREATE_ID(NPROFILE_CLASS_I2C, bus, 0)
 
 /**@brief       Convenience wrapper macro around @ref NP_DEV_ID_TO_MAJOR().
  * @param       id
  *              Valid I2C bus ID
  * @return      Returns I2C bus number
  */
-#define NI2C_ID_TO_BUS(id)      NP_DEV_ID_TO_MAJOR(id)
+#define NI2C_ID_TO_BUS(id)      	NP_DEV_ID_TO_MAJOR(id)
 
-#define NI2C0					0
-#define NI2C1					1
-#define NI2C2					2
-#define NI2C3					3
-#define NI2C4					4
-#define NI2C5					5
-#define NI2C6					6
-#define NI2C7					7
-#define NI2C8					8
-#define NI2C9					9
-#define NI2C10					10
-#define NI2C11					11
-#define NI2C12					12
-#define NI2C13					13
-#define NI2C14					14
-#define NI2C15					15
+#define NI2C0						0
+#define NI2C1						1
+#define NI2C2						2
+#define NI2C3						3
+#define NI2C4						4
+#define NI2C5						5
+#define NI2C6						6
+#define NI2C7						7
+#define NI2C8						8
+#define NI2C9						9
+#define NI2C10						10
+#define NI2C11						11
+#define NI2C12						12
+#define NI2C13						13
+#define NI2C14						14
+#define NI2C15						15
 
-#define NI2C_BUS_MODE_MASTER	(0x0u << 0)
-#define NI2C_BUS_MODE_SLAVE		(0x1u << 0)
-#define NI2C_BUS_ADDRESS_7BIT   (0x0u << 1)
-#define NI2C_BUS_ADDRESS_10BIT  (0x1u << 1)
-#define NI2C_BUS_SPEED_100		(0x0u << 4)
-#define NI2C_BUS_SPEED_400		(0x1u << 4)
-#define NI2C_BUS_SPEED_1700		(0x2u << 4)
-#define NI2C_BUS_SPEED_3400		(0x3u << 4)
-#define NI2C_BUS_HANDLING_IT	(0x0u << 6)
-#define NI2C_BUS_HANDLING_DMA	(0x1u << 6)
+#define NI2C_BUS_MODE_MASTER		(0x0u << 0)
+#define NI2C_BUS_MODE_SLAVE			(0x1u << 0)
+#define NI2C_BUS_ADDRESS_7BIT   	(0x0u << 1)
+#define NI2C_BUS_ADDRESS_10BIT  	(0x1u << 1)
+#define NI2C_BUS_SPEED_100			(0x0u << 4)
+#define NI2C_BUS_SPEED_400			(0x1u << 4)
+#define NI2C_BUS_SPEED_1700			(0x2u << 4)
+#define NI2C_BUS_SPEED_3400			(0x3u << 4)
+#define NI2C_BUS_HANDLING_IT		(0x0u << 6)
+#define NI2C_BUS_HANDLING_DMA		(0x1u << 6)
 
-#define NI2C_REG_SIZE_0			(0u << 0)
-#define NI2C_REG_SIZE_1			(1u << 0)
-#define NI2C_REG_SIZE_2			(2u << 0)
-#define NI2C_REG_SIZE_3			(3u << 0)
-#define NI2C_REG_SIZE_4			(4u << 0)
+#define NI2C_REG_SIZE_0				(0u << 0)
+#define NI2C_REG_SIZE_1				(1u << 0)
+#define NI2C_REG_SIZE_2				(2u << 0)
+#define NI2C_REG_SIZE_3				(3u << 0)
+#define NI2C_REG_SIZE_4				(4u << 0)
+
+#define NI2C_READ_WITH_RESTART		(0u << 4)
+#define NI2C_READ_WITHOUT_RESTART	(1u << 4)
+
 
 #define NI2C_BUS_ADDRESSING_MODE												\
 	(NI2C_BUS_ADDRESS_7BIT | NI2C_BUS_ADDRESS_10BIT)
@@ -105,6 +109,8 @@
 	(NI2C_REG_SIZE_0 | NI2C_REG_SIZE_1 | NI2C_REG_SIZE_2						\
 	| NI2C_REG_SIZE_3 | NI2C_REG_SIZE_4)
 
+#define NI2C_READ_MODE															\
+	(NI2C_READ_WITH_RESTART | NI2C_READ_WITHOUT_RESTART)
 
 #define ni2c_get_reg_size(slave, value)											\
 	((slave)->flags & NI2C_REG_SIZE)
@@ -143,17 +149,18 @@ struct ni2c_bus_driver
 {
     struct npdrv               	pdrv;
     struct np_dev_i2c		   	ctx;
+    struct ni2c_slave *			slave;
     uint32_t				   	bus_handling;
     uint32_t					reg;
     void *					   	data;
     size_t					   	size;
-    uint32_t					normal_phase;
-    void *					   	combined_data;
-    size_t					   	combined_size;
-    uint32_t					combined_phase;
+    uint32_t					phase;
     uint32_t					format;
-    struct ni2c_slave *			slave;
-
+    uint32_t					type;
+    uint32_t					read_mode;
+    uint32_t					retry;
+    enum ni2c_bus_error			error;
+    struct ntimer               recovery_period;
 };
 
 
