@@ -1,5 +1,29 @@
-
-#if (0)
+/*
+ * This file is part of Neon.
+ *
+ * Copyright (C) 2010 - 2015 Nenad Radulovic
+ *
+ * Neon is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Neon is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Neon. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * web site: http://github.com/nradulovic
+ * e-mail : nenad.b.radulovic@gmail.com
+ *//***********************************************************************//**
+ * @file
+ * @author dejan
+ * @brief
+ *********************************************************************//** @{ */
+/*=========================================================  INCLUDE FILES  ==*/
 
 #include "lib/string/num_conv.h"
 #include <string.h>
@@ -9,6 +33,8 @@
 #include "mcu/i2c_bus.h"
 #include "rtc/ab_rtcmc_32768_eoz9.h"
 #include "rtc/rtc_class.h"
+
+/*=========================================================  LOCAL MACRO's  ==*/
 
 #define CONFIG_DEFAULT_RTC_YEAR         2015
 #define CONFIG_DEFAULT_RTC_MONTH        1
@@ -80,12 +106,16 @@
 #define RTC_READ_CMD                    (RTC_SLAVE_ADDRESS |  0x1u)
 #define RTC_WRITE_CMD                   (RTC_SLAVE_ADDRESS & ~0x1u)
 
+/*======================================================  LOCAL DATA TYPES  ==*/
+
 struct context
 {
-    struct i2c_slave            i2c_slave;
+    struct ni2c_slave           i2c_slave;
     struct nrtc_time            time;
     struct nrtc_state           state;
 };
+
+
 
 struct PORT_C_PACKED ab_rtcmc_time_registers
 {
@@ -98,13 +128,35 @@ struct PORT_C_PACKED ab_rtcmc_time_registers
     uint8_t                     years;
 };
 
-static struct context                g_context;
 
-static const struct i2c_slave_config g_rtc_i2c_config =
+
+struct rtc_workspace
 {
-    I2C_SLAVE_RD_NACK | I2C_SLAVE_RD_REPEAT,
-    RTC_SLAVE_ADDRESS
+	struct nepa	*				client;
 };
+
+/*=============================================  LOCAL FUNCTION PROTOTYPES  ==*/
+/*=======================================================  LOCAL VARIABLES  ==*/
+
+static struct context           g_context;
+static struct nevent * 		  	g_rtc_queue_storage[CONFIG_RTC_QUEUE_SIZE];
+static struct fram_workspace  	g_rtc_workspace;
+
+/*======================================================  GLOBAL VARIABLES  ==*/
+
+struct nepa 					g_rtc_epa;
+const struct nepa_define		g_rtc_define =
+{
+    .sm.wspace                  = &g_rtc_workspace,
+    .sm.init_state              = &state_active,
+    .sm.type                    = NSM_TYPE_FSM,
+    .working_queue.storage      = g_rtc_queue_storage,
+    .working_queue.size         = sizeof(g_rtc_queue_storage),
+    .thread.priority            = 1,
+    .thread.name                = "rtc"
+};
+
+/*===================================================  FUNCTION PROTOTYPES  ==*/
 
 void ab_rtcmc_init_driver(
     const void *                config)
@@ -116,6 +168,7 @@ void ab_rtcmc_init_driver(
     i2c_slave_open(&g_context.i2c_slave, &g_rtc_i2c_config,
         i2c_bus_from_id(((const struct ab_rtcmc_config *)config)->bus_id),
         ((const struct ab_rtcmc_config *)config)->device_id);
+
     error = i2c_slave_read(&g_context.i2c_slave, REG_CONTROL_STATUS, &reg, 1);
 
     if (error) {
@@ -157,7 +210,7 @@ void ab_rtcmc_init_driver(
         goto NO_COMM_FAILURE;
     }
     reg   = 32;
-    error = i2c_slave_write(&g_context.i2c_slave, REG_TIMER_LOW, &reg, 1);
+    error =  (&g_context.i2c_slave, REG_TIMER_LOW, &reg, 1);
 
     if (error) {
         goto NO_COMM_FAILURE;
@@ -291,4 +344,7 @@ const struct nrtc_state * ab_rtcmc_state(void)
     return (&g_context.state);
 }
 
-#endif
+/*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/
+/** @endcond *//** @} *//******************************************************
+ * END of ab_rtcmc_32768_eoz9.c
+ ******************************************************************************/
