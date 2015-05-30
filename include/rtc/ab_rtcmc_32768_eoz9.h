@@ -35,8 +35,19 @@
 #include "mcu/i2c.h"
 #include "mcu/config.h"
 #include "neon_eds.h"
+#include "rtc_class.h"
 
 /*===============================================================  MACRO's  ==*/
+
+#define AB_RTC_CLOCKOUT_32768HZ		(0u << 0)
+#define AB_RTC_CLOCKOUT_1024HZ		(1u << 0)
+#define AB_RTC_CLOCKOUT_32HZ		(2u << 0)
+#define AB_RTC_CLOCKOUT_1HZ			(3u << 0)
+
+#define AB_RTC_CLOCKOUT_FREQ													\
+	(AB_RTC_CLOCKOUT_32768HZ | AB_RTC_CLOCKOUT_1024HZ | AB_RTC_CLOCKOUT_32HZ |  \
+	AB_RTC_CLOCKOUT_1HZ)
+
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
 extern "C" {
@@ -44,61 +55,17 @@ extern "C" {
 
 /*============================================================  DATA TYPES  ==*/
 
-enum rtc_event_id
+struct ab_nrtc_custom_config
 {
-	EVT_RTC_OPEN = 				CONFIG_RTC_EVENT_BASE_ID,
-	EVT_RTC_SET_TIME,
-	EVT_RTC_GET_STATE,
-	EVT_RTC_TICK,
-	EVT_RTC_TIME,
-};
-
-
-
-struct nrtc_config;
-
-
-
-struct nrtc_time;
-
-
-
-struct nrtc_state;
-
-
-
-struct rtc_open_event
-{
-	nevent   					event;
-	struct nrtc_config			config;
-	struct nepa	*				ni2c_epa;
-};
-
-
-
-struct rtc_time_event
-{
-	nevent   					event;
-	struct nrtc_time *			time;
-};
-
-
-
-struct rtc_state_event
-{
-	nevent   					event;
-	struct nrtc_state			state;
+	uint32_t					config;
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 
-extern struct nepa 				g_rtc_epa;
-extern const struct nepa_define g_rtc_define;
+extern struct nepa 				g_ab_rtc_epa;
+extern const struct nepa_define g_ab_rtc_define;
 
 /*===================================================  FUNCTION PROTOTYPES  ==*/
-
-struct nrtc_time * nrtc_get_time_immediately(void);
-
 /*--------------------------------------------------------  C++ extern end  --*/
 #ifdef __cplusplus
 }
