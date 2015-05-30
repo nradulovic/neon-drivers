@@ -61,11 +61,29 @@ enum nrtc_device_state
 
 
 
+enum nrtc_reading_mode
+{
+	RTC_AUTO_READING,
+	RTC_MANUAL_READING
+};
+
+
+
+enum rtc_event_id
+{
+	EVT_RTC_OPEN = 				CONFIG_RTC_EVENT_BASE_ID,
+	EVT_RTC_SET_TIME,
+	EVT_RTC_GET_TIME,
+	EVT_RTC_TICK,
+	EVT_RTC_TIME,
+};
+
+
+
 struct nrtc_config
 {
-	uint32_t					rtc_id;
-	bool						notification_on;
-	struct nrtc_custom_config * custom;
+	enum nrtc_reading_mode		reading_mode;
+	void * 						custom;
 };
 
 
@@ -90,19 +108,39 @@ struct nrtc_state
 
 
 
-struct nrtc_class
+struct rtc_open_event
 {
-    void                     (* init)(struct nrtc_config *);
-    void                     (* term)(void);
-    void                     (* set_time)(const struct nrtc_time *);
-    enum nrtc_time_state     (* get_time)(struct nrtc_time *);
-    void                     (* tick_isr)(void);
-    const struct nrtc_state  (* get_state)(void);
+	nevent   					event;
+	struct nrtc_config *		config;
+	struct nepa	*				ni2c_epa;
+};
 
+
+
+struct rtc_set_time_event
+{
+	nevent   					event;
+	struct nrtc_time *			time;
+};
+
+
+
+struct rtc_time_event
+{
+	nevent   					event;
+	struct nrtc_time *			time;
+	struct nrtc_state *			state;
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*===================================================  FUNCTION PROTOTYPES  ==*/
+
+struct nrtc_time * nrtc_get_time_immediately(void);
+
+
+
+struct nrtc_state * nrtc_get_state_immediately(void);
+
 /*--------------------------------------------------------  C++ extern end  --*/
 #ifdef __cplusplus
 }
