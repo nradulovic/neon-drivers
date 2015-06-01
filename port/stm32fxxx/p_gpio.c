@@ -53,7 +53,7 @@ struct notify_info {
 /*=============================================  LOCAL FUNCTION PROTOTYPES  ==*/
 /*=======================================================  LOCAL VARIABLES  ==*/
 
-static const NCOMPONENT_DEFINE("STM32Fxxx GPIO driver", "Nenad Radulovic, Dejan Ristic");
+static const NCOMPONENT_DEFINE("STM32Fxxx GPIO driver");
 static struct notify_info g_notify_info[16];
 
 /*======================================================  GLOBAL VARIABLES  ==*/
