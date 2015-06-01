@@ -20,14 +20,12 @@
  * e-mail : nenad.b.radulovic@gmail.com
  *//***********************************************************************//**
  * @file
- * @author dejan
- * @brief 
- * @defgroup 
- * @brief 
+ * @author 		Dejan Ristic
+ * @brief 		Pin Input/Output Peripheral Multiplexer
  *********************************************************************//** @{ */
 
-#ifndef PLATFORM_NEON_DRIVERS_INCLUDE_MCU_MUX_H_
-#define PLATFORM_NEON_DRIVERS_INCLUDE_MCU_MUX_H_
+#ifndef NEON_DRIVERS_MCU_MUX_H_
+#define NEON_DRIVERS_MCU_MUX_H_
 
 /*=========================================================  INCLUDE FILES  ==*/
 
@@ -41,13 +39,34 @@ extern "C" {
 
 /*============================================================  DATA TYPES  ==*/
 
+/**@brief		Portable multiplexer structure
+ * @details		This is forward declaration of the multiplexer structure. The
+ * 				structure is defined in port p_mux.h header.
+ */
 struct nmux;
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 
-void nmux_setup(const struct nmux * mux_array, size_t size);
-void nmux_reset(uint32_t gpio_id);
+/**@brief		Setup multiplexer according to given array
+ * @param 		mux_array
+ * 				Pointer to mux array
+ * @param 		size
+ * 				The size of mux array in bytes, eg. sizeof(array).
+ * @api
+ */
+void nmux_setup(
+	const struct nmux * 		mux_array,
+	size_t 						size);
+
+
+
+/**@brief		Reset mux settings to power-on defaults
+ * @param 		gpio_id
+ * 				GPIO id number.
+ */
+void nmux_reset(
+	uint32_t 					gpio_id);
 
 /*--------------------------------------------------------  C++ extern end  --*/
 #ifdef __cplusplus
@@ -58,4 +77,4 @@ void nmux_reset(uint32_t gpio_id);
 /** @endcond *//** @} *//******************************************************
  * END of mux.h
  ******************************************************************************/
-#endif /* PLATFORM_NEON_DRIVERS_INCLUDE_MCU_MUX_H_ */
+#endif /* NEON_DRIVERS_MCU_MUX_H_ */
