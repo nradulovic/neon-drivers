@@ -124,7 +124,7 @@ struct npdev
 struct npdrv
 {
     const struct npdev *        pdev;   /**<@brief Peripheral device.         */
-    ncore_atomic                ref;    /**<@brief Reference counter.         */
+    uint32_t                    ref;    /**<@brief Reference counter.         */
     void *                      data;   /**<@brief Custom user data attached to
                                           * this driver.
                                           */

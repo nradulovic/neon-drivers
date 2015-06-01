@@ -11,14 +11,16 @@
 struct npdrv * npdrv_request(uint32_t dev_id)
 {
 	const struct npdev *		pdev;
+	struct npdrv *				pdrv;
 
+	pdrv = NULL;
 	pdev = nprofile_pdev(dev_id);
 
 	/* NOTE 1:
 	 * First check if this is the device class we are asked for was found.
 	 */
 	if (pdev) {
-		struct npdrv *			pdrv;
+		ncore_lock				lock;
 
 		pdrv = pdev->pdrv;
 
@@ -26,22 +28,23 @@ struct npdrv * npdrv_request(uint32_t dev_id)
 		 * Check if we have not reached the maximum number of users for this
 		 * driver.
 		 */
-		if (ncore_atomic_read(&pdrv->ref) < pdev->max_ref) {
-			ncore_atomic_inc(&pdrv->ref);
+		ncore_lock_enter(&lock);
+
+		if (pdrv->ref < pdev->max_ref) {
+			pdrv->ref++;
 
 			/* NOTE 3:
 			 * Check if this is the first time we are asked for this driver
 			 */
-			if (ncore_atomic_read(&pdrv->ref) == 1) {
+			if (pdrv->ref == 1) {
 				pdrv->pdev = pdev;
 				pdrv->data = NULL;
 			}
-
-			return (pdrv);
 		}
+		ncore_lock_exit(&lock);
 	}
 
-	return (NULL);
+	return (pdrv);
 }
 
 void npdrv_release(struct npdrv * pdrv)

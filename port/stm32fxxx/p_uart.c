@@ -59,7 +59,7 @@
 /*=============================================  LOCAL FUNCTION PROTOTYPES  ==*/
 /*=======================================================  LOCAL VARIABLES  ==*/
 
-static const NCOMPONENT_DEFINE("STM32Fxxx UART device driver", "Nenad Radulovic");
+static const NCOMPONENT_DEFINE("STM32Fxxx UART device driver");
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
