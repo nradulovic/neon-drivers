@@ -21,7 +21,9 @@
  *//***********************************************************************//**
  * @file
  * @author 		Dejan Ristic
- * @brief 		Pin Input/Output Peripheral Multiplexer
+ * @brief 		Pin Peripheral Multiplexer
+ * @defgroup	mux_intf Pin Peripheral Multiplexer
+ * @brief 		Pin Peripheral Multiplexer
  *********************************************************************//** @{ */
 
 #ifndef NEON_DRIVERS_MCU_MUX_H_
