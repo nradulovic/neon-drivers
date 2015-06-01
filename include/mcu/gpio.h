@@ -26,8 +26,8 @@
  * @brief       GPIO operations
  *********************************************************************//** @{ */
 
-#ifndef NEON_MCU_GPIO_H_
-#define NEON_MCU_GPIO_H_
+#ifndef NEON_DRIVERS_MCU_GPIO_H_
+#define NEON_DRIVERS_MCU_GPIO_H_
 
 /*=========================================================  INCLUDE FILES  ==*/
 
@@ -40,6 +40,10 @@
 
 /*===============================================================  MACRO's  ==*/
 
+/*------------------------------------------------------------------------*//**
+ * @name        Convenience wrapper macro
+ * @{ *//*--------------------------------------------------------------------*/
+
 /**@brief       Convenience wrapper macro around @ref NP_DEV_CREATE_ID().
  * @param       port
  *              Specify port number in range 1 - 32, where GPIOA is 1 etc.
@@ -48,7 +52,8 @@
  * @return      Returns valid GPIO pin ID number which can be used with other
  *              functions and macros.
  */
-#define NGPIO_ID(port, pin)             NP_DEV_CREATE_ID(NPROFILE_CLASS_GPIO, port, pin)
+#define NGPIO_ID(port, pin)             										\
+	NP_DEV_CREATE_ID(NPROFILE_CLASS_GPIO, port, pin)
 
 /**@brief       Convenience wrapper macro around @ref NP_DEV_ID_TO_MAJOR().
  * @param       id
@@ -64,6 +69,10 @@
  */
 #define NGPIO_ID_TO_PIN(id)             NP_DEV_ID_TO_MINOR(id)
 
+/**@} *//*----------------------------------------------------------------*//**
+ * @name        GPIO ports
+ * @{ *//*--------------------------------------------------------------------*/
+
 #define NGPIOA                          0
 #define NGPIOB                          1
 #define NGPIOC                          2
@@ -75,6 +84,10 @@
 #define NGPIOI                          8
 #define NGPIOJ                          9
 #define NGPIOK                          10
+
+/**@} *//*----------------------------------------------------------------*//**
+ * @name        GPIO pin configuration flags
+ * @{ *//*--------------------------------------------------------------------*/
 
 #define NGPIO_INPUT                     (0x1ul << 0)
 #define NGPIO_OUTPUT_LOW                (0x1ul << 1)
@@ -89,6 +102,11 @@
 #define NGPIO_TRIGGER_RISING			(0x1ul << 8)
 #define NGPIO_TRIGGER_TOGGLE			(0x1ul << 9)
 
+/**@} *//*----------------------------------------------------------------*//**
+ * @name        GPIO pin configuration flags filters
+ * @napi
+ * @{ *//*--------------------------------------------------------------------*/
+
 #define NGPIO_MODE                                                              \
     (NGPIO_INPUT | NGPIO_OUTPUT_LOW | NGPIO_OUTPUT_HIGH | 						\
 	 NGPIO_OUTPUT_OPEN_DRAIN_LOW    | NGPIO_OUTPUT_OPEN_DRAIN_FLOAT)
@@ -99,7 +117,7 @@
 #define NGPIO_TRIGGER															\
 	(NGPIO_TRIGGER_FALLING | NGPIO_TRIGGER_RISING | NGPIO_TRIGGER_TOGGLE)
 
-/*-------------------------------------------------------  C++ extern base  --*/
+/**@} *//*-----------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -107,28 +125,150 @@ extern "C" {
 /*============================================================  DATA TYPES  ==*/
 
 /**@brief       GPIO driver structure
+ * @napi
  */
 struct ngpio_driver
 {
     struct npdrv               pdrv;
 };
 
+/**@brief		Change handler function pointer
+ * @param 		gpio_id
+ * 				GPIO pin ID.
+ * @api
+ */
 typedef void (ngpio_change_handler)(uint32_t gpio_id);
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 
-void ngpio_init(uint32_t gpio_id, uint32_t config);
-void ngpio_term(uint32_t gpio_id);
-bool ngpio_is_set(uint32_t gpio_id);
-void ngpio_set(uint32_t gpio_id);
-void ngpio_clear(uint32_t gpio_id);
-void ngpio_toggle(uint32_t gpio_id);
-void ngpio_request(uint32_t gpio_id);
-void ngpio_release(uint32_t gpio_id);
-void ngpio_change_notice_request(uint32_t gpio_id, uint32_t config, ngpio_change_handler * change_handler);
-void ngpio_change_notice_release(uint32_t gpio_id);
-bool ngpio_is_id_valid(uint32_t gpio_id);
+/**@brief		Initialize GPIO pin
+ * @param 		gpio_id
+ * 				GPIO pin ID.
+ * @param 		config
+ * 				Configuration flags
+ * @api
+ */
+void ngpio_init(
+	uint32_t 					gpio_id,
+	uint32_t 					config);
+
+
+
+/**@brief		Terminate GPIO pin
+ * @param 		gpio_id
+ * 				GPIO pin ID.
+ * @api
+ */
+void ngpio_term(
+	uint32_t 					gpio_id);
+
+
+
+/**@brief		Returns if GPIO pin is set
+ * @param 		gpio_id
+ * 				GPIO pin ID.
+ * @return		GPIO pin state
+ * @retval		true - pin is in logic high state
+ * @retval		false - pin is in logic low state
+ * @api
+ */
+bool ngpio_is_set(
+	uint32_t 					gpio_id);
+
+
+
+/**@brief		Set GPIO pin to high logic state
+ * @param 		gpio_id
+ * 				GPIO pin ID.
+ * @api
+ */
+void ngpio_set(
+	uint32_t 					gpio_id);
+
+
+
+/**@brief		Set GPIO pin to low logic state
+ * @param 		gpio_id
+ * 				GPIO pin ID.
+ * @api
+ */
+void ngpio_clear(
+	uint32_t 					gpio_id);
+
+
+
+/**@brief		Toggle GPIO pin logic state
+ * @param 		gpio_id
+ * 				GPIO pin ID.
+ * @api
+ */
+void ngpio_toggle(
+	uint32_t 					gpio_id);
+
+
+
+/**@brief		Request GPIO pin for usage
+ * @param 		gpio_id
+ * 				GPIO pin ID.
+ * @api
+ */
+void ngpio_request(
+	uint32_t 					gpio_id);
+
+
+
+/**@brief		Release GPIO pin
+ * @param 		gpio_id
+ * 				GPIO pin ID.
+ * @api
+ */
+void ngpio_release(
+	uint32_t 					gpio_id);
+
+
+
+/**@brief		Request change notice handler for a GPIO pin
+ * @param 		gpio_id
+ * 				GPIO pin ID.
+ * @param 		config
+ * 				Configuration flags
+ * @param 		change_handler
+ * 				Pointer to change handler function.
+ * @api
+ */
+void ngpio_change_notice_request(
+	uint32_t 					gpio_id,
+	uint32_t 					config,
+	ngpio_change_handler * 		change_handler);
+
+
+
+/**@brief		Release change notice handler
+ * @param 		gpio_id
+ *				GPIO pin ID.
+ * @api
+ */
+void ngpio_change_notice_release(
+	uint32_t 					gpio_id);
+
+
+
+/**@brief		Validate GPIO pin id.
+ * @param 		gpio_id
+ *				GPIO pin ID.
+ * @return		GPIO pin ID validity:
+ * @retval		true - GPIO pin ID is valid and exists
+ * 				false - GPIO pin ID is not valid
+ * @api
+ */
+bool ngpio_is_id_valid(
+	uint32_t 					gpio_id);
+
+
+
+/**@brief		Change notice ISR handler
+ */
 void ngpio_isr(void);
 
 
@@ -141,4 +281,4 @@ void ngpio_isr(void);
 /** @endcond *//** @} *//******************************************************
  * END of gpio.h
  ******************************************************************************/
-#endif /* NEON_MCU_GPIO_H_ */
+#endif /* NEON_DRIVERS_MCU_GPIO_H_ */
