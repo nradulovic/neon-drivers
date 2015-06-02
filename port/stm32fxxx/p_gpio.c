@@ -21,10 +21,10 @@
  *//***********************************************************************//**
  * @file
  * @author      Nenad Radulovic
- * @brief       Brief description
+ * @brief       GPIO driver
  *********************************************************************//** @{ */
-/**@defgroup    def_impl Implementation
- * @brief       Default Implementation
+/**@defgroup    gpio_intf Implementation
+ * @brief       Implementation
  * @{ *//*--------------------------------------------------------------------*/
 
 /*=========================================================  INCLUDE FILES  ==*/
@@ -45,16 +45,17 @@
 /*=========================================================  LOCAL MACRO's  ==*/
 /*======================================================  LOCAL DATA TYPES  ==*/
 
-struct notify_info {
-	void 		(* notify_handle)(uint32_t gpio_id);
-	uint32_t	gpio_id;
+struct notify_info
+{
+	void 		             (* notify_handle)(uint32_t gpio_id);
+	uint32_t	                gpio_id;
 };
 
 /*=============================================  LOCAL FUNCTION PROTOTYPES  ==*/
 /*=======================================================  LOCAL VARIABLES  ==*/
 
 static const NCOMPONENT_DEFINE("STM32Fxxx GPIO driver");
-static struct notify_info g_notify_info[16];
+static struct notify_info       g_notify_info[16];
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
@@ -133,7 +134,7 @@ void ngpio_term(uint32_t gpio_id)
 
 	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
 
-	HAL_GPIO_DeInit((GPIO_TypeDef *)npdrv_address(pdrv), 0x1 << pin);
+	HAL_GPIO_DeInit((GPIO_TypeDef *)npdrv_address(pdrv), 0x1u << pin);
 
 	if (npdrv_ref(pdrv) == 0) {
 		npdrv_pwr_disable(pdrv, 0);
@@ -153,7 +154,7 @@ bool ngpio_is_set(uint32_t gpio_id)
 
 	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
 
-	if (HAL_GPIO_ReadPin((GPIO_TypeDef *)npdev_address(pdev), 0x1 << pin) == GPIO_PIN_SET) {
+	if (HAL_GPIO_ReadPin((GPIO_TypeDef *)npdev_address(pdev), (uint16_t)(0x1u << pin)) == GPIO_PIN_SET) {
 
 		return (true);
 	}
@@ -174,7 +175,7 @@ void ngpio_set(uint32_t gpio_id)
 
 	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
 
-	HAL_GPIO_WritePin((GPIO_TypeDef *)npdev_address(pdev), 0x1 << pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin((GPIO_TypeDef *)npdev_address(pdev), (uint16_t)(0x1u << pin), GPIO_PIN_SET);
 }
 
 
@@ -190,7 +191,7 @@ void ngpio_clear(uint32_t gpio_id)
 
 	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
 
-	HAL_GPIO_WritePin((GPIO_TypeDef *)npdev_address(pdev), 0x1 << pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin((GPIO_TypeDef *)npdev_address(pdev), (uint16_t)(0x1u << pin), GPIO_PIN_RESET);
 }
 
 
@@ -206,7 +207,7 @@ void ngpio_toggle(uint32_t gpio_id)
 
 	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
 
-	HAL_GPIO_TogglePin((GPIO_TypeDef *)npdev_address(pdev), 0x1 << pin);
+	HAL_GPIO_TogglePin((GPIO_TypeDef *)npdev_address(pdev), (uint16_t)(0x1u << pin));
 }
 
 
@@ -242,7 +243,6 @@ void ngpio_change_notice_request(uint32_t gpio_id, uint32_t config, ngpio_change
 {
 	GPIO_InitTypeDef			gpio_init;
 	struct npdrv *				pdrv;
-	uint32_t					port;
 	uint32_t					pin;
 
 	pdrv = npdrv_request(gpio_id);
@@ -253,7 +253,6 @@ void ngpio_change_notice_request(uint32_t gpio_id, uint32_t config, ngpio_change
 	g_notify_info[NP_DEV_ID_TO_MINOR(gpio_id)].notify_handle = change_handler;
 	g_notify_info[NP_DEV_ID_TO_MINOR(gpio_id)].gpio_id = gpio_id;
 
-	port = NP_DEV_ID_TO_MAJOR(gpio_id);
 	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
 
 	gpio_init.Pin = (0x1u << pin);
@@ -317,7 +316,7 @@ void ngpio_change_notice_release(uint32_t gpio_id)
 
 	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
 
-	HAL_GPIO_DeInit((GPIO_TypeDef *)npdrv_address(pdrv), 0x1 << pin);
+	HAL_GPIO_DeInit((GPIO_TypeDef *)npdrv_address(pdrv), 0x1u << pin);
 	npdrv_release(pdrv);
 
 	if (npdrv_ref(pdrv) == 0) {
