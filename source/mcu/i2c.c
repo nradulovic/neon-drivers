@@ -100,7 +100,7 @@ static naction state_transfer(
 
 /*=======================================================  LOCAL VARIABLES  ==*/
 
-static const NCOMPONENT_DEFINE("STM32Fxxx I2C driver");
+static const NCOMPONENT_DEFINE("Generic I2C driver");
 
 #if (NPROFILE_EN_I2C & NPROFILE_EN(1))
 static struct nevent * 		  	g_ni2c1_queue_storage[CONFIG_I2C_QUEUE_SIZE];
