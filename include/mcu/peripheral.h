@@ -245,7 +245,7 @@ struct npdrv
  * @return      Instance number value
  * @api
  */
-#define npdrv_get_id(pdrv)			npdev_instance(npdrv_to_pdev(pdrv))
+#define npdrv_get_id(pdrv)			    npdev_instance(npdrv_to_pdev(pdrv))
 
 /**@brief       Get the peripheral driver class number
  * @param       pdrv
@@ -256,7 +256,7 @@ struct npdrv
 #define npdrv_class(pdrv)				npdev_class(npdrv_to_pdev(pdrv))
 #define npdrv_flags(pdrv)				npdev_flags(npdrv_to_pdev(pdrv))
 #define npdrv_address(pdrv)				npdev_address(npdrv_to_pdev(pdrv))
-#define npdrv_ref(pdrv)					ncore_atomic_read(&(pdrv)->ref)
+#define npdrv_ref(pdrv)					(pdrv)->ref
 #define npdrv_isr(pdrv, no)				npdev_isr(npdrv_to_pdev(pdrv), (no))
 #define npdrv_rst(pdrv, no)				npdev_rst(npdrv_to_pdev(pdrv), (no))
 #define npdrv_pwr(pdrv, no)				npdev_pwr(npdrv_to_pdev(pdrv), (no))
