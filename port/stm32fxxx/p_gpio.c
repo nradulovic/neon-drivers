@@ -136,6 +136,8 @@ void ngpio_term(uint32_t gpio_id)
 
 	HAL_GPIO_DeInit((GPIO_TypeDef *)npdrv_address(pdrv), 0x1u << pin);
 
+	npdrv_release(pdrv);
+
 	if (npdrv_ref(pdrv) == 0) {
 		npdrv_pwr_disable(pdrv, 0);
 	}
@@ -145,6 +147,7 @@ void ngpio_term(uint32_t gpio_id)
 
 bool ngpio_is_set(uint32_t gpio_id)
 {
+    GPIO_TypeDef *              gpio;
 	const struct npdev * 		pdev;
 	uint32_t					pin;
 
@@ -152,20 +155,23 @@ bool ngpio_is_set(uint32_t gpio_id)
 
 	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdev != NULL);
 
+	gpio = (GPIO_TypeDef *)npdev_address(pdev);
 	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
 
-	if (HAL_GPIO_ReadPin((GPIO_TypeDef *)npdev_address(pdev), (uint16_t)(0x1u << pin)) == GPIO_PIN_SET) {
+	if (gpio->IDR & (0x1u << pin)) {
 
-		return (true);
+	    return (true);
+	} else {
+
+	    return (false);
 	}
-
-	return (false);
 }
 
 
 
 void ngpio_set(uint32_t gpio_id)
 {
+    GPIO_TypeDef *              gpio;
 	const struct npdev * 		pdev;
 	uint32_t					pin;
 
@@ -173,18 +179,16 @@ void ngpio_set(uint32_t gpio_id)
 
 	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdev != NULL);
 
+	gpio = (GPIO_TypeDef *)npdev_address(pdev);
 	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
-
-	HAL_GPIO_WritePin(
-        (GPIO_TypeDef *)npdev_address(pdev),
-        (uint16_t)(0x1u << pin),
-        GPIO_PIN_SET);
+	gpio->BSRR = 0x1u << pin;
 }
 
 
 
 void ngpio_clear(uint32_t gpio_id)
 {
+    GPIO_TypeDef *              gpio;
 	const struct npdev * 		pdev;
 	uint32_t					pin;
 
@@ -193,11 +197,8 @@ void ngpio_clear(uint32_t gpio_id)
 	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdev != NULL);
 
 	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
-
-	HAL_GPIO_WritePin(
-        (GPIO_TypeDef *)npdev_address(pdev),
-        (uint16_t)(0x1u << pin),
-        GPIO_PIN_RESET);
+	gpio = (GPIO_TypeDef *)npdev_address(pdev);
+	gpio->BSRR = 0x1u << (pin + 16u);
 }
 
 
@@ -224,9 +225,10 @@ void ngpio_request(uint32_t gpio_id)
 {
 	struct npdrv * 				pdrv;
 
-	pdrv = npdrv_from_id(gpio_id);
+	pdrv = npdrv_request(gpio_id);
 
 	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdrv != NULL);
+
 	npdrv_pwr_enable(pdrv, 0);
 }
 
@@ -239,6 +241,8 @@ void ngpio_release(uint32_t gpio_id)
 	pdrv = npdrv_from_id(gpio_id);
 
 	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdrv != NULL);
+
+	npdrv_release(pdrv);
 
 	if (npdrv_ref(pdrv) == 0) {
 		npdrv_pwr_disable(pdrv, 0);
