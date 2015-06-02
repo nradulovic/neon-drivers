@@ -490,8 +490,6 @@ void ni2c_write_slave(
 	void *						data,
 	size_t						size)
 {
-	I2C_HandleTypeDef  *  		handle;
-
 	NREQUIRE(NAPI_USAGE "Invalid driver.", slave != NULL);
 	NREQUIRE(NAPI_USAGE "Invalid data.", data != NULL);
 	NREQUIRE(NAPI_USAGE "Invalid size.", size != 0u);
@@ -507,8 +505,6 @@ void ni2c_read_slave(
 	void *						data,
 	size_t						size)
 {
-	I2C_HandleTypeDef  *  		handle;
-
 	NREQUIRE(NAPI_USAGE "Invalid driver.", slave != NULL);
 	NREQUIRE(NAPI_USAGE "Invalid data.", data != NULL);
 	NREQUIRE(NAPI_USAGE "Invalid size.", size != 0u);
