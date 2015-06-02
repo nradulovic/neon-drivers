@@ -36,6 +36,10 @@
 
 /*=========================================================  LOCAL MACRO's  ==*/
 
+/* TODO: Move to configuration file
+ */
+#define NCONFIG_RTC_EPA_PRIO            1
+
 #define CONFIG_DEFAULT_RTC_YEAR         2015
 #define CONFIG_DEFAULT_RTC_MONTH        1
 #define CONFIG_DEFAULT_RTC_DAY          1
@@ -243,6 +247,7 @@ static naction state_read_time(
 
 static struct context           g_context;
 static struct nevent * 		  	g_rtc_queue_storage[CONFIG_RTC_QUEUE_SIZE];
+static struct nevent *          g_rtc_queue_deffered_storage[CONFIG_RTC_QUEUE_SIZE];
 static struct rtc_workspace  	g_rtc_workspace;
 
 /*======================================================  GLOBAL VARIABLES  ==*/
@@ -250,13 +255,10 @@ static struct rtc_workspace  	g_rtc_workspace;
 struct nepa 					g_ab_rtc_epa;
 const struct nepa_define		g_ab_rtc_define =
 {
-    .sm.wspace                  = &g_rtc_workspace,
-    .sm.init_state              = &state_open,
-    .sm.type                    = NSM_TYPE_FSM,
-    .working_queue.storage      = g_rtc_queue_storage,
-    .working_queue.size         = sizeof(g_rtc_queue_storage),
-    .thread.priority            = 1,
-    .thread.name                = "rtc"
+    NSM_DEF_INIT(&g_rtc_workspace, &state_open, NSM_TYPE_FSM),
+    NEQUEUE_DEF_INIT(g_rtc_queue_storage, sizeof(g_rtc_queue_storage)),
+    NEQUEUE_DEF_INIT(g_rtc_queue_deffered_storage, sizeof(g_rtc_queue_deffered_storage)),
+    NTHREAD_DEF_INIT("rtc", NCONFIG_RTC_EPA_PRIO),
 };
 
 /*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
@@ -360,7 +362,7 @@ static naction state_clear_pon(
 		case NSM_ENTRY: {
 			struct ni2c_transfer_event	* 	i2c_transfer;
 
-			ws->reg &= ~CONTROL_STATUS_PON;
+			ws->reg &= (uint8_t)~CONTROL_STATUS_PON;
 
 			i2c_transfer = (struct ni2c_transfer_event *)nevent_create(
 					sizeof(struct ni2c_transfer_event),
@@ -417,7 +419,7 @@ static naction state_set_default_time(
 			time.minute = CONFIG_DEFAULT_RTC_MINUTE;
 			time.second = CONFIG_DEFAULT_RTC_SECOND;
 
-		    ws->regs.years   = bin_to_bcd(time.year - 2000u);
+		    ws->regs.years   = bin_to_bcd((uint8_t)(time.year - 2000u));
 		    ws->regs.months  = bin_to_bcd(time.month);
 		    ws->regs.days    = bin_to_bcd(time.day);
 		    ws->regs.hours   = bin_to_bcd(time.hour);
@@ -997,7 +999,7 @@ static naction state_set_time(
 
 			set_time = (struct rtc_set_time_event *)event;
 
-			ws->regs.years   = bin_to_bcd(set_time->time->year - 2000u);
+			ws->regs.years   = bin_to_bcd((uint8_t)(set_time->time->year - 2000u));
 			ws->regs.months  = bin_to_bcd(set_time->time->month);
 			ws->regs.days    = bin_to_bcd(set_time->time->day);
 			ws->regs.hours   = bin_to_bcd(set_time->time->hour);
@@ -1067,7 +1069,7 @@ static naction state_read_time(
 
 		    g_context.state.time  |= RTC_TIME_VALID;
 		    g_context.state.device = RTC_DEVICE_OK;
-		    g_context.time.year    = (uint16_t)bcd_to_bin(ws->regs.years) + 2000u;
+		    g_context.time.year    = (uint16_t)(bcd_to_bin(ws->regs.years) + 2000u);
 		    g_context.time.month   = bcd_to_bin(ws->regs.months);
 		    g_context.time.day     = bcd_to_bin(ws->regs.days);
 		    g_context.time.hour    = bcd_to_bin(ws->regs.hours);
