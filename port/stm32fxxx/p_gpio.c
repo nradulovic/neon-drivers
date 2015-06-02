@@ -175,7 +175,10 @@ void ngpio_set(uint32_t gpio_id)
 
 	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
 
-	HAL_GPIO_WritePin((GPIO_TypeDef *)npdev_address(pdev), (uint16_t)(0x1u << pin), GPIO_PIN_SET);
+	HAL_GPIO_WritePin(
+        (GPIO_TypeDef *)npdev_address(pdev),
+        (uint16_t)(0x1u << pin),
+        GPIO_PIN_SET);
 }
 
 
@@ -191,7 +194,10 @@ void ngpio_clear(uint32_t gpio_id)
 
 	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
 
-	HAL_GPIO_WritePin((GPIO_TypeDef *)npdev_address(pdev), (uint16_t)(0x1u << pin), GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(
+        (GPIO_TypeDef *)npdev_address(pdev),
+        (uint16_t)(0x1u << pin),
+        GPIO_PIN_RESET);
 }
 
 
@@ -207,7 +213,9 @@ void ngpio_toggle(uint32_t gpio_id)
 
 	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
 
-	HAL_GPIO_TogglePin((GPIO_TypeDef *)npdev_address(pdev), (uint16_t)(0x1u << pin));
+	HAL_GPIO_TogglePin(
+        (GPIO_TypeDef *)npdev_address(pdev),
+        (uint16_t)(0x1u << pin));
 }
 
 
@@ -345,7 +353,8 @@ void ngpio_isr(void)
 	for (exti_line = 0;  exti_line < 16; exti_line++)  {
 		if (EXTI->PR & (1u << exti_line)) {
 			if (g_notify_info[exti_line].notify_handle != NULL) {
-				g_notify_info[exti_line].notify_handle(g_notify_info[exti_line].gpio_id);
+				g_notify_info[exti_line].notify_handle(
+                    g_notify_info[exti_line].gpio_id);
 				EXTI->PR |= 1u << exti_line;
 			}
 		}
