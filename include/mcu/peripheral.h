@@ -114,9 +114,6 @@ struct npdev
 #if (NP_ATTR_CLK == 1)
     const struct npdev_clk * 	clk;
 #endif
-#if (NP_ATTR_MUX == 1)
-    const struct npdev_mux *    mux;
-#endif
 };
 
 /**@brief       Peripheral driver
@@ -217,16 +214,6 @@ struct npdrv
  */
 #define npdev_clk(pdev, no)		    	&((pdev)->clk[no])
 
-/**@brief       Get the peripheral MUX structures
- * @param       pdev
- *              Pointer to peripheral device
- * @param       no
- *              MUX structure ordinal number
- * @return      Pointer to the MUX structure
- * @api
- */
-#define npdev_mux(pdev, no)             &((pdev)->mux[no])
-
 /**@} *//*----------------------------------------------------------------*//**
  * @name        Peripheral driver methods
  * @{ *//*--------------------------------------------------------------------*/
@@ -261,7 +248,6 @@ struct npdrv
 #define npdrv_rst(pdrv, no)				npdev_rst(npdrv_to_pdev(pdrv), (no))
 #define npdrv_pwr(pdrv, no)				npdev_pwr(npdrv_to_pdev(pdrv), (no))
 #define npdrv_clk(pdrv, no)				npdev_clk(npdrv_to_pdev(pdrv), (no))
-#define npdrv_mux(pdrv, no)				npdev_mux(npdrv_to_pdev(pdrv), (no))
 
 #define npdrv_isr_enable(pdrv, no)      np_isr_enable(npdrv_isr((pdrv), (no)))
 
@@ -308,8 +294,6 @@ void np_isr_clear_flag(const struct npdev_isr * isr);
 void np_isr_set_flag(const struct npdev_isr * isr);
 void np_isr_set_prio(const struct npdev_isr * isr, uint32_t prio);
 uint32_t np_isr_get_prio(const struct npdev_isr * isr);
-void np_mux_enable(const struct npdev_mux * mux, uint32_t pin_id);
-void np_mux_disable(uint32_t pin_id);
 
 /*--------------------------------------------------------  C++ extern end  --*/
 #ifdef __cplusplus

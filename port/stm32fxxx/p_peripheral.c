@@ -79,14 +79,6 @@ uint32_t np_isr_get_prio(const struct npdev_isr * isr)
     return (NVIC_GetPriority(isr->irqn));
 }
 
-void np_mux_enable(const struct npdev_mux * mux, uint32_t pin_id)
-{
-}
-
-void np_mux_disable(uint32_t pin_id)
-{
-}
-
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/
 /** @endcond *//** @} *//******************************************************
  * END of p_dev.c
