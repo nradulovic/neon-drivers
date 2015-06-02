@@ -52,10 +52,13 @@ struct npdrv * npdrv_request(uint32_t dev_id)
 
 void npdrv_release(struct npdrv * pdrv)
 {
+	ncore_lock					lock;
 	/* NOTE 1:
 	 * Remove one user for this driver.
 	 */
-	ncore_atomic_dec(&pdrv->ref);
+	ncore_lock_enter(&lock);
+	pdrv->ref--;
+	ncore_lock_exit(&lock);
 }
 
 
