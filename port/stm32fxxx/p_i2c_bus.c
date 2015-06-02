@@ -37,7 +37,7 @@
 #include "base/debug.h"
 #include "base/component.h"
 #include "mcu/i2c_bus.h"
-#include "neon-drivers/port/stm32fxxx/family/p_i2c_bus.h"
+#include "family/p_i2c_bus.h"
 
 /*=========================================================  LOCAL MACRO's  ==*/
 
@@ -142,7 +142,7 @@ enum transfer_type
 /*=============================================  LOCAL FUNCTION PROTOTYPES  ==*/
 /*=======================================================  LOCAL VARIABLES  ==*/
 
-static const NCOMPONENT_DEFINE("STM32Fxxx I2C-BUS driver", "Nenad Radulovic, Dejan Risric");
+static const NCOMPONENT_DEFINE("STM32Fxxx I2C bus driver");
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
