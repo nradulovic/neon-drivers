@@ -75,7 +75,6 @@ void nmux_setup(const struct nmux * mux_array, size_t size)
 
 void nmux_reset(uint32_t gpio_id)
 {
-	uint32_t 			mux_index;
 	GPIO_InitTypeDef  	GPIO_InitStruct;
 	struct npdrv *		pdrv;
 
