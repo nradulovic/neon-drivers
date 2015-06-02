@@ -26,10 +26,12 @@
 
 /*=========================================================  INCLUDE FILES  ==*/
 
-#include "mcu/i2c.h"
-#include "mcu/i2c_bus.h"
 #include "mcu/peripheral.h"
 #include "mcu/profile.h"
+
+#if (NPROFILE_EN_I2C)
+#include "mcu/i2c.h"
+#include "mcu/i2c_bus.h"
 #include "neon_eds.h"
 
 /*=========================================================  LOCAL MACRO's  ==*/
@@ -743,6 +745,8 @@ static naction state_transfer(
 		}
 	}
 }
+
+#endif /* NPROFILE_EN_I2C */
 
 /*===================================  GLOBAL PRIVATE FUNCTION DEFINITIONS  ==*/
 /*====================================  GLOBAL PUBLIC FUNCTION DEFINITIONS  ==*/
