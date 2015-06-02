@@ -64,14 +64,12 @@ void ngpio_init(uint32_t gpio_id, uint32_t config)
 {
 	GPIO_InitTypeDef			gpio_init;
 	struct npdrv *				pdrv;
-	uint32_t					port;
 	uint32_t					pin;
 
 	pdrv = npdrv_request(gpio_id);
 
 	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdrv != NULL);
 
-	port = NP_DEV_ID_TO_MAJOR(gpio_id);
 	pin  = NP_DEV_ID_TO_MINOR(gpio_id);
 
 	gpio_init.Pin = (0x1u << pin);
