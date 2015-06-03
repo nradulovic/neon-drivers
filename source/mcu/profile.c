@@ -26,12 +26,18 @@
 
 /*=========================================================  INCLUDE FILES  ==*/
 
+#include <stddef.h>
+
 #include "mcu/profile.h"
 #include "mcu/peripheral.h"
 #include "base/bitop.h"
-#include <stddef.h>
+#include "base/component.h"
+#include "base/debug.h"
 
 /*=========================================================  LOCAL MACRO's  ==*/
+
+static NCOMPONENT_DEFINE("MCU profile");
+
 /*======================================================  LOCAL DATA TYPES  ==*/
 /*=============================================  LOCAL FUNCTION PROTOTYPES  ==*/
 /*=======================================================  LOCAL VARIABLES  ==*/
@@ -371,6 +377,8 @@ const struct npdev * nprofile_pdev(uint32_t dev_id)
 
 	dev_index  = (NP_DEV_ID_TO_CLASS(dev_id) & 0xffu) * 16u;
 	dev_index += NP_DEV_ID_TO_MAJOR(dev_id);
+
+	NASSERT(NAPI_USAGE "invalid dev_id", dev_index < NARRAY_DIMENSION(g_devices));
 
 	pdev = g_devices[dev_index];
 
