@@ -117,13 +117,10 @@ static struct fram_workspace  	g_fram_workspace;
 struct nepa    					g_fram_epa;
 const struct nepa_define		g_fram_define =
 {
-    .sm.wspace                  = &g_fram_workspace,
-    .sm.init_state              = &state_active,
-    .sm.type                    = NSM_TYPE_FSM,
-    .working_queue.storage      = g_fram_queue_storage,
-    .working_queue.size         = sizeof(g_fram_queue_storage),
-    .thread.priority            = 1,
-    .thread.name                = "fram"
+    NSM_DEF_INIT(&g_fram_workspace, state_active, NSM_TYPE_FSM),
+    NEQUEUE_DEF_INIT(g_fram_queue_storage,  sizeof(g_fram_queue_storage)),
+    NEQUEUE_DEF_INIT(NULL, 0),
+    NTHREAD_DEF_INIT("fram", 1),
 };
 
 /*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
