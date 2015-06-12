@@ -247,7 +247,6 @@ static naction state_read_time(
 
 static struct context           g_context;
 static struct nevent * 		  	g_rtc_queue_storage[CONFIG_RTC_QUEUE_SIZE];
-static struct nevent *          g_rtc_queue_deffered_storage[CONFIG_RTC_QUEUE_SIZE];
 static struct rtc_workspace  	g_rtc_workspace;
 
 /*======================================================  GLOBAL VARIABLES  ==*/
@@ -257,7 +256,6 @@ const struct nepa_define		g_ab_rtc_define =
 {
     NSM_DEF_INIT(&g_rtc_workspace, &state_open, NSM_TYPE_FSM),
     NEQUEUE_DEF_INIT(g_rtc_queue_storage, sizeof(g_rtc_queue_storage)),
-    NEQUEUE_DEF_INIT(g_rtc_queue_deffered_storage, sizeof(g_rtc_queue_deffered_storage)),
     NTHREAD_DEF_INIT("rtc", NCONFIG_RTC_EPA_PRIO),
 };
 

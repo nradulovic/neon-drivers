@@ -119,7 +119,6 @@ const struct nepa_define		g_fram_define =
 {
     NSM_DEF_INIT(&g_fram_workspace, state_active, NSM_TYPE_FSM),
     NEQUEUE_DEF_INIT(g_fram_queue_storage,  sizeof(g_fram_queue_storage)),
-    NEQUEUE_DEF_INIT(NULL, 0),
     NTHREAD_DEF_INIT("fram", 1),
 };
 
