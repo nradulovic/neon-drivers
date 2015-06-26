@@ -59,6 +59,8 @@ enum i2c_action
 
 struct i2c_workspace
 {
+	struct nequeue				deferred;
+	struct nevent * 		  	deferred_queue_storage[CONFIG_I2C_QUEUE_SIZE];
 	const struct npdev *    	dev;
 	struct netimer			 	timeout;
 	struct ni2c_slave *			slave;
@@ -234,13 +236,9 @@ struct ni2c_bus_driver * g_i2c1_bus;
 struct nepa    g_ni2c1_epa;
 const struct nepa_define g_ni2c1_define =
 {
-    .sm.wspace                  = &g_ni2c1_workspace,
-    .sm.init_state              = &state_init,
-    .sm.type                    = NSM_TYPE_FSM,
-    .working_queue.storage      = g_ni2c1_queue_storage,
-    .working_queue.size         = sizeof(g_ni2c1_queue_storage),
-    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
-    .thread.name                = "ni2c1"
+	NSM_DEF_INIT(&g_ni2c1_workspace, &state_init, NSM_TYPE_FSM),
+	NEQUEUE_DEF_INIT(g_ni2c1_queue_storage, sizeof(g_ni2c1_queue_storage)),
+	NTHREAD_DEF_INIT("ni2c1", CONFIG_I2C_EPA_PRIORITY)
 };
 #endif
 
@@ -248,13 +246,9 @@ const struct nepa_define g_ni2c1_define =
 struct nepa    g_ni2c2_epa;
 const struct nepa_define g_ni2c2_define =
 {
-    .sm.wspace                  = &g_ni2c2_workspace,
-    .sm.init_state              = &state_init,
-    .sm.type                    = NSM_TYPE_FSM,
-    .working_queue.storage      = g_ni2c2_queue_storage,
-    .working_queue.size         = sizeof(g_ni2c2_queue_storage),
-    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
-    .thread.name                = "ni2c2"
+	NSM_DEF_INIT(&g_ni2c2_workspace, &state_init, NSM_TYPE_FSM),
+	NEQUEUE_DEF_INIT(g_ni2c2_queue_storage, sizeof(g_ni2c2_queue_storage)),
+	NTHREAD_DEF_INIT("ni2c2", CONFIG_I2C_EPA_PRIORITY)
 };
 #endif
 
@@ -262,13 +256,9 @@ const struct nepa_define g_ni2c2_define =
 struct nepa    g_ni2c3_epa;
 const struct nepa_define g_ni2c3_define =
 {
-    .sm.wspace                  = &g_ni2c3_workspace,
-    .sm.init_state              = &state_init,
-    .sm.type                    = NSM_TYPE_FSM,
-    .working_queue.storage      = g_ni2c3_queue_storage,
-    .working_queue.size         = sizeof(g_ni2c3_queue_storage),
-    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
-    .thread.name                = "ni2c3"
+	NSM_DEF_INIT(&g_ni2c3_workspace, &state_init, NSM_TYPE_FSM),
+	NEQUEUE_DEF_INIT(g_ni2c3_queue_storage, sizeof(g_ni2c3_queue_storage)),
+	NTHREAD_DEF_INIT("ni2c3", CONFIG_I2C_EPA_PRIORITY)
 };
 #endif
 
@@ -276,13 +266,9 @@ const struct nepa_define g_ni2c3_define =
 struct nepa    g_ni2c4_epa;
 const struct nepa_define g_ni2c4_define =
 {
-    .sm.wspace                  = &g_ni2c4_workspace,
-    .sm.init_state              = &state_init,
-    .sm.type                    = NSM_TYPE_FSM,
-    .working_queue.storage      = g_ni2c4_queue_storage,
-    .working_queue.size         = sizeof(g_ni2c4_queue_storage),
-    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
-    .thread.name                = "ni2c4"
+	NSM_DEF_INIT(&g_ni2c4_workspace, &state_init, NSM_TYPE_FSM),
+	NEQUEUE_DEF_INIT(g_ni2c4_queue_storage, sizeof(g_ni2c4_queue_storage)),
+	NTHREAD_DEF_INIT("ni2c4", CONFIG_I2C_EPA_PRIORITY)
 };
 #endif
 
@@ -290,13 +276,9 @@ const struct nepa_define g_ni2c4_define =
 struct nepa    g_ni2c5_epa;
 const struct nepa_define g_ni2c5_define =
 {
-    .sm.wspace                  = &g_ni2c5_workspace,
-    .sm.init_state              = &state_init,
-    .sm.type                    = NSM_TYPE_FSM,
-    .working_queue.storage      = g_ni2c5_queue_storage,
-    .working_queue.size         = sizeof(g_ni2c5_queue_storage),
-    .thread.priority            = CONFIG_I2C_EPA_PRIORITY,
-    .thread.name                = "ni2c5"
+	NSM_DEF_INIT(&g_ni2c5_workspace, &state_init, NSM_TYPE_FSM),
+	NEQUEUE_DEF_INIT(g_ni2c5_queue_storage, sizeof(g_ni2c5_queue_storage)),
+	NTHREAD_DEF_INIT("ni2c5", CONFIG_I2C_EPA_PRIORITY)
 };
 #endif
 
@@ -539,7 +521,10 @@ static naction state_init(
 
 	switch (event->id) {
 		case NSM_INIT: {
+			struct nequeue_define deferred_def =
+				NEQUEUE_DEF_INIT(ws->deferred_queue_storage, sizeof(ws->deferred_queue_storage));
 			netimer_init(&ws->timeout);
+			nepa_defer_init(&ws->deferred, &deferred_def);
 
 			return (naction_handled());
 		}
@@ -580,7 +565,7 @@ static naction state_idle(
 	switch (event->id) {
 		case NSM_ENTRY: {
 
-			nepa_fetch_one_deferred();
+			nepa_defer_fetch_one(&ws->deferred);
 
 			return (naction_handled());
 		}
