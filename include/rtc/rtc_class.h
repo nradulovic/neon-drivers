@@ -46,19 +46,19 @@ extern "C" {
 
 enum nrtc_time_state
 {
-    RTC_TIME_SET                = (0x1u << 0),
-    RTC_TIME_VALID              = (0x1u << 1),
-    RTC_TIME_SET_AND_VALID      = RTC_TIME_SET | RTC_TIME_VALID
+    NRTC_TIME_SET                = (0x1u << 0),
+    NRTC_TIME_VALID              = (0x1u << 1),
+    NRTC_TIME_SET_AND_VALID      = NRTC_TIME_SET | NRTC_TIME_VALID
 };
 
 
 
 enum nrtc_device_state
 {
-    RTC_DEVICE_OK,
-    RTC_DEVICE_INACTIVE,
-    RTC_DEVICE_FAILURE,
-    RTC_DEVICE_NO_COMM
+    NRTC_DEVICE_OK,
+    NRTC_DEVICE_INACTIVE,
+    NRTC_DEVICE_FAILURE,
+    NRTC_DEVICE_NO_COMM
 };
 
 

@@ -325,14 +325,14 @@ static naction state_read_control_status(
 
 				return (naction_transit_to(sm, state_clear_pon));
 			} else {
-				g_context.state.time |=  RTC_TIME_SET;
+				g_context.state.time |=  NRTC_TIME_SET;
 
 				return (naction_transit_to(sm, state_clear_control_int_reg));
 			}
 		}
 		case EVT_NI2C_ERROR: {
-		    g_context.state.time  &= ~RTC_TIME_VALID;
-		    g_context.state.device = RTC_DEVICE_NO_COMM;
+		    g_context.state.time  &= ~NRTC_TIME_VALID;
+		    g_context.state.device = NRTC_DEVICE_NO_COMM;
 		    g_context.time.year    = CONFIG_DEFAULT_RTC_YEAR;
 		    g_context.time.month   = CONFIG_DEFAULT_RTC_MONTH;
 		    g_context.time.day     = CONFIG_DEFAULT_RTC_DAY;
@@ -380,8 +380,8 @@ static naction state_clear_pon(
 			return (naction_transit_to(sm, state_set_default_time));
 		}
 		case EVT_NI2C_ERROR: {
-		    g_context.state.time  &= ~RTC_TIME_VALID;
-		    g_context.state.device = RTC_DEVICE_NO_COMM;
+		    g_context.state.time  &= ~NRTC_TIME_VALID;
+		    g_context.state.device = NRTC_DEVICE_NO_COMM;
 		    g_context.time.year    = CONFIG_DEFAULT_RTC_YEAR;
 		    g_context.time.month   = CONFIG_DEFAULT_RTC_MONTH;
 		    g_context.time.day     = CONFIG_DEFAULT_RTC_DAY;
@@ -436,9 +436,9 @@ static naction state_set_default_time(
 			nepa_send_event(ws->ni2c_epa, (nevent *)i2c_transfer);
 
 		    memcpy(&g_context.time, &time, sizeof(g_context.time));
-		    g_context.state.time  |= RTC_TIME_SET_AND_VALID;
-		    g_context.state.device = RTC_DEVICE_OK;
-			g_context.state.time &= ~RTC_TIME_SET;
+		    g_context.state.time  |= NRTC_TIME_SET_AND_VALID;
+		    g_context.state.device = NRTC_DEVICE_OK;
+			g_context.state.time &= ~NRTC_TIME_SET;
 
 			return (naction_handled());
 		}
@@ -447,8 +447,8 @@ static naction state_set_default_time(
 			return (naction_transit_to(sm, state_clear_control_int_reg));
 		}
 		case EVT_NI2C_ERROR: {
-		    g_context.state.time  &= ~RTC_TIME_VALID;
-		    g_context.state.device = RTC_DEVICE_NO_COMM;
+		    g_context.state.time  &= ~NRTC_TIME_VALID;
+		    g_context.state.device = NRTC_DEVICE_NO_COMM;
 		    g_context.time.year    = CONFIG_DEFAULT_RTC_YEAR;
 		    g_context.time.month   = CONFIG_DEFAULT_RTC_MONTH;
 		    g_context.time.day     = CONFIG_DEFAULT_RTC_DAY;
@@ -496,8 +496,8 @@ static naction state_clear_control_int_reg(
 			return (naction_transit_to(sm, state_watch_enable));
 		}
 		case EVT_NI2C_ERROR: {
-		    g_context.state.time  &= ~RTC_TIME_VALID;
-		    g_context.state.device = RTC_DEVICE_NO_COMM;
+		    g_context.state.time  &= ~NRTC_TIME_VALID;
+		    g_context.state.device = NRTC_DEVICE_NO_COMM;
 		    g_context.time.year    = CONFIG_DEFAULT_RTC_YEAR;
 		    g_context.time.month   = CONFIG_DEFAULT_RTC_MONTH;
 		    g_context.time.day     = CONFIG_DEFAULT_RTC_DAY;
@@ -545,8 +545,8 @@ static naction state_watch_enable(
 			return (naction_transit_to(sm, state_write_timer_low));
 		}
 		case EVT_NI2C_ERROR: {
-		    g_context.state.time  &= ~RTC_TIME_VALID;
-		    g_context.state.device = RTC_DEVICE_NO_COMM;
+		    g_context.state.time  &= ~NRTC_TIME_VALID;
+		    g_context.state.device = NRTC_DEVICE_NO_COMM;
 		    g_context.time.year    = CONFIG_DEFAULT_RTC_YEAR;
 		    g_context.time.month   = CONFIG_DEFAULT_RTC_MONTH;
 		    g_context.time.day     = CONFIG_DEFAULT_RTC_DAY;
@@ -594,8 +594,8 @@ static naction state_write_timer_low(
 			return (naction_transit_to(sm, state_write_timer_high));
 		}
 		case EVT_NI2C_ERROR: {
-		    g_context.state.time  &= ~RTC_TIME_VALID;
-		    g_context.state.device = RTC_DEVICE_NO_COMM;
+		    g_context.state.time  &= ~NRTC_TIME_VALID;
+		    g_context.state.device = NRTC_DEVICE_NO_COMM;
 		    g_context.time.year    = CONFIG_DEFAULT_RTC_YEAR;
 		    g_context.time.month   = CONFIG_DEFAULT_RTC_MONTH;
 		    g_context.time.day     = CONFIG_DEFAULT_RTC_DAY;
@@ -643,8 +643,8 @@ static naction state_write_timer_high(
 			return (naction_transit_to(sm, state_enable_autoreload_mode));
 		}
 		case EVT_NI2C_ERROR: {
-		    g_context.state.time  &= ~RTC_TIME_VALID;
-		    g_context.state.device = RTC_DEVICE_NO_COMM;
+		    g_context.state.time  &= ~NRTC_TIME_VALID;
+		    g_context.state.device = NRTC_DEVICE_NO_COMM;
 		    g_context.time.year    = CONFIG_DEFAULT_RTC_YEAR;
 		    g_context.time.month   = CONFIG_DEFAULT_RTC_MONTH;
 		    g_context.time.day     = CONFIG_DEFAULT_RTC_DAY;
@@ -693,8 +693,8 @@ static naction state_enable_autoreload_mode(
 			return (naction_transit_to(sm, state_select_clkout_freq));
 		}
 		case EVT_NI2C_ERROR: {
-		    g_context.state.time  &= ~RTC_TIME_VALID;
-		    g_context.state.device = RTC_DEVICE_NO_COMM;
+		    g_context.state.time  &= ~NRTC_TIME_VALID;
+		    g_context.state.device = NRTC_DEVICE_NO_COMM;
 		    g_context.time.year    = CONFIG_DEFAULT_RTC_YEAR;
 		    g_context.time.month   = CONFIG_DEFAULT_RTC_MONTH;
 		    g_context.time.day     = CONFIG_DEFAULT_RTC_DAY;
@@ -741,8 +741,8 @@ static naction state_select_clkout_freq(
 			return (naction_transit_to(sm, state_enable_timer));
 		}
 		case EVT_NI2C_ERROR: {
-		    g_context.state.time  &= ~RTC_TIME_VALID;
-		    g_context.state.device = RTC_DEVICE_NO_COMM;
+		    g_context.state.time  &= ~NRTC_TIME_VALID;
+		    g_context.state.device = NRTC_DEVICE_NO_COMM;
 		    g_context.time.year    = CONFIG_DEFAULT_RTC_YEAR;
 		    g_context.time.month   = CONFIG_DEFAULT_RTC_MONTH;
 		    g_context.time.day     = CONFIG_DEFAULT_RTC_DAY;
@@ -790,8 +790,8 @@ static naction state_enable_timer(
 			return (naction_transit_to(sm, state_clear_control_int_flag_reg));
 		}
 		case EVT_NI2C_ERROR: {
-		    g_context.state.time  &= ~RTC_TIME_VALID;
-		    g_context.state.device = RTC_DEVICE_NO_COMM;
+		    g_context.state.time  &= ~NRTC_TIME_VALID;
+		    g_context.state.device = NRTC_DEVICE_NO_COMM;
 		    g_context.time.year    = CONFIG_DEFAULT_RTC_YEAR;
 		    g_context.time.month   = CONFIG_DEFAULT_RTC_MONTH;
 		    g_context.time.day     = CONFIG_DEFAULT_RTC_DAY;
@@ -839,8 +839,8 @@ static naction state_clear_control_int_flag_reg(
 			return (naction_transit_to(sm, state_enable_timer_int));
 		}
 		case EVT_NI2C_ERROR: {
-		    g_context.state.time  &= ~RTC_TIME_VALID;
-		    g_context.state.device = RTC_DEVICE_NO_COMM;
+		    g_context.state.time  &= ~NRTC_TIME_VALID;
+		    g_context.state.device = NRTC_DEVICE_NO_COMM;
 		    g_context.time.year    = CONFIG_DEFAULT_RTC_YEAR;
 		    g_context.time.month   = CONFIG_DEFAULT_RTC_MONTH;
 		    g_context.time.day     = CONFIG_DEFAULT_RTC_DAY;
@@ -888,8 +888,8 @@ static naction state_enable_timer_int(
 			return (naction_transit_to(sm, state_tick));
 		}
 		case EVT_NI2C_ERROR: {
-		    g_context.state.time  &= ~RTC_TIME_VALID;
-		    g_context.state.device = RTC_DEVICE_NO_COMM;
+		    g_context.state.time  &= ~NRTC_TIME_VALID;
+		    g_context.state.device = NRTC_DEVICE_NO_COMM;
 		    g_context.time.year    = CONFIG_DEFAULT_RTC_YEAR;
 		    g_context.time.month   = CONFIG_DEFAULT_RTC_MONTH;
 		    g_context.time.day     = CONFIG_DEFAULT_RTC_DAY;
@@ -945,8 +945,8 @@ static naction state_tick(
 
 			get_time->time = nrtc_get_time_immediately();
 			get_time->state = nrtc_get_state_immediately();
-		    g_context.state.time  &= ~RTC_TIME_VALID;
-		    g_context.state.device = RTC_DEVICE_NO_COMM;
+		    g_context.state.time  &= ~NRTC_TIME_VALID;
+		    g_context.state.device = NRTC_DEVICE_NO_COMM;
 
 			nepa_send_event(ws->client, (nevent *)get_time);
 
@@ -1016,8 +1016,8 @@ static naction state_set_time(
 			nepa_send_event(ws->ni2c_epa, (nevent *)i2c_transfer);
 
 		    memcpy(&g_context.time, set_time->time, sizeof(g_context.time));
-		    g_context.state.time  |= RTC_TIME_SET_AND_VALID;
-		    g_context.state.device = RTC_DEVICE_OK;
+		    g_context.state.time  |= NRTC_TIME_SET_AND_VALID;
+		    g_context.state.device = NRTC_DEVICE_OK;
 
 			return (naction_handled());
 		}
@@ -1026,8 +1026,8 @@ static naction state_set_time(
 			return (naction_transit_to(sm, state_tick));
 		}
 		case EVT_NI2C_ERROR: {
-		    g_context.state.time  &= ~(RTC_TIME_SET_AND_VALID);
-		    g_context.state.device = RTC_DEVICE_NO_COMM;
+		    g_context.state.time  &= ~(NRTC_TIME_SET_AND_VALID);
+		    g_context.state.device = NRTC_DEVICE_NO_COMM;
 
 		    return (naction_transit_to(sm, state_tick));
 		}
@@ -1065,8 +1065,8 @@ static naction state_read_time(
 		case EVT_NI2C_TRANSFER_COMPLETED: {
 			struct rtc_time_event * get_time;
 
-		    g_context.state.time  |= RTC_TIME_VALID;
-		    g_context.state.device = RTC_DEVICE_OK;
+		    g_context.state.time  |= NRTC_TIME_VALID;
+		    g_context.state.device = NRTC_DEVICE_OK;
 		    g_context.time.year    = (uint16_t)(bcd_to_bin(ws->regs.years) + 2000u);
 		    g_context.time.month   = bcd_to_bin(ws->regs.months);
 		    g_context.time.day     = bcd_to_bin(ws->regs.days);
@@ -1080,8 +1080,8 @@ static naction state_read_time(
 
 			get_time->time = nrtc_get_time_immediately();
 			get_time->state = nrtc_get_state_immediately();
-		    g_context.state.time  &= ~RTC_TIME_VALID;
-		    g_context.state.device = RTC_DEVICE_NO_COMM;
+		    g_context.state.time  &= ~NRTC_TIME_VALID;
+		    g_context.state.device = NRTC_DEVICE_NO_COMM;
 
 			nepa_send_event(ws->client, (nevent *)get_time);
 
@@ -1096,8 +1096,8 @@ static naction state_read_time(
 
 			get_time->time = nrtc_get_time_immediately();
 			get_time->state = nrtc_get_state_immediately();
-		    g_context.state.time  &= ~RTC_TIME_VALID;
-		    g_context.state.device = RTC_DEVICE_NO_COMM;
+		    g_context.state.time  &= ~NRTC_TIME_VALID;
+		    g_context.state.device = NRTC_DEVICE_NO_COMM;
 
 			nepa_send_event(ws->client, (nevent *)get_time);
 
