@@ -724,6 +724,12 @@ static naction state_transfer(
 
 			return (naction_transit_to(sm, state_transfer));
 		}
+		case EVT_NI2C_WRITE_SLAVE:
+		case EVT_NI2C_READ_SLAVE: {
+			nepa_defer_event(&ws->deferred, event);
+
+			return (naction_handled());
+		}
 		default: {
 
 			return (naction_ignored());
