@@ -281,10 +281,10 @@ static inline void master_receive(struct ni2c_bus_driver * bus)
 
 	handle = &bus->ctx.handle;
 
-	if (handle->XferCount != 0) {
-		(*handle->pBuffPtr++) = handle->Instance->DR;
-    	handle->XferCount--;
-	} else {
+	(*handle->pBuffPtr++) = handle->Instance->DR;
+    handle->XferCount--;
+
+    if (handle->XferCount == 0) {
 		if (bus->format == NORMAL_TRANSFER) {
 			if (((bus->slave->flags & NI2C_READ_MODE) == NI2C_READ_WITHOUT_RESTART) &&
 				(bus->phase == ADDRESS_TRANSFER)) {
@@ -305,9 +305,7 @@ static inline void master_receive(struct ni2c_bus_driver * bus)
 	}
 	if (handle->XferCount == 1) {
 		disable_ack(handle);
-		if (bus->format == NORMAL_TRANSFER) {
-			generate_stop(handle);
-		}
+		generate_stop(handle);
 	}
 }
 
