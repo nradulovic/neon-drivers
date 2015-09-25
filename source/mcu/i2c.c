@@ -495,17 +495,19 @@ static void error(
 	static struct ni2c_error_event error =
 	{
 		{
-			.attrib = NEVENT_ATTR_RESERVED,
-			.id     = EVT_ERROR,
-#if (CONFIG_API_VALIDATION == 1)
-			.signature = NSIGNATURE_EVENT,
+			.attrib 		= NEVENT_ATTR_RESERVED,
+			.id     		= EVT_ERROR,
+#if (CONFIG_API_VALIDATION 	== 1)
+			.signature 		= NSIGNATURE_EVENT,
 #endif
-		}
+		},
+		.retries 			= 0u
 	};
 
 	bus = slave->bus;
 	epa = npdrv_get_data(&bus->pdrv);
 	error.error_id = id;
+	error.retries  = bus->retry;
 	nepa_send_event_i(
 		epa,
 		(nevent *)&error);
