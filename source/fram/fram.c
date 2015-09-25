@@ -27,6 +27,7 @@
 /*=========================================================  INCLUDE FILES  ==*/
 
 #include "fram/fram.h"
+#include "app_epa_config.h"
 
 /*=========================================================  LOCAL MACRO's  ==*/
 
@@ -119,7 +120,7 @@ const struct nepa_define		g_fram_define =
 {
     NSM_DEF_INIT(&g_fram_workspace, state_active, NSM_TYPE_FSM),
     NEQUEUE_DEF_INIT(g_fram_queue_storage,  sizeof(g_fram_queue_storage)),
-    NTHREAD_DEF_INIT("fram", 1),
+    NTHREAD_DEF_INIT("fram", CONFIG_FRAM_PRIORITY),
 };
 
 /*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
