@@ -34,7 +34,6 @@
 #include <stdint.h>
 #include "base/error.h"
 #include "mcu/config.h"
-#include "neon-eds/include/neon_eds.h"
 
 /*===============================================================  MACRO's  ==*/
 /*-------------------------------------------------------  C++ extern base  --*/
