@@ -27,7 +27,7 @@
 /*=========================================================  INCLUDE FILES  ==*/
 
 #include "fram/fram.h"
-#include "app_epa_config.h"
+#include "neon_drivers_app_config.h"
 
 /*=========================================================  LOCAL MACRO's  ==*/
 
