@@ -41,7 +41,8 @@
 
 /*=========================================================  LOCAL MACRO's  ==*/
 
-#define MAX_RETRIES				3
+#define MAX_RETRIES						3u
+#define REPEATED_START_TIMEOUT_US		100u
 
 #define get_flag(handle, flag)													\
 		__HAL_I2C_GET_FLAG(handle, flag)
@@ -143,6 +144,7 @@ enum transfer_type
 /*=======================================================  LOCAL VARIABLES  ==*/
 
 static const NCOMPONENT_DEFINE("STM32Fxxx I2C bus driver");
+static uint32_t g_repeated_start_timeout;
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
@@ -200,6 +202,8 @@ static inline void handle_combined_transfer(struct ni2c_bus_driver * bus)
 	handle = &bus->ctx.handle;
 
 	if (bus->phase == ADDRESS_TRANSFER) {
+		uint32_t timeout = 0u;
+
 		bus->phase = DATA_TRANSFER;
 		handle->pBuffPtr = (uint8_t *)bus->data;
 		handle->XferSize = bus->size;
@@ -207,7 +211,13 @@ static inline void handle_combined_transfer(struct ni2c_bus_driver * bus)
 		bus->slave->address = I2C_7BIT_ADD_READ(bus->slave->address);
 		generate_start(handle);
 		while(handle->Instance->CR1 & I2C_CR1_START) {
-			;
+			timeout++;
+			if (timeout > g_repeated_start_timeout) {
+				bus->error = NI2C_BUS_COLISION_ERROR;
+				bus->slave->error(bus->slave, bus->error);
+
+				break;
+			}
 		}
 	} else {
 		bus->phase = ADDRESS_TRANSFER;
@@ -340,8 +350,12 @@ static inline void i2c_transfer(
 	bus = slave->bus;
 	handle = &slave->bus->ctx.handle;
 
-	while(is_busy(handle));
+	if (is_busy(handle)) {
+		bus->error = NI2C_BUS_OVERFLOW;
+		bus->slave->error(bus->slave, bus->error);
 
+		return;
+	}
     handle->pBuffPtr = (uint8_t *)&slave->bus->reg;
     handle->XferSize = slave->flags & NI2C_REG_SIZE;
     handle->XferCount = handle->XferSize;
@@ -427,7 +441,7 @@ void ni2c_bus_init(
 	HAL_I2C_Init(handle);
 
 	ntimer_init(&ndrv->recovery_period);
-
+	g_repeated_start_timeout = SystemCoreClock / (REPEATED_START_TIMEOUT_US * 100u);
 	if ((config & NI2C_BUS_HANDLING) == NI2C_BUS_HANDLING_IT) {
 		ndrv->bus_handling = NI2C_BUS_HANDLING_IT;
 		npdrv_isr_set_prio(pdrv, 0, CONFIG_CORE_LOCK_MAX_LEVEL);				/* I2Cx_EV_IRQn Priority */
