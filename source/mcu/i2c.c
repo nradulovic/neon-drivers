@@ -71,6 +71,7 @@ struct i2c_workspace
 	uint32_t					speed;
 	uint32_t					retries;
 	uint32_t					reg;
+	uint32_t					config;
 };
 
 /*=============================================  LOCAL FUNCTION PROTOTYPES  ==*/
@@ -534,6 +535,7 @@ static naction state_init(
 			struct ni2c_config_event * config;
 
 			config = (struct ni2c_config_event *)event;
+			ws->config = config->config;
 
 			ni2c_bus_init(
 				NP_DEV_CREATE_ID(NPROFILE_CLASS_I2C, npdev_instance(ws->dev), 0),
@@ -701,6 +703,11 @@ static naction state_transfer(
 				nepa_send_event(
 					ws->client,
 					(nevent *)error);
+				ni2c_bus_term(
+					NP_DEV_CREATE_ID(NPROFILE_CLASS_I2C, npdev_instance(ws->dev), 0));
+				ni2c_bus_init(
+					NP_DEV_CREATE_ID(NPROFILE_CLASS_I2C, npdev_instance(ws->dev), 0),
+					ws->config);
 
 				return (naction_transit_to(sm, state_idle));
 			}
