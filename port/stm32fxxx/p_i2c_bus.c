@@ -210,7 +210,7 @@ static inline void handle_combined_transfer(struct ni2c_bus_driver * bus)
 		handle->XferCount = bus->size;
 		bus->slave->address = I2C_7BIT_ADD_READ(bus->slave->address);
 		generate_start(handle);
-		while(handle->Instance->CR1 & I2C_CR1_START) {
+		while (handle->Instance->CR1 & I2C_CR1_START) {
 			timeout++;
 			if (timeout > g_repeated_start_timeout) {
 				bus->error = NI2C_BUS_COLISION_ERROR;
@@ -442,6 +442,7 @@ void ni2c_bus_init(
 
 	ntimer_init(&ndrv->recovery_period);
 	g_repeated_start_timeout = SystemCoreClock / (REPEATED_START_TIMEOUT_US * 100u);
+	g_repeated_start_timeout /= 4u;												/* Four instructions to load and compare variable */
 	if ((config & NI2C_BUS_HANDLING) == NI2C_BUS_HANDLING_IT) {
 		ndrv->bus_handling = NI2C_BUS_HANDLING_IT;
 		npdrv_isr_set_prio(pdrv, 0, CONFIG_CORE_LOCK_MAX_LEVEL);				/* I2Cx_EV_IRQn Priority */
