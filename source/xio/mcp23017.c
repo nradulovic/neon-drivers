@@ -109,7 +109,7 @@ static naction state_init(
 				NEQUEUE_DEF_INIT(ws->deferred_queue_storage, sizeof(ws->deferred_queue_storage));
 			nepa_defer_init(&ws->deferred, &deferred_def);
 
-			return (naction_transit_to(sm, state_open));
+			return (naction_transit_to(sm, state_idle));
 		}
 		default: {
 			return (naction_ignored());
@@ -132,32 +132,44 @@ static naction state_idle(
 			return (naction_handled());
 		}
 		case EVT_NXIO_OPEN: {
-			ws->event = (nevent *)event;
+			nevent_lock(event);
+			ws->event 	= (nevent *)event;
+			ws->client	= event->producer;
 
 			return (naction_transit_to(sm, state_open));
 		}
 		case EVT_NXIO_CONFIG: {
-			ws->event = (nevent *)event;
+			nevent_lock(event);
+			ws->event 	= (nevent *)event;
+			ws->client	= event->producer;
 
 			return (naction_transit_to(sm, state_config));
 		}
 		case EVT_NXIO_WRITE_PIN: {
-			ws->event = (nevent *)event;
+			nevent_lock(event);
+			ws->event 	= (nevent *)event;
+			ws->client	= event->producer;
 
 			return (naction_transit_to(sm, state_write_pin));
 		}
 		case EVT_NXIO_WRITE: {
-			ws->event = (nevent *)event;
+			nevent_lock(event);
+			ws->event 	= (nevent *)event;
+			ws->client	= event->producer;
 
 			return (naction_transit_to(sm, state_write));
 		}
 		case EVT_NXIO_READ_PIN: {
-			ws->event = (nevent *)event;
+			nevent_lock(event);
+			ws->event 	= (nevent *)event;
+			ws->client	= event->producer;
 
 			return (naction_transit_to(sm, state_read_pin));
 		}
 		case EVT_NXIO_READ: {
-			ws->event = (nevent *)event;
+			nevent_lock(event);
+			ws->event 	= (nevent *)event;
+			ws->client	= event->producer;
 
 			return (naction_transit_to(sm, state_read));
 		}
@@ -176,7 +188,7 @@ static naction state_open(
 	struct mcp_workspace * ws = sm->wspace;
 
 	switch (event->id) {
-		case EVT_NXIO_OPEN: {
+		case NSM_INIT: {
 			struct ni2c_transfer_event * 	transfer;
 			struct ni2c_open_event * 		i2c_open;
 			struct nxio_event_open *		open;
@@ -207,10 +219,10 @@ static naction state_open(
 			transfer->reg  		= REG16_IODIR_ADDR;
 			transfer->data  	= &mcp->regs;
 			transfer->size		= sizeof(struct mcp23017_word_registers);
-			ws->client 			= event->producer;
 
 			nepa_send_event(open->ni2c_epa, (nevent *)i2c_open);
 			nepa_send_event(open->ni2c_epa, (nevent *)transfer);
+			nevent_unlock(ws->event);
 
 			return (naction_transit_to(sm, state_idle));
 		}
@@ -229,7 +241,7 @@ static naction state_config (
 	struct mcp_workspace * ws = sm->wspace;
 
 	switch (event->id) {
-		case EVT_NXIO_CONFIG: {
+		case NSM_ENTRY: {
 			struct nxio_event_config *  	config;
 			struct ni2c_transfer_event * 	transfer;
 			struct nxio_driver *			driver;
@@ -250,6 +262,7 @@ static naction state_config (
 			ws->client 		= event->producer;
 
 			nepa_send_event(driver->ni2c_epa, (nevent *)transfer);
+			nevent_unlock(ws->event);
 
 			return (naction_handled());
 		}
@@ -264,6 +277,8 @@ static naction state_config (
 			return (naction_transit_to(sm, state_idle));
 		}
 		default: {
+			nepa_defer_event(&ws->deferred, event);
+
 			return (naction_ignored());
 		}
 	}
@@ -305,6 +320,7 @@ static naction state_write_pin(
 			transfer->size	= sizeof(mcp->regs.gpio);
 
 			nepa_send_event(driver->ni2c_epa, (nevent *)transfer);
+			nevent_unlock(ws->event);
 
 			return (naction_handled());
 		}
@@ -318,16 +334,9 @@ static naction state_write_pin(
 
 			return (naction_transit_to(sm, state_idle));
 		}
-		case EVT_NXIO_OPEN:
-		case EVT_NXIO_CONFIG:
-		case EVT_NXIO_WRITE:
-		case EVT_NXIO_READ_PIN:
-		case EVT_NXIO_READ: {
+		default: {
 			nepa_defer_event(&ws->deferred, event);
 
-			return (naction_handled());
-		}
-		default: {
 			return (naction_ignored());
 		}
 	}
@@ -363,6 +372,7 @@ static naction state_write(
 			transfer->size	= sizeof(mcp->regs.gpio);
 
 			nepa_send_event(driver->ni2c_epa, (nevent *)transfer);
+			nevent_unlock(ws->event);
 
 			return (naction_handled());
 		}
@@ -376,16 +386,9 @@ static naction state_write(
 
 			return (naction_transit_to(sm, state_idle));
 		}
-		case EVT_NXIO_OPEN:
-		case EVT_NXIO_CONFIG:
-		case EVT_NXIO_WRITE_PIN:
-		case EVT_NXIO_READ_PIN:
-		case EVT_NXIO_READ: {
+		default: {
 			nepa_defer_event(&ws->deferred, event);
 
-			return (naction_handled());
-		}
-		default: {
 			return (naction_ignored());
 		}
 	}
@@ -444,24 +447,19 @@ static naction state_read_pin(
 				*ws->state = NXIO_PIN_STATE_LOW;
 			}
 			nepa_send_signal(ws->client, EVT_NXIO_COMPLETED);
+			nevent_unlock(ws->event);
 
 			return (naction_transit_to(sm, state_idle));
 		}
 		case EVT_NI2C_ERROR: {
 			nepa_send_signal(ws->client, EVT_NXIO_FAILED);
+			nevent_unlock(ws->event);
 
 			return (naction_transit_to(sm, state_idle));
 		}
-		case EVT_NXIO_OPEN:
-		case EVT_NXIO_CONFIG:
-		case EVT_NXIO_WRITE:
-		case EVT_NXIO_READ_PIN:
-		case EVT_NXIO_READ: {
+		default: {
 			nepa_defer_event(&ws->deferred, event);
 
-			return (naction_handled());
-		}
-		default: {
 			return (naction_ignored());
 		}
 	}
@@ -498,6 +496,7 @@ static naction state_read(
 			transfer->size	= sizeof(mcp->regs.gpio);
 			ws->value		= read->value;
 			nepa_send_event(driver->ni2c_epa, (nevent *)transfer);
+			nevent_unlock(ws->event);
 
 			return (naction_handled());
 		}
@@ -521,16 +520,9 @@ static naction state_read(
 
 			return (naction_transit_to(sm, state_idle));
 		}
-		case EVT_NXIO_OPEN:
-		case EVT_NXIO_CONFIG:
-		case EVT_NXIO_WRITE:
-		case EVT_NXIO_READ_PIN:
-		case EVT_NXIO_READ: {
+		default: {
 			nepa_defer_event(&ws->deferred, event);
 
-			return (naction_handled());
-		}
-		default: {
 			return (naction_ignored());
 		}
 	}
