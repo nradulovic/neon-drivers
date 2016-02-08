@@ -206,8 +206,8 @@ static inline void handle_combined_transfer(struct ni2c_bus_driver * bus)
 
 		bus->phase = DATA_TRANSFER;
 		handle->pBuffPtr = (uint8_t *)bus->data;
-		handle->XferSize = bus->size;
-		handle->XferCount = bus->size;
+		handle->XferSize  = (uint16_t)bus->size;
+		handle->XferCount = (uint16_t)bus->size;
 		bus->slave->address = I2C_7BIT_ADD_READ(bus->slave->address);
 		generate_start(handle);
 		while (handle->Instance->CR1 & I2C_CR1_START) {
