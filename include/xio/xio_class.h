@@ -32,10 +32,11 @@
 /*=========================================================  INCLUDE FILES  ==*/
 
 #include <stdint.h>
-#include "base/error.h"
+
+#include "ep/event.h"
+#include "ep/epa.h"
 #include "mcu/config.h"
 #include "mcu/i2c.h"
-#include "neon_eds.h"
 
 /*===============================================================  MACRO's  ==*/
 /*------------------------------------------------------  C++ extern begin  --*/

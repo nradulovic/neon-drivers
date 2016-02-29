@@ -91,6 +91,17 @@
 # define CONFIG_RTC_QUEUE_SIZE			10
 #endif
 
+#if !defined(CONFIG_NXIO_EVENT_BASE_ID)
+# define CONFIG_NXIO_EVENT_BASE_ID      4000
+#endif
+
+#if !defined(CONFIG_NXIO_QUEUE_SIZE)
+# define CONFIG_NXIO_QUEUE_SIZE         10
+#endif
+
+#if !defined(CONFIG_NXIO_PRIORITY)
+# define CONFIG_NXIO_PRIORITY           NTHREAD_PRIORITY_MAX
+#endif
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
