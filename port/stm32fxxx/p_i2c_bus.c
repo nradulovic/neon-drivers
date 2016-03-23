@@ -223,6 +223,7 @@ static inline void handle_combined_transfer(struct ni2c_bus_driver * bus)
 		bus->phase = ADDRESS_TRANSFER;
 		disable_it(handle, I2C_IT_EVT | I2C_IT_BUF | I2C_IT_ERR);
 		generate_stop(handle);
+		while(is_busy(handle)); // wait for idle state
 		ntimer_cancel_i(&bus->recovery_period);
 
 		bus->slave->transfer(bus->slave);
@@ -254,6 +255,7 @@ static inline void master_transmit(struct ni2c_bus_driver * bus)
 				bus->phase = ADDRESS_TRANSFER;
 				disable_it(handle, I2C_IT_EVT | I2C_IT_BUF | I2C_IT_ERR);
 				generate_stop(handle);
+				while(is_busy(handle));
 				ntimer_cancel_i(&bus->recovery_period);
 
 				bus->slave->transfer(bus->slave);
@@ -387,7 +389,6 @@ void recovery(void * arg)
 	struct ni2c_bus_driver * bus;
 
 	bus = (struct ni2c_bus_driver *)arg;
-
 	start_transfer(bus);
 }
 
@@ -468,8 +469,8 @@ void ni2c_bus_term(
 	NREQUIRE(NAPI_USAGE "Invalid bus_id.", pdrv != NULL);
 
 	ndrv = pdrv_to_ni2c_driver(pdrv);
+	ntimer_term(&ndrv->recovery_period);
 	handle = &ndrv->ctx.handle;
-
 	NREQUIRE(NAPI_USAGE "i2c init failed.", HAL_I2C_DeInit(handle) == HAL_OK);
 }
 
@@ -572,6 +573,7 @@ void ni2c_error_isr(
 	if (is_buss_error(handle) == SET) {
 		clear_flag(handle, I2C_FLAG_BERR);
 		generate_stop(handle);
+		while(is_busy(handle));
 		bus->error = NI2C_BUS_COLISION_ERROR;
 
 		goto RETRY;
@@ -585,6 +587,7 @@ void ni2c_error_isr(
 	if (is_acknowledge_failure(handle) == SET) {
 		clear_flag(handle, I2C_FLAG_AF);
 		generate_stop(handle);
+		while(is_busy(handle));
 		bus->error = NI2C_BUS_ACKNOWLEDGE_FAILURE;
 
 		goto RETRY;
@@ -592,6 +595,7 @@ void ni2c_error_isr(
 	if (is_over_under_run(handle) == SET) {
 		clear_flag(handle, I2C_FLAG_OVR);
 		generate_stop(handle);
+		while(is_busy(handle));
 		bus->error = NI2C_BUS_OVERFLOW;
 
 		goto RETRY;
@@ -600,7 +604,7 @@ void ni2c_error_isr(
 RETRY:
 	if (bus->retry < MAX_RETRIES) {
 		bus->retry++;
-		ntimer_start_i(&bus->recovery_period, 1u, recovery, (void *)bus, NTIMER_ATTR_ONE_SHOT);
+		ntimer_start_i(&bus->recovery_period, NTIMER_MS(1), recovery, bus, NTIMER_ATTR_ONE_SHOT);
 	} else {
 		bus->slave->error(bus->slave, bus->error);
 	}

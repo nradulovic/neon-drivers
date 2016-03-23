@@ -62,7 +62,7 @@ struct i2c_workspace
 	struct nequeue				deferred;
 	struct nevent * 		  	deferred_queue_storage[CONFIG_I2C_QUEUE_SIZE];
 	const struct npdev *    	dev;
-	struct netimer			 	timeout;
+//	struct netimer			 	timeout;
 	struct ni2c_slave *			slave;
 	struct nepa	*				client;
 	enum i2c_action				action;
@@ -425,37 +425,6 @@ const struct nepa_define g_ni2c15_define =
 
 /*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
 
-static inline uint32_t compute_timeout(
-		uint32_t size,
-		uint32_t speed)
-{
-	uint32_t timeout;
-
-	switch (speed) {
-		case NI2C_BUS_SPEED_100: {
-
-			return (timeout = size / 10);
-		}
-		case NI2C_BUS_SPEED_400: {
-
-			return (timeout = size / 40);
-		}
-		case NI2C_BUS_SPEED_1700: {
-
-			return (timeout = size / 160);
-		}
-		case NI2C_BUS_SPEED_3400: {
-
-			return (timeout = size / 340);
-		}
-		default: {
-
-			return size;
-		}
-	}
-}
-
-
 
 static inline struct ni2c_bus_driver * pdrv_to_ni2c_driver(
  	struct npdrv * 				pdrv)
@@ -526,7 +495,6 @@ static naction state_init(
 		case NSM_INIT: {
 			struct nequeue_define deferred_def =
 				NEQUEUE_DEF_INIT(ws->deferred_queue_storage, sizeof(ws->deferred_queue_storage));
-			netimer_init(&ws->timeout);
 			nepa_defer_init(&ws->deferred, &deferred_def);
 
 			return (naction_handled());
@@ -621,9 +589,9 @@ static naction state_idle(
 			return (naction_transit_to(sm, state_transfer));
 		}
 		case EVT_NI2C_GENERAL_CALL: {
-			struct ni2c_general_call_event * general;
+			const struct ni2c_general_call_event * general;
 
-			general = (struct ni2c_general_call_event *)event;
+			general = (const struct ni2c_general_call_event *)event;
 
 			NREQUIRE(NAPI_USAGE "Invalid command.", general->command != 0);
 
@@ -634,7 +602,7 @@ static naction state_idle(
 			ws->client = event->producer;
 			ws->retries = 0;
 
-			ni2c_open_slave(ws->slave, bus, 0, 0, transfer, error);
+			ni2c_open_slave(ws->slave, bus, 0, 0, &transfer, &error);
 
 			return (naction_transit_to(sm, state_transfer));
 		}
@@ -670,9 +638,6 @@ static naction state_transfer(
 					;
 				}
 			}
-			ws->retries++;
-			timeout = compute_timeout(ws->size, ws->speed) + 1u;
-			netimer_after(&ws->timeout, timeout, EVT_TIMEOUT);
 
 		    return (naction_handled());
 		}
@@ -687,52 +652,30 @@ static naction state_transfer(
 			nepa_send_event(
 				ws->client,
 				(nevent *)completed);
-			netimer_cancel(&ws->timeout);
 
 			return (naction_transit_to(sm, state_idle));
 		}
 		case EVT_ERROR: {
-			netimer_cancel(&ws->timeout);
-			if (ws->retries == I2C_MAX_RETRIES) {
+
 				struct ni2c_error_event * error;
 
-				error = (struct ni2c_error_event *)event;
-
-				error->event.id = EVT_NI2C_ERROR;
+				error = NEVENT_CREATE(struct ni2c_error_event, EVT_NI2C_ERROR);
 				error->retries = ws->retries;
-				nepa_send_event(
-					ws->client,
-					(nevent *)error);
-				ni2c_bus_term(
-					NP_DEV_CREATE_ID(NPROFILE_CLASS_I2C, npdev_instance(ws->dev), 0));
-				ni2c_bus_init(
-					NP_DEV_CREATE_ID(NPROFILE_CLASS_I2C, npdev_instance(ws->dev), 0),
-					ws->config);
-
-				return (naction_transit_to(sm, state_idle));
-			}
-
-			return (naction_transit_to(sm, state_transfer));
-		}
-		case EVT_TIMEOUT: {
-			netimer_cancel(&ws->timeout);
-			if (ws->retries == I2C_MAX_RETRIES) {
-				struct ni2c_error_event * error;
-
-				error = (struct ni2c_error_event *)event;
-
-				error->event.id = EVT_NI2C_ERROR;
-				error->retries = ws->retries;
-				error->error_id = NI2C_TIMEOUT;
+				error->error_id = NI2C_ACKNOWLEDGE_FAILURE;
 				nepa_send_event(
 					ws->client,
 					(nevent *)error);
 
 				return (naction_transit_to(sm, state_idle));
-			}
-
-			return (naction_transit_to(sm, state_transfer));
 		}
+
+
+		case EVT_NI2C_ERROR: {
+
+			nepa_defer_event(&ws->deferred, event);
+					return (naction_handled());
+				}
+
 		case EVT_NI2C_WRITE_SLAVE:
 		case EVT_NI2C_READ_SLAVE: {
 			nepa_defer_event(&ws->deferred, event);

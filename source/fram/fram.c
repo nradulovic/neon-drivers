@@ -123,6 +123,7 @@ const struct nepa_define		g_fram_define =
     NTHREAD_DEF_INIT("fram", CONFIG_FRAM_PRIORITY),
 };
 
+
 /*============================================  LOCAL FUNCTION DEFINITIONS  ==*/
 
 static inline uint32_t get_address_space(
@@ -202,6 +203,7 @@ static naction state_active(
 		const struct nevent * event)
 {
 	struct fram_workspace * ws = sm->wspace;
+
 
 	switch (event->id) {
 		case EVT_FRAM_OPEN: {
