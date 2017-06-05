@@ -48,46 +48,46 @@ static const NCOMPONENT_DEFINE("STM32Fxxx GPIO driver");
 
 void nmux_setup(const struct nmux * mux_array, size_t size)
 {
-	uint32_t 			mux_index;
-	GPIO_InitTypeDef  	GPIO_InitStruct;
-	struct npdrv *		pdrv;
+    uint32_t            mux_index;
+    GPIO_InitTypeDef    GPIO_InitStruct;
+    struct npdrv *      pdrv;
 
-	size /= sizeof(mux_array[0]);
+    size /= sizeof(mux_array[0]);
 
-	for (mux_index = 0; mux_index < size; mux_index++) {
-	    pdrv = npdrv_request(mux_array[mux_index].gpio_id);
+    for (mux_index = 0; mux_index < size; mux_index++) {
+        pdrv = npdrv_request(mux_array[mux_index].gpio_id);
 
-		NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdrv != NULL);
+        NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdrv != NULL);
 
-		npdrv_pwr_enable(pdrv, 0);
+        npdrv_pwr_enable(pdrv, 0);
 
-		GPIO_InitStruct.Pin       = (uint32_t)(1u << NGPIO_ID_TO_PIN(mux_array[mux_index].gpio_id));
-		GPIO_InitStruct.Mode      = mux_array[mux_index].mode;
-		GPIO_InitStruct.Pull      = mux_array[mux_index].pull;
-		GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;
-		GPIO_InitStruct.Alternate = mux_array[mux_index].alternate;
+        GPIO_InitStruct.Pin       = (uint32_t)(1u << NGPIO_ID_TO_PIN(mux_array[mux_index].gpio_id));
+        GPIO_InitStruct.Mode      = mux_array[mux_index].mode;
+        GPIO_InitStruct.Pull      = mux_array[mux_index].pull;
+        GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;
+        GPIO_InitStruct.Alternate = mux_array[mux_index].alternate;
 
-	    HAL_GPIO_Init((GPIO_TypeDef *)npdrv_address(pdrv), &GPIO_InitStruct);
-	}
+        HAL_GPIO_Init((GPIO_TypeDef *)npdrv_address(pdrv), &GPIO_InitStruct);
+    }
 }
 
 
 
 void nmux_reset(uint32_t gpio_id)
 {
-	GPIO_InitTypeDef  	GPIO_InitStruct;
-	struct npdrv *		pdrv;
+    GPIO_InitTypeDef    GPIO_InitStruct;
+    struct npdrv *      pdrv;
 
-	pdrv = npdrv_request(gpio_id);
+    pdrv = npdrv_request(gpio_id);
 
-	NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdrv != NULL);
+    NREQUIRE(NAPI_USAGE "Invalid gpio_id.", pdrv != NULL);
 
-	GPIO_InitStruct.Pin       = NGPIO_ID_TO_PIN(gpio_id);
-	GPIO_InitStruct.Mode      = GPIO_MODE_INPUT;
-	GPIO_InitStruct.Pull      = GPIO_NOPULL;
-	GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;
+    GPIO_InitStruct.Pin       = NGPIO_ID_TO_PIN(gpio_id);
+    GPIO_InitStruct.Mode      = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull      = GPIO_NOPULL;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;
 
-	HAL_GPIO_Init((GPIO_TypeDef *)npdrv_address(pdrv), &GPIO_InitStruct);
+    HAL_GPIO_Init((GPIO_TypeDef *)npdrv_address(pdrv), &GPIO_InitStruct);
 }
 
 /*================================*//** @cond *//*==  CONFIGURATION ERRORS  ==*/

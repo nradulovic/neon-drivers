@@ -43,7 +43,7 @@
 #define NP_ATTR_ISR                     1
 #define NP_ATTR_MUX                     1
 #define NP_ATTR_RST                     0
-#define NP_ATTR_PWR						1
+#define NP_ATTR_PWR                     1
 
 /* NOTE:
  * This port defines some common ARCH_* macros
@@ -51,7 +51,7 @@
 #define ARCH_STM32_APB2                 0
 #define ARCH_STM32_APB1                 1
 #define ARCH_STM32_AHB1                 10
-#define ARCH_STM32_AHB2					11
+#define ARCH_STM32_AHB2                 11
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
@@ -73,7 +73,7 @@ struct npdev_isr
 
 struct npdev_mux
 {
-	unsigned int				gpio_id;
+    unsigned int                gpio_id;
     unsigned int                af;
     unsigned int                mode;
     unsigned int                pull;
@@ -87,8 +87,8 @@ struct npdev_rst
 
 struct npdev_pwr
 {
-	volatile void *             reg;
-	unsigned int                mask;
+    volatile void *             reg;
+    unsigned int                mask;
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/

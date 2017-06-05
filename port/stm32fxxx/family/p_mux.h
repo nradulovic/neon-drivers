@@ -43,10 +43,10 @@ extern "C" {
 
 struct nmux
 {
-	uint32_t	gpio_id;
-	uint32_t	mode;
-	uint32_t	pull;
-	uint32_t	alternate;
+    uint32_t    gpio_id;
+    uint32_t    mode;
+    uint32_t    pull;
+    uint32_t    alternate;
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/

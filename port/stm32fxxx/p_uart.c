@@ -30,7 +30,7 @@
  * TODOs:
  * - Implement timeouts
  * - How to handle HAL callbacks? If application code defines and uses UART HAL
- * 		API callbacks then it's not possible to use callbacks in this source.
+ *      API callbacks then it's not possible to use callbacks in this source.
  */
 
 /*=========================================================  INCLUDE FILES  ==*/
@@ -52,8 +52,8 @@
 
 /*=========================================================  LOCAL MACRO's  ==*/
 
-#define pdrv_to_uartdrv(ptr_pdrv)		PORT_C_CONTAINER_OF(ptr_pdrv, struct nuart_drv, pdrv)
-#define uartdrv_to_pdrv(ptr_uartdrv)	&((ptr_uartdrv)->pdrv)
+#define pdrv_to_uartdrv(ptr_pdrv)       PORT_C_CONTAINER_OF(ptr_pdrv, struct nuart_drv, pdrv)
+#define uartdrv_to_pdrv(ptr_uartdrv)    &((ptr_uartdrv)->pdrv)
 
 /*======================================================  LOCAL DATA TYPES  ==*/
 /*=============================================  LOCAL FUNCTION PROTOTYPES  ==*/
@@ -69,20 +69,20 @@ static const NCOMPONENT_DEFINE("STM32Fxxx UART device driver");
 
 nerror nuart_init(uint32_t uart_id, const struct nuart_config * config)
 {
-	UART_HandleTypeDef *        huart;
-	struct nuart_drv *			uart_drv;
+    UART_HandleTypeDef *        huart;
+    struct nuart_drv *          uart_drv;
     struct npdrv *              pdrv;
 
     if (NP_DEV_ID_TO_CLASS(uart_id) != NPROFILE_CLASS_UART) {
-    	return (NERROR_ARG_INVALID);
+        return (NERROR_ARG_INVALID);
     }
     pdrv = npdrv_request(uart_id);
 
     if (!pdrv) {
-    	return (NERROR_OBJECT_NFOUND);
+        return (NERROR_OBJECT_NFOUND);
     }
     uart_drv = pdrv_to_uartdrv(pdrv);
-    huart 	 = &uart_drv->ctx.huart;
+    huart    = &uart_drv->ctx.huart;
     huart->Instance          = (USART_TypeDef *)npdrv_address(pdrv);
     huart->Init.BaudRate     = config->baud_rate;
     huart->Init.HwFlowCtl    = UART_HWCONTROL_NONE;
@@ -98,7 +98,7 @@ nerror nuart_init(uint32_t uart_id, const struct nuart_config * config)
             break;
         }
         default : {
-        	goto NUART_INIT_ARG_FAIL;
+            goto NUART_INIT_ARG_FAIL;
         }
     }
     switch (config->flags & NUART_STOPBITS) {
@@ -111,7 +111,7 @@ nerror nuart_init(uint32_t uart_id, const struct nuart_config * config)
             break;
         }
         default: {
-        	goto NUART_INIT_ARG_FAIL;
+            goto NUART_INIT_ARG_FAIL;
         }
     }
     switch (config->flags & NUART_PARITY) {
@@ -128,7 +128,7 @@ nerror nuart_init(uint32_t uart_id, const struct nuart_config * config)
             break;
         }
         default: {
-        	goto NUART_INIT_ARG_FAIL;
+            goto NUART_INIT_ARG_FAIL;
         }
     }
     switch (config->flags & NUART_MODE) {
@@ -145,7 +145,7 @@ nerror nuart_init(uint32_t uart_id, const struct nuart_config * config)
             break;
         }
         default: {
-        	goto NUART_INIT_ARG_FAIL;
+            goto NUART_INIT_ARG_FAIL;
         }
     }
     npdrv_pwr_enable(pdrv, 0);
@@ -157,7 +157,7 @@ nerror nuart_init(uint32_t uart_id, const struct nuart_config * config)
     }
 
     if (config->flags & NUART_MODE_TX) {
-    	npdrv_mux_setup(pdrv, 0, uart_drv->gpios[NUART_MUX_FN_TX]);
+        npdrv_mux_setup(pdrv, 0, uart_drv->gpios[NUART_MUX_FN_TX]);
     }
 
     if (config->flags & NUART_SET_ISR_PRIO) {
@@ -171,9 +171,9 @@ nerror nuart_init(uint32_t uart_id, const struct nuart_config * config)
 
     return (NERROR_NONE);
 NUART_INIT_ARG_FAIL:
-	npdrv_release(pdrv);
+    npdrv_release(pdrv);
 
-	return (NERROR_ARG_INVALID);
+    return (NERROR_ARG_INVALID);
 }
 
 

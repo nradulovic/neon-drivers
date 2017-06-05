@@ -38,8 +38,8 @@
 
 #define NPROFILE_AVAILABLE_GPIO         NPROFILE_EN_0 | NPROFILE_EN_1 | NPROFILE_EN_2 | NPROFILE_EN_3
 #define NPROFILE_AVAILABLE_UART         0
-#define NPROFILE_AVAILABLE_SPI			0
-#define NPROFILE_AVAILABLE_I2C			NPROFILE_EN_1 | NPROFILE_EN_2 | NPROFILE_EN_3
+#define NPROFILE_AVAILABLE_SPI          0
+#define NPROFILE_AVAILABLE_I2C          NPROFILE_EN_1 | NPROFILE_EN_2 | NPROFILE_EN_3
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus

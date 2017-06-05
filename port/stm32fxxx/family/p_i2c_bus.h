@@ -36,22 +36,22 @@
 
 /*===============================================================  MACRO's  ==*/
 
-#define	NI2C_DUALADDRESS_DISABLE		(0u << 0)
-#define	NI2C_DUALADDRESS_ENABLE			(1u << 0)
-#define	NI2C_FM_DUTYCYCLE_2				(0u << 1)
-#define NI2C_FM_DUTYCYCLE_16_9			(1u << 1)
-#define NI2C_NOSTRETCH_DISABLE			(0u << 2)
-#define NI2C_NOSTRETCH_ENABLE			(1u << 2)
-#define NI2C_OWN_ADDRESS_2(x)			((x) << 8)
+#define NI2C_DUALADDRESS_DISABLE        (0u << 0)
+#define NI2C_DUALADDRESS_ENABLE         (1u << 0)
+#define NI2C_FM_DUTYCYCLE_2             (0u << 1)
+#define NI2C_FM_DUTYCYCLE_16_9          (1u << 1)
+#define NI2C_NOSTRETCH_DISABLE          (0u << 2)
+#define NI2C_NOSTRETCH_ENABLE           (1u << 2)
+#define NI2C_OWN_ADDRESS_2(x)           ((x) << 8)
 
-#define I2C_DUAL_ADDRESS														\
-	(NI2C_DUALADDRESS_DISABLE | NI2C_DUALADDRESS_ENABLE)
+#define I2C_DUAL_ADDRESS                                                        \
+    (NI2C_DUALADDRESS_DISABLE | NI2C_DUALADDRESS_ENABLE)
 
-#define I2C_FM_DUTYCYCLE														\
-	(NI2C_FM_DUTYCYCLE_2 | NI2C_FM_DUTYCYCLE_16_9)
+#define I2C_FM_DUTYCYCLE                                                        \
+    (NI2C_FM_DUTYCYCLE_2 | NI2C_FM_DUTYCYCLE_16_9)
 
-#define I2C_NOSTRETCH															\
-	(NI2C_NOSTRETCH_DISABLE | NI2C_NOSTRETCH_ENABLE)
+#define I2C_NOSTRETCH                                                           \
+    (NI2C_NOSTRETCH_DISABLE | NI2C_NOSTRETCH_ENABLE)
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
@@ -62,26 +62,26 @@ extern "C" {
 
 struct np_dev_i2c
 {
-	I2C_HandleTypeDef    handle;
+    I2C_HandleTypeDef    handle;
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 
 void ni2c_port_config(
-	uint32_t 					bus_id,
-	uint32_t 					config);
+    uint32_t                    bus_id,
+    uint32_t                    config);
 
 
 
 void ni2c_port_analog_filter_config(
-	uint32_t 					bus_id,
-	uint32_t 					config);
+    uint32_t                    bus_id,
+    uint32_t                    config);
 
 
 
 void ni2c_port_digital_filter_config(
-	uint32_t 					bus_id,
-	uint32_t 					config);
+    uint32_t                    bus_id,
+    uint32_t                    config);
 
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 /*--------------------------------------------------------  C++ extern end  --*/
