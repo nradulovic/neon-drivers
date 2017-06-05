@@ -52,7 +52,7 @@
 #endif
 
 #if !defined(CONFIG_I2C_QUEUE_SIZE)
-# define CONFIG_I2C_QUEUE_SIZE			10
+# define CONFIG_I2C_QUEUE_SIZE          10
 #endif
 
 #if !defined(CONFIG_SPI)
@@ -60,19 +60,19 @@
 #endif
 
 #if !defined(CONFIG_DRIVERS_PM_ENABLE)
-# define CONFIG_DRIVERS_PM_ENABLE		0
+# define CONFIG_DRIVERS_PM_ENABLE       0
 #endif
 
 #if !defined(CONFIG_I2C_EVENT_BASE_ID)
-# define CONFIG_I2C_EVENT_BASE_ID		1000	/* todo naci mesto gde treba da stoji vrednost id za sistem i drajvere */
+# define CONFIG_I2C_EVENT_BASE_ID       1000    /* todo naci mesto gde treba da stoji vrednost id za sistem i drajvere */
 #endif
 
 #if !defined(CONFIG_I2C_EPA_PRIORITY)
-#define CONFIG_I2C_EPA_PRIORITY			NTHREAD_PRIORITY_MAX
+#define CONFIG_I2C_EPA_PRIORITY         NTHREAD_PRIORITY_MAX
 #endif
 
 #if !defined(CONFIG_FRAM_EVENT_BASE_ID)
-# define CONFIG_FRAM_EVENT_BASE_ID		2000	/* todo naci mesto gde treba da stoji vrednost id za sistem i drajvere */
+# define CONFIG_FRAM_EVENT_BASE_ID      2000    /* todo naci mesto gde treba da stoji vrednost id za sistem i drajvere */
 #endif
 
 #if !defined(CONFIG_FRAM_PRIORITY)
@@ -80,15 +80,15 @@
 #endif
 
 #if !defined(CONFIG_FRAM_QUEUE_SIZE)
-# define CONFIG_FRAM_QUEUE_SIZE			10
+# define CONFIG_FRAM_QUEUE_SIZE         10
 #endif
 
 #if !defined(CONFIG_RTC_EVENT_BASE_ID)
-# define CONFIG_RTC_EVENT_BASE_ID		3000	/* todo naci mesto gde treba da stoji vrednost id za sistem i drajvere */
+# define CONFIG_RTC_EVENT_BASE_ID       3000    /* todo naci mesto gde treba da stoji vrednost id za sistem i drajvere */
 #endif
 
 #if !defined(CONFIG_RTC_QUEUE_SIZE)
-# define CONFIG_RTC_QUEUE_SIZE			10
+# define CONFIG_RTC_QUEUE_SIZE          10
 #endif
 
 

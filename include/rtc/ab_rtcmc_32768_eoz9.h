@@ -39,14 +39,14 @@
 
 /*===============================================================  MACRO's  ==*/
 
-#define AB_RTC_CLOCKOUT_32768HZ		(0u << 0)
-#define AB_RTC_CLOCKOUT_1024HZ		(1u << 0)
-#define AB_RTC_CLOCKOUT_32HZ		(2u << 0)
-#define AB_RTC_CLOCKOUT_1HZ			(3u << 0)
+#define AB_RTC_CLOCKOUT_32768HZ     (0u << 0)
+#define AB_RTC_CLOCKOUT_1024HZ      (1u << 0)
+#define AB_RTC_CLOCKOUT_32HZ        (2u << 0)
+#define AB_RTC_CLOCKOUT_1HZ         (3u << 0)
 
-#define AB_RTC_CLOCKOUT_FREQ													\
-	(AB_RTC_CLOCKOUT_32768HZ | AB_RTC_CLOCKOUT_1024HZ | AB_RTC_CLOCKOUT_32HZ |  \
-	AB_RTC_CLOCKOUT_1HZ)
+#define AB_RTC_CLOCKOUT_FREQ                                                    \
+    (AB_RTC_CLOCKOUT_32768HZ | AB_RTC_CLOCKOUT_1024HZ | AB_RTC_CLOCKOUT_32HZ |  \
+    AB_RTC_CLOCKOUT_1HZ)
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
@@ -57,12 +57,12 @@ extern "C" {
 
 struct ab_nrtc_custom_config
 {
-	uint32_t					config;
+    uint32_t                    config;
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 
-extern struct nepa 				g_ab_rtc_epa;
+extern struct nepa              g_ab_rtc_epa;
 extern const struct nepa_define g_ab_rtc_define;
 
 /*===================================================  FUNCTION PROTOTYPES  ==*/

@@ -52,8 +52,8 @@
  * @return      Returns valid GPIO pin ID number which can be used with other
  *              functions and macros.
  */
-#define NGPIO_ID(port, pin)             										\
-	NP_DEV_CREATE_ID(NPROFILE_CLASS_GPIO, port, pin)
+#define NGPIO_ID(port, pin)                                                     \
+    NP_DEV_CREATE_ID(NPROFILE_CLASS_GPIO, port, pin)
 
 /**@brief       Convenience wrapper macro around @ref NP_DEV_ID_TO_MAJOR().
  * @param       id
@@ -93,14 +93,14 @@
 #define NGPIO_OUTPUT_LOW                (0x1ul << 1)
 #define NGPIO_OUTPUT_HIGH               (0x1ul << 2)
 #define NGPIO_OUTPUT_OPEN_DRAIN_LOW     (0x1ul << 3)
-#define NGPIO_OUTPUT_OPEN_DRAIN_FLOAT 	(0x1ul << 4)
-#define NGPIO_PULL_NONE					(0)
+#define NGPIO_OUTPUT_OPEN_DRAIN_FLOAT   (0x1ul << 4)
+#define NGPIO_PULL_NONE                 (0)
 #define NGPIO_PULL_UP                   (0x1ul << 5)
 #define NGPIO_PULL_DOWN                 (0x1ul << 6)
 
-#define NGPIO_TRIGGER_FALLING			(0x1ul << 7)
-#define NGPIO_TRIGGER_RISING			(0x1ul << 8)
-#define NGPIO_TRIGGER_TOGGLE			(0x1ul << 9)
+#define NGPIO_TRIGGER_FALLING           (0x1ul << 7)
+#define NGPIO_TRIGGER_RISING            (0x1ul << 8)
+#define NGPIO_TRIGGER_TOGGLE            (0x1ul << 9)
 
 /**@} *//*----------------------------------------------------------------*//**
  * @name        GPIO pin configuration flags filters
@@ -108,14 +108,14 @@
  * @{ *//*--------------------------------------------------------------------*/
 
 #define NGPIO_MODE                                                              \
-    (NGPIO_INPUT | NGPIO_OUTPUT_LOW | NGPIO_OUTPUT_HIGH | 						\
-	 NGPIO_OUTPUT_OPEN_DRAIN_LOW    | NGPIO_OUTPUT_OPEN_DRAIN_FLOAT)
+    (NGPIO_INPUT | NGPIO_OUTPUT_LOW | NGPIO_OUTPUT_HIGH |                       \
+     NGPIO_OUTPUT_OPEN_DRAIN_LOW    | NGPIO_OUTPUT_OPEN_DRAIN_FLOAT)
 
-#define NGPIO_PULL																\
-	(NGPIO_PULL_UP | NGPIO_PULL_DOWN)
+#define NGPIO_PULL                                                              \
+    (NGPIO_PULL_UP | NGPIO_PULL_DOWN)
 
-#define NGPIO_TRIGGER															\
-	(NGPIO_TRIGGER_FALLING | NGPIO_TRIGGER_RISING | NGPIO_TRIGGER_TOGGLE)
+#define NGPIO_TRIGGER                                                           \
+    (NGPIO_TRIGGER_FALLING | NGPIO_TRIGGER_RISING | NGPIO_TRIGGER_TOGGLE)
 
 /**@} *//*-----------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
@@ -132,9 +132,9 @@ struct ngpio_driver
     struct npdrv               pdrv;
 };
 
-/**@brief		Change handler function pointer
- * @param 		gpio_id
- * 				GPIO pin ID.
+/**@brief       Change handler function pointer
+ * @param       gpio_id
+ *              GPIO pin ID.
  * @api
  */
 typedef void (ngpio_change_handler)(uint32_t gpio_id);
@@ -142,132 +142,132 @@ typedef void (ngpio_change_handler)(uint32_t gpio_id);
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 
-/**@brief		Initialize GPIO pin
- * @param 		gpio_id
- * 				GPIO pin ID.
- * @param 		config
- * 				Configuration flags
+/**@brief       Initialize GPIO pin
+ * @param       gpio_id
+ *              GPIO pin ID.
+ * @param       config
+ *              Configuration flags
  * @api
  */
 void ngpio_init(
-	uint32_t 					gpio_id,
-	uint32_t 					config);
+    uint32_t                    gpio_id,
+    uint32_t                    config);
 
 
 
-/**@brief		Terminate GPIO pin
- * @param 		gpio_id
- * 				GPIO pin ID.
+/**@brief       Terminate GPIO pin
+ * @param       gpio_id
+ *              GPIO pin ID.
  * @api
  */
 void ngpio_term(
-	uint32_t 					gpio_id);
+    uint32_t                    gpio_id);
 
 
 
-/**@brief		Returns if GPIO pin is set
- * @param 		gpio_id
- * 				GPIO pin ID.
- * @return		GPIO pin state
- * @retval		true - pin is in logic high state
- * @retval		false - pin is in logic low state
+/**@brief       Returns if GPIO pin is set
+ * @param       gpio_id
+ *              GPIO pin ID.
+ * @return      GPIO pin state
+ * @retval      true - pin is in logic high state
+ * @retval      false - pin is in logic low state
  * @api
  */
 bool ngpio_is_set(
-	uint32_t 					gpio_id);
+    uint32_t                    gpio_id);
 
 
 
-/**@brief		Set GPIO pin to high logic state
- * @param 		gpio_id
- * 				GPIO pin ID.
+/**@brief       Set GPIO pin to high logic state
+ * @param       gpio_id
+ *              GPIO pin ID.
  * @api
  */
 void ngpio_set(
-	uint32_t 					gpio_id);
+    uint32_t                    gpio_id);
 
 
 
-/**@brief		Set GPIO pin to low logic state
- * @param 		gpio_id
- * 				GPIO pin ID.
+/**@brief       Set GPIO pin to low logic state
+ * @param       gpio_id
+ *              GPIO pin ID.
  * @api
  */
 void ngpio_clear(
-	uint32_t 					gpio_id);
+    uint32_t                    gpio_id);
 
 
 
-/**@brief		Toggle GPIO pin logic state
- * @param 		gpio_id
- * 				GPIO pin ID.
+/**@brief       Toggle GPIO pin logic state
+ * @param       gpio_id
+ *              GPIO pin ID.
  * @api
  */
 void ngpio_toggle(
-	uint32_t 					gpio_id);
+    uint32_t                    gpio_id);
 
 
 
-/**@brief		Request GPIO pin for usage
- * @param 		gpio_id
- * 				GPIO pin ID.
+/**@brief       Request GPIO pin for usage
+ * @param       gpio_id
+ *              GPIO pin ID.
  * @api
  */
 void ngpio_request(
-	uint32_t 					gpio_id);
+    uint32_t                    gpio_id);
 
 
 
-/**@brief		Release GPIO pin
- * @param 		gpio_id
- * 				GPIO pin ID.
+/**@brief       Release GPIO pin
+ * @param       gpio_id
+ *              GPIO pin ID.
  * @api
  */
 void ngpio_release(
-	uint32_t 					gpio_id);
+    uint32_t                    gpio_id);
 
 
 
-/**@brief		Request change notice handler for a GPIO pin
- * @param 		gpio_id
- * 				GPIO pin ID.
- * @param 		config
- * 				Configuration flags
- * @param 		change_handler
- * 				Pointer to change handler function.
+/**@brief       Request change notice handler for a GPIO pin
+ * @param       gpio_id
+ *              GPIO pin ID.
+ * @param       config
+ *              Configuration flags
+ * @param       change_handler
+ *              Pointer to change handler function.
  * @api
  */
 void ngpio_change_notice_request(
-	uint32_t 					gpio_id,
-	uint32_t 					config,
-	ngpio_change_handler * 		change_handler);
+    uint32_t                    gpio_id,
+    uint32_t                    config,
+    ngpio_change_handler *      change_handler);
 
 
 
-/**@brief		Release change notice handler
- * @param 		gpio_id
- *				GPIO pin ID.
+/**@brief       Release change notice handler
+ * @param       gpio_id
+ *              GPIO pin ID.
  * @api
  */
 void ngpio_change_notice_release(
-	uint32_t 					gpio_id);
+    uint32_t                    gpio_id);
 
 
 
-/**@brief		Validate GPIO pin id.
- * @param 		gpio_id
- *				GPIO pin ID.
- * @return		GPIO pin ID validity:
- * @retval		true - GPIO pin ID is valid and exists
- * 				false - GPIO pin ID is not valid
+/**@brief       Validate GPIO pin id.
+ * @param       gpio_id
+ *              GPIO pin ID.
+ * @return      GPIO pin ID validity:
+ * @retval      true - GPIO pin ID is valid and exists
+ *              false - GPIO pin ID is not valid
  * @api
  */
 bool ngpio_is_id_valid(
-	uint32_t 					gpio_id);
+    uint32_t                    gpio_id);
 
 
 
-/**@brief		Change notice ISR handler
+/**@brief       Change notice ISR handler
  */
 void ngpio_isr(void);
 

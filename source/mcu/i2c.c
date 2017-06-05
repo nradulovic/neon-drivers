@@ -36,194 +36,194 @@
 
 /*=========================================================  LOCAL MACRO's  ==*/
 
-#define I2C_MAX_RETRIES			3u
+#define I2C_MAX_RETRIES         3u
 
 /*======================================================  LOCAL DATA TYPES  ==*/
 
 enum i2c_local_events
 {
-	EVT_TRANSFER_COMPLETE = NEVENT_LOCAL_ID,
-	EVT_TIMEOUT,
-	EVT_ERROR
+    EVT_TRANSFER_COMPLETE = NEVENT_LOCAL_ID,
+    EVT_TIMEOUT,
+    EVT_ERROR
 };
 
 
 
 enum i2c_action
 {
-	I2C_WRITE,
-	I2C_READ,
+    I2C_WRITE,
+    I2C_READ,
 };
 
 
 
 struct i2c_workspace
 {
-	struct nequeue				deferred;
-	struct nevent * 		  	deferred_queue_storage[CONFIG_I2C_QUEUE_SIZE];
-	const struct npdev *    	dev;
-//	struct netimer			 	timeout;
-	struct ni2c_slave *			slave;
-	struct nepa	*				client;
-	enum i2c_action				action;
-	void *						data;
-	size_t						size;
-	uint32_t					speed;
-	uint32_t					retries;
-	uint32_t					reg;
-	uint32_t					config;
+    struct nequeue              deferred;
+    struct nevent *             deferred_queue_storage[CONFIG_I2C_QUEUE_SIZE];
+    const struct npdev *        dev;
+//  struct netimer              timeout;
+    struct ni2c_slave *         slave;
+    struct nepa *               client;
+    enum i2c_action             action;
+    void *                      data;
+    size_t                      size;
+    uint32_t                    speed;
+    uint32_t                    retries;
+    uint32_t                    reg;
+    uint32_t                    config;
 };
 
 /*=============================================  LOCAL FUNCTION PROTOTYPES  ==*/
 
 static void transfer(
-	struct ni2c_slave * slave);
+    struct ni2c_slave * slave);
 
 
 
 static void error(
-	struct ni2c_slave * slave,
-	enum ni2c_bus_error id);
+    struct ni2c_slave * slave,
+    enum ni2c_bus_error id);
 
 
 
 static naction state_init(
-	struct nsm *,
-	const struct nevent *);
+    struct nsm *,
+    const struct nevent *);
 
 
 
 static naction state_idle(
-	struct nsm *,
-	const struct nevent *);
+    struct nsm *,
+    const struct nevent *);
 
 
 
 static naction state_transfer(
-	struct nsm *,
-	const struct nevent *);
+    struct nsm *,
+    const struct nevent *);
 
 /*=======================================================  LOCAL VARIABLES  ==*/
 
 static const NCOMPONENT_DEFINE("Generic I2C driver");
 
 #if (NPROFILE_EN_I2C & NPROFILE_EN(1))
-static struct nevent * 		  	g_ni2c1_queue_storage[CONFIG_I2C_QUEUE_SIZE];
-static struct i2c_workspace  	g_ni2c1_workspace =
+static struct nevent *          g_ni2c1_queue_storage[CONFIG_I2C_QUEUE_SIZE];
+static struct i2c_workspace     g_ni2c1_workspace =
 {
-	.dev = &g_i2c1
+    .dev = &g_i2c1
 };
 #endif
 
 #if (NPROFILE_EN_I2C & NPROFILE_EN(2))
-static struct nevent * 		  	g_ni2c2_queue_storage[CONFIG_I2C_QUEUE_SIZE];
-static struct i2c_workspace  	g_ni2c2_workspace =
+static struct nevent *          g_ni2c2_queue_storage[CONFIG_I2C_QUEUE_SIZE];
+static struct i2c_workspace     g_ni2c2_workspace =
 {
-		.dev = &g_i2c2
+        .dev = &g_i2c2
 };
 #endif
 
 #if (NPROFILE_EN_I2C & NPROFILE_EN(3))
-static struct nevent * 		  	g_ni2c3_queue_storage[CONFIG_I2C_QUEUE_SIZE];
-static struct i2c_workspace  	g_ni2c3_workspace =
+static struct nevent *          g_ni2c3_queue_storage[CONFIG_I2C_QUEUE_SIZE];
+static struct i2c_workspace     g_ni2c3_workspace =
 {
-	.dev = &g_i2c3
+    .dev = &g_i2c3
 };
 #endif
 
 #if (NPROFILE_EN_I2C & NPROFILE_EN(4))
-static struct nevent  		  	g_ni2c4_queue_storage[CONFIG_I2C_QUEUE_SIZE];
-static struct i2c_workspace  	g_ni2c4_workspace =
+static struct nevent            g_ni2c4_queue_storage[CONFIG_I2C_QUEUE_SIZE];
+static struct i2c_workspace     g_ni2c4_workspace =
 {
-	.dev = &g_i2c4
+    .dev = &g_i2c4
 };
 #endif
 
 #if (NPROFILE_EN_I2C & NPROFILE_EN(5))
-static struct nevent  		  	g_ni2c5_queue_storage[CONFIG_I2C_QUEUE_SIZE];
-static struct i2c_workspace  	g_ni2c5_workspace =
+static struct nevent            g_ni2c5_queue_storage[CONFIG_I2C_QUEUE_SIZE];
+static struct i2c_workspace     g_ni2c5_workspace =
 {
-	.dev = &g_i2c4
+    .dev = &g_i2c4
 };
 #endif
 
 #if (NPROFILE_EN_I2C & NPROFILE_EN(6))
-static struct nevent  		  	g_ni2c6_queue_storage[CONFIG_I2C_QUEUE_SIZE];
-static struct i2c_workspace  	g_ni2c6_workspace =
+static struct nevent            g_ni2c6_queue_storage[CONFIG_I2C_QUEUE_SIZE];
+static struct i2c_workspace     g_ni2c6_workspace =
 {
-	.dev = &g_i2c4
+    .dev = &g_i2c4
 };
 #endif
 
 #if (NPROFILE_EN_I2C & NPROFILE_EN(7))
-static struct nevent  		  	g_ni2c7_queue_storage[CONFIG_I2C_QUEUE_SIZE];
-static struct i2c_workspace  	g_ni2c7_workspace =
+static struct nevent            g_ni2c7_queue_storage[CONFIG_I2C_QUEUE_SIZE];
+static struct i2c_workspace     g_ni2c7_workspace =
 {
-	.dev = &g_i2c4
+    .dev = &g_i2c4
 };
 #endif
 
 #if (NPROFILE_EN_I2C & NPROFILE_EN(8))
-static struct nevent  		  	g_ni2c8_queue_storage[CONFIG_I2C_QUEUE_SIZE];
-static struct i2c_workspace  	g_ni2c8_workspace =
+static struct nevent            g_ni2c8_queue_storage[CONFIG_I2C_QUEUE_SIZE];
+static struct i2c_workspace     g_ni2c8_workspace =
 {
-	.dev = &g_i2c4
+    .dev = &g_i2c4
 };
 #endif
 
 #if (NPROFILE_EN_I2C & NPROFILE_EN(9))
-static struct nevent  		  	g_ni2c9_queue_storage[CONFIG_I2C_QUEUE_SIZE];
-static struct i2c_workspace  	g_ni2c9_workspace =
+static struct nevent            g_ni2c9_queue_storage[CONFIG_I2C_QUEUE_SIZE];
+static struct i2c_workspace     g_ni2c9_workspace =
 {
-	.dev = &g_i2c4
+    .dev = &g_i2c4
 };
 #endif
 
 #if (NPROFILE_EN_I2C & NPROFILE_EN(10))
-static struct nevent  		  	g_ni2c10_queue_storage[CONFIG_I2C_QUEUE_SIZE];
-static struct i2c_workspace  	g_ni2c10_workspace =
+static struct nevent            g_ni2c10_queue_storage[CONFIG_I2C_QUEUE_SIZE];
+static struct i2c_workspace     g_ni2c10_workspace =
 {
-	.dev = &g_i2c4
+    .dev = &g_i2c4
 };
 #endif
 
 #if (NPROFILE_EN_I2C & NPROFILE_EN(11))
-static struct nevent  		  	g_ni2c11_queue_storage[CONFIG_I2C_QUEUE_SIZE];
-static struct i2c_workspace  	g_ni2c11_workspace =
+static struct nevent            g_ni2c11_queue_storage[CONFIG_I2C_QUEUE_SIZE];
+static struct i2c_workspace     g_ni2c11_workspace =
 {
-	.dev = &g_i2c4
+    .dev = &g_i2c4
 };
 #endif
 
 #if (NPROFILE_EN_I2C & NPROFILE_EN(12))
-static struct nevent  		  	g_ni2c12_queue_storage[CONFIG_I2C_QUEUE_SIZE];
-static struct i2c_workspace  	g_ni2c12_workspace =
+static struct nevent            g_ni2c12_queue_storage[CONFIG_I2C_QUEUE_SIZE];
+static struct i2c_workspace     g_ni2c12_workspace =
 {
-	.dev = &g_i2c4
+    .dev = &g_i2c4
 };
 #endif
 
 #if (NPROFILE_EN_I2C & NPROFILE_EN(13))
-static struct nevent  		  	g_ni2c13_queue_storage[CONFIG_I2C_QUEUE_SIZE];
-static struct i2c_workspace  	g_ni2c13_workspace =
+static struct nevent            g_ni2c13_queue_storage[CONFIG_I2C_QUEUE_SIZE];
+static struct i2c_workspace     g_ni2c13_workspace =
 {
-	.dev = &g_i2c4
+    .dev = &g_i2c4
 };
 #endif
 
 #if (NPROFILE_EN_I2C & NPROFILE_EN(14))
-static struct nevent  		  	g_ni2c14_queue_storage[CONFIG_I2C_QUEUE_SIZE];
-static struct i2c_workspace  	g_ni2c14_workspace =
+static struct nevent            g_ni2c14_queue_storage[CONFIG_I2C_QUEUE_SIZE];
+static struct i2c_workspace     g_ni2c14_workspace =
 {
-	.dev = &g_i2c4
+    .dev = &g_i2c4
 };
 #endif
 
 #if (NPROFILE_EN_I2C & NPROFILE_EN(15))
-static struct nevent  		  	g_ni2c15_queue_storage[CONFIG_I2C_QUEUE_SIZE];
-static struct i2c_workspace  	g_ni2c15_workspace =
+static struct nevent            g_ni2c15_queue_storage[CONFIG_I2C_QUEUE_SIZE];
+static struct i2c_workspace     g_ni2c15_workspace =
 {
-	.dev = &g_i2c4
+    .dev = &g_i2c4
 };
 #endif
 
@@ -237,9 +237,9 @@ struct ni2c_bus_driver * g_i2c1_bus;
 struct nepa    g_ni2c1_epa;
 const struct nepa_define g_ni2c1_define =
 {
-	NSM_DEF_INIT(&g_ni2c1_workspace, &state_init, NSM_TYPE_FSM),
-	NEQUEUE_DEF_INIT(g_ni2c1_queue_storage, sizeof(g_ni2c1_queue_storage)),
-	NTHREAD_DEF_INIT("ni2c1", CONFIG_I2C_EPA_PRIORITY)
+    NSM_DEF_INIT(&g_ni2c1_workspace, &state_init, NSM_TYPE_FSM),
+    NEQUEUE_DEF_INIT(g_ni2c1_queue_storage, sizeof(g_ni2c1_queue_storage)),
+    NTHREAD_DEF_INIT("ni2c1", CONFIG_I2C_EPA_PRIORITY)
 };
 #endif
 
@@ -247,9 +247,9 @@ const struct nepa_define g_ni2c1_define =
 struct nepa    g_ni2c2_epa;
 const struct nepa_define g_ni2c2_define =
 {
-	NSM_DEF_INIT(&g_ni2c2_workspace, &state_init, NSM_TYPE_FSM),
-	NEQUEUE_DEF_INIT(g_ni2c2_queue_storage, sizeof(g_ni2c2_queue_storage)),
-	NTHREAD_DEF_INIT("ni2c2", CONFIG_I2C_EPA_PRIORITY)
+    NSM_DEF_INIT(&g_ni2c2_workspace, &state_init, NSM_TYPE_FSM),
+    NEQUEUE_DEF_INIT(g_ni2c2_queue_storage, sizeof(g_ni2c2_queue_storage)),
+    NTHREAD_DEF_INIT("ni2c2", CONFIG_I2C_EPA_PRIORITY)
 };
 #endif
 
@@ -257,9 +257,9 @@ const struct nepa_define g_ni2c2_define =
 struct nepa    g_ni2c3_epa;
 const struct nepa_define g_ni2c3_define =
 {
-	NSM_DEF_INIT(&g_ni2c3_workspace, &state_init, NSM_TYPE_FSM),
-	NEQUEUE_DEF_INIT(g_ni2c3_queue_storage, sizeof(g_ni2c3_queue_storage)),
-	NTHREAD_DEF_INIT("ni2c3", CONFIG_I2C_EPA_PRIORITY)
+    NSM_DEF_INIT(&g_ni2c3_workspace, &state_init, NSM_TYPE_FSM),
+    NEQUEUE_DEF_INIT(g_ni2c3_queue_storage, sizeof(g_ni2c3_queue_storage)),
+    NTHREAD_DEF_INIT("ni2c3", CONFIG_I2C_EPA_PRIORITY)
 };
 #endif
 
@@ -267,9 +267,9 @@ const struct nepa_define g_ni2c3_define =
 struct nepa    g_ni2c4_epa;
 const struct nepa_define g_ni2c4_define =
 {
-	NSM_DEF_INIT(&g_ni2c4_workspace, &state_init, NSM_TYPE_FSM),
-	NEQUEUE_DEF_INIT(g_ni2c4_queue_storage, sizeof(g_ni2c4_queue_storage)),
-	NTHREAD_DEF_INIT("ni2c4", CONFIG_I2C_EPA_PRIORITY)
+    NSM_DEF_INIT(&g_ni2c4_workspace, &state_init, NSM_TYPE_FSM),
+    NEQUEUE_DEF_INIT(g_ni2c4_queue_storage, sizeof(g_ni2c4_queue_storage)),
+    NTHREAD_DEF_INIT("ni2c4", CONFIG_I2C_EPA_PRIORITY)
 };
 #endif
 
@@ -277,9 +277,9 @@ const struct nepa_define g_ni2c4_define =
 struct nepa    g_ni2c5_epa;
 const struct nepa_define g_ni2c5_define =
 {
-	NSM_DEF_INIT(&g_ni2c5_workspace, &state_init, NSM_TYPE_FSM),
-	NEQUEUE_DEF_INIT(g_ni2c5_queue_storage, sizeof(g_ni2c5_queue_storage)),
-	NTHREAD_DEF_INIT("ni2c5", CONFIG_I2C_EPA_PRIORITY)
+    NSM_DEF_INIT(&g_ni2c5_workspace, &state_init, NSM_TYPE_FSM),
+    NEQUEUE_DEF_INIT(g_ni2c5_queue_storage, sizeof(g_ni2c5_queue_storage)),
+    NTHREAD_DEF_INIT("ni2c5", CONFIG_I2C_EPA_PRIORITY)
 };
 #endif
 
@@ -427,266 +427,266 @@ const struct nepa_define g_ni2c15_define =
 
 
 static inline struct ni2c_bus_driver * pdrv_to_ni2c_driver(
- 	struct npdrv * 				pdrv)
+    struct npdrv *              pdrv)
 {
- 	return (PORT_C_CONTAINER_OF(pdrv, struct ni2c_bus_driver, pdrv));
+    return (PORT_C_CONTAINER_OF(pdrv, struct ni2c_bus_driver, pdrv));
 }
 
 
 
 static void transfer(
-	struct ni2c_slave * slave)
+    struct ni2c_slave * slave)
 {
-	struct nepa	* epa;
-	struct ni2c_bus_driver * bus;
-	static const struct nevent transfer =
-	{
-		.id     = EVT_TRANSFER_COMPLETE,
+    struct nepa * epa;
+    struct ni2c_bus_driver * bus;
+    static const struct nevent transfer =
+    {
+        .id     = EVT_TRANSFER_COMPLETE,
 #if (CONFIG_API_VALIDATION == 1)
-		.signature = NSIGNATURE_EVENT,
+        .signature = NSIGNATURE_EVENT,
 #endif
-	};
+    };
 
-	bus = slave->bus;
-	epa = npdrv_get_data(&bus->pdrv);
-	nepa_send_event_i(
-		epa,
-		(nevent *)&transfer);
+    bus = slave->bus;
+    epa = npdrv_get_data(&bus->pdrv);
+    nepa_send_event_i(
+        epa,
+        (nevent *)&transfer);
 }
 
 
 
 static void error(
-	struct ni2c_slave * slave,
-	enum ni2c_bus_error id)
+    struct ni2c_slave * slave,
+    enum ni2c_bus_error id)
 {
-	struct nepa	* epa;
-	struct ni2c_bus_driver * bus;
-	static struct ni2c_error_event error =
-	{
-		{
-			.attrib 		= NEVENT_ATTR_RESERVED,
-			.id     		= EVT_ERROR,
-#if (CONFIG_API_VALIDATION 	== 1)
-			.signature 		= NSIGNATURE_EVENT,
+    struct nepa * epa;
+    struct ni2c_bus_driver * bus;
+    static struct ni2c_error_event error =
+    {
+        {
+            .attrib         = NEVENT_ATTR_RESERVED,
+            .id             = EVT_ERROR,
+#if (CONFIG_API_VALIDATION  == 1)
+            .signature      = NSIGNATURE_EVENT,
 #endif
-		},
-		.retries 			= 0u
-	};
+        },
+        .retries            = 0u
+    };
 
-	bus = slave->bus;
-	epa = npdrv_get_data(&bus->pdrv);
-	error.error_id = id;
-	error.retries  = bus->retry;
-	nepa_send_event_i(
-		epa,
-		(nevent *)&error);
+    bus = slave->bus;
+    epa = npdrv_get_data(&bus->pdrv);
+    error.error_id = id;
+    error.retries  = bus->retry;
+    nepa_send_event_i(
+        epa,
+        (nevent *)&error);
 }
 
 
 
 static naction state_init(
-		struct nsm * sm,
-		const struct nevent * event)
+        struct nsm * sm,
+        const struct nevent * event)
 {
-	struct i2c_workspace * ws = sm->wspace;
+    struct i2c_workspace * ws = sm->wspace;
 
-	switch (event->id) {
-		case NSM_INIT: {
-			struct nequeue_define deferred_def =
-				NEQUEUE_DEF_INIT(ws->deferred_queue_storage, sizeof(ws->deferred_queue_storage));
-			nepa_defer_init(&ws->deferred, &deferred_def);
+    switch (event->id) {
+        case NSM_INIT: {
+            struct nequeue_define deferred_def =
+                NEQUEUE_DEF_INIT(ws->deferred_queue_storage, sizeof(ws->deferred_queue_storage));
+            nepa_defer_init(&ws->deferred, &deferred_def);
 
-			return (naction_handled());
-		}
-		case EVT_NI2C_CONFIG: {
-			struct ni2c_config_event * config;
+            return (naction_handled());
+        }
+        case EVT_NI2C_CONFIG: {
+            struct ni2c_config_event * config;
 
-			config = (struct ni2c_config_event *)event;
-			ws->config = config->config;
+            config = (struct ni2c_config_event *)event;
+            ws->config = config->config;
 
-			ni2c_bus_init(
-				NP_DEV_CREATE_ID(NPROFILE_CLASS_I2C, npdev_instance(ws->dev), 0),
-				config->config);
+            ni2c_bus_init(
+                NP_DEV_CREATE_ID(NPROFILE_CLASS_I2C, npdev_instance(ws->dev), 0),
+                config->config);
 
-			ws->speed = (config->config & NI2C_BUS_SPEED);
-			npdrv_set_data(
-				ws->dev->pdrv,
-				nepa_get_current());
+            ws->speed = (config->config & NI2C_BUS_SPEED);
+            npdrv_set_data(
+                ws->dev->pdrv,
+                nepa_get_current());
 
-			return (naction_transit_to(sm, state_idle));
-		}
-		default: {
+            return (naction_transit_to(sm, state_idle));
+        }
+        default: {
 
-			return (naction_ignored());
-		}
-	}
+            return (naction_ignored());
+        }
+    }
 }
 
 
 
 static naction state_idle(
-	struct nsm * sm,
-	const struct nevent * event)
+    struct nsm * sm,
+    const struct nevent * event)
 {
-	struct i2c_workspace * ws = sm->wspace;
-	struct ni2c_bus_driver * bus;
+    struct i2c_workspace * ws = sm->wspace;
+    struct ni2c_bus_driver * bus;
 
-	bus = pdrv_to_ni2c_driver(ws->dev->pdrv);
+    bus = pdrv_to_ni2c_driver(ws->dev->pdrv);
 
-	switch (event->id) {
-		case NSM_ENTRY: {
+    switch (event->id) {
+        case NSM_ENTRY: {
 
-			nepa_defer_fetch_one(&ws->deferred);
+            nepa_defer_fetch_one(&ws->deferred);
 
-			return (naction_handled());
-		}
-		case EVT_NI2C_OPEN_SLAVE: {
-			struct ni2c_open_event * open;
+            return (naction_handled());
+        }
+        case EVT_NI2C_OPEN_SLAVE: {
+            struct ni2c_open_event * open;
 
-			open = (struct ni2c_open_event *)event;
+            open = (struct ni2c_open_event *)event;
 
-			ni2c_open_slave(open->slave, bus, open->flags, open->address, transfer, error);
+            ni2c_open_slave(open->slave, bus, open->flags, open->address, transfer, error);
 
-			return (naction_handled());
-		}
-		case EVT_NI2C_WRITE_SLAVE: {
-			struct ni2c_transfer_event * transfer;
+            return (naction_handled());
+        }
+        case EVT_NI2C_WRITE_SLAVE: {
+            struct ni2c_transfer_event * transfer;
 
-			transfer = (struct ni2c_transfer_event *)event;
+            transfer = (struct ni2c_transfer_event *)event;
 
-			NREQUIRE(NAPI_USAGE "Invalid slave.", transfer->slave != NULL);
-			NREQUIRE(NAPI_USAGE "Invalid data.", transfer->data != NULL);
-			NREQUIRE(NAPI_USAGE "Invalid size.", transfer->size != 0);
+            NREQUIRE(NAPI_USAGE "Invalid slave.", transfer->slave != NULL);
+            NREQUIRE(NAPI_USAGE "Invalid data.", transfer->data != NULL);
+            NREQUIRE(NAPI_USAGE "Invalid size.", transfer->size != 0);
 
-			ws->slave = transfer->slave;
-			ws->data = transfer->data;
-			ws->size = transfer->size;
-			ws->reg  = transfer->reg;
-			ws->action = I2C_WRITE;
-			ws->client = event->producer;
-			ws->retries = 0;
+            ws->slave = transfer->slave;
+            ws->data = transfer->data;
+            ws->size = transfer->size;
+            ws->reg  = transfer->reg;
+            ws->action = I2C_WRITE;
+            ws->client = event->producer;
+            ws->retries = 0;
 
-			return (naction_transit_to(sm, state_transfer));
-		}
-		case EVT_NI2C_READ_SLAVE: {
-			struct ni2c_transfer_event * transfer;
+            return (naction_transit_to(sm, state_transfer));
+        }
+        case EVT_NI2C_READ_SLAVE: {
+            struct ni2c_transfer_event * transfer;
 
-			transfer = (struct ni2c_transfer_event *)event;
+            transfer = (struct ni2c_transfer_event *)event;
 
-			NREQUIRE(NAPI_USAGE "Invalid slave.", transfer->slave != NULL);
-			NREQUIRE(NAPI_USAGE "Invalid data.", transfer->data != NULL);
-			NREQUIRE(NAPI_USAGE "Invalid size.", transfer->size != 0);
+            NREQUIRE(NAPI_USAGE "Invalid slave.", transfer->slave != NULL);
+            NREQUIRE(NAPI_USAGE "Invalid data.", transfer->data != NULL);
+            NREQUIRE(NAPI_USAGE "Invalid size.", transfer->size != 0);
 
-			ws->slave = transfer->slave;
-			ws->data = transfer->data;
-			ws->size = transfer->size;
-			ws->reg  = transfer->reg;
-			ws->action = I2C_READ;
-			ws->client = event->producer;
-			ws->retries = 0;
+            ws->slave = transfer->slave;
+            ws->data = transfer->data;
+            ws->size = transfer->size;
+            ws->reg  = transfer->reg;
+            ws->action = I2C_READ;
+            ws->client = event->producer;
+            ws->retries = 0;
 
-			return (naction_transit_to(sm, state_transfer));
-		}
-		case EVT_NI2C_GENERAL_CALL: {
-			const struct ni2c_general_call_event * general;
+            return (naction_transit_to(sm, state_transfer));
+        }
+        case EVT_NI2C_GENERAL_CALL: {
+            const struct ni2c_general_call_event * general;
 
-			general = (const struct ni2c_general_call_event *)event;
+            general = (const struct ni2c_general_call_event *)event;
 
-			NREQUIRE(NAPI_USAGE "Invalid command.", general->command != 0);
+            NREQUIRE(NAPI_USAGE "Invalid command.", general->command != 0);
 
-			ws->slave = &g_general_call_slave;
-			ws->data = &general->command;
-			ws->size = 1u;
-			ws->action = I2C_WRITE;
-			ws->client = event->producer;
-			ws->retries = 0;
+            ws->slave = &g_general_call_slave;
+            ws->data = &general->command;
+            ws->size = 1u;
+            ws->action = I2C_WRITE;
+            ws->client = event->producer;
+            ws->retries = 0;
 
-			ni2c_open_slave(ws->slave, bus, 0, 0, &transfer, &error);
+            ni2c_open_slave(ws->slave, bus, 0, 0, &transfer, &error);
 
-			return (naction_transit_to(sm, state_transfer));
-		}
-		default: {
+            return (naction_transit_to(sm, state_transfer));
+        }
+        default: {
 
-			return (naction_ignored());
-		}
-	}
+            return (naction_ignored());
+        }
+    }
 }
 
 
 
 static naction state_transfer(
-		struct nsm * sm,
-		const struct nevent * event)
+        struct nsm * sm,
+        const struct nevent * event)
 {
-	struct i2c_workspace * ws = sm->wspace;
+    struct i2c_workspace * ws = sm->wspace;
 
-	switch (event->id) {
-		case NSM_ENTRY: {
-			uint32_t	timeout;
+    switch (event->id) {
+        case NSM_ENTRY: {
+            uint32_t    timeout;
 
-			switch (ws->action) {
-				case I2C_WRITE: {
-					ni2c_write_slave(ws->slave, ws->reg, ws->data, ws->size);
-					break;
-				}
-				case I2C_READ: {
-					ni2c_read_slave(ws->slave, ws->reg, ws->data, ws->size);
-					break;
-				}
-				default: {
-					;
-				}
-			}
+            switch (ws->action) {
+                case I2C_WRITE: {
+                    ni2c_write_slave(ws->slave, ws->reg, ws->data, ws->size);
+                    break;
+                }
+                case I2C_READ: {
+                    ni2c_read_slave(ws->slave, ws->reg, ws->data, ws->size);
+                    break;
+                }
+                default: {
+                    ;
+                }
+            }
 
-		    return (naction_handled());
-		}
-		case EVT_TRANSFER_COMPLETE: {
-			struct ni2c_transfer_completed_event * completed;
+            return (naction_handled());
+        }
+        case EVT_TRANSFER_COMPLETE: {
+            struct ni2c_transfer_completed_event * completed;
 
-			completed = (struct ni2c_transfer_completed_event *)nevent_create(
-					sizeof(struct ni2c_transfer_completed_event),
-					EVT_NI2C_TRANSFER_COMPLETED);
+            completed = (struct ni2c_transfer_completed_event *)nevent_create(
+                    sizeof(struct ni2c_transfer_completed_event),
+                    EVT_NI2C_TRANSFER_COMPLETED);
 
-			completed->retries = ws->retries;
-			nepa_send_event(
-				ws->client,
-				(nevent *)completed);
+            completed->retries = ws->retries;
+            nepa_send_event(
+                ws->client,
+                (nevent *)completed);
 
-			return (naction_transit_to(sm, state_idle));
-		}
-		case EVT_ERROR: {
+            return (naction_transit_to(sm, state_idle));
+        }
+        case EVT_ERROR: {
 
-				struct ni2c_error_event * error;
+                struct ni2c_error_event * error;
 
-				error = NEVENT_CREATE(struct ni2c_error_event, EVT_NI2C_ERROR);
-				error->retries = ws->retries;
-				error->error_id = NI2C_ACKNOWLEDGE_FAILURE;
-				nepa_send_event(
-					ws->client,
-					(nevent *)error);
+                error = NEVENT_CREATE(struct ni2c_error_event, EVT_NI2C_ERROR);
+                error->retries = ws->retries;
+                error->error_id = NI2C_ACKNOWLEDGE_FAILURE;
+                nepa_send_event(
+                    ws->client,
+                    (nevent *)error);
 
-				return (naction_transit_to(sm, state_idle));
-		}
+                return (naction_transit_to(sm, state_idle));
+        }
 
 
-		case EVT_NI2C_ERROR: {
+        case EVT_NI2C_ERROR: {
 
-			nepa_defer_event(&ws->deferred, event);
-					return (naction_handled());
-				}
+            nepa_defer_event(&ws->deferred, event);
+                    return (naction_handled());
+                }
 
-		case EVT_NI2C_WRITE_SLAVE:
-		case EVT_NI2C_READ_SLAVE: {
-			nepa_defer_event(&ws->deferred, event);
+        case EVT_NI2C_WRITE_SLAVE:
+        case EVT_NI2C_READ_SLAVE: {
+            nepa_defer_event(&ws->deferred, event);
 
-			return (naction_handled());
-		}
-		default: {
+            return (naction_handled());
+        }
+        default: {
 
-			return (naction_ignored());
-		}
-	}
+            return (naction_ignored());
+        }
+    }
 }
 
 #endif /* NPROFILE_EN_I2C */

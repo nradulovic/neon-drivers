@@ -65,27 +65,27 @@ enum nrtc_device_state
 
 enum nrtc_reading_mode
 {
-	RTC_AUTO_READING,
-	RTC_MANUAL_READING
+    RTC_AUTO_READING,
+    RTC_MANUAL_READING
 };
 
 
 
 enum rtc_event_id
 {
-	EVT_RTC_OPEN = 				CONFIG_RTC_EVENT_BASE_ID,
-	EVT_RTC_SET_TIME,
-	EVT_RTC_GET_TIME,
-	EVT_RTC_TICK,
-	EVT_RTC_TIME,
+    EVT_RTC_OPEN =              CONFIG_RTC_EVENT_BASE_ID,
+    EVT_RTC_SET_TIME,
+    EVT_RTC_GET_TIME,
+    EVT_RTC_TICK,
+    EVT_RTC_TIME,
 };
 
 
 
 struct nrtc_config
 {
-	enum nrtc_reading_mode		reading_mode;
-	void * 						custom;
+    enum nrtc_reading_mode      reading_mode;
+    void *                      custom;
 };
 
 
@@ -112,26 +112,26 @@ struct nrtc_state
 
 struct rtc_open_event
 {
-	nevent   					event;
-	struct nrtc_config *		config;
-	struct nepa	*				ni2c_epa;
+    nevent                      event;
+    struct nrtc_config *        config;
+    struct nepa *               ni2c_epa;
 };
 
 
 
 struct rtc_set_time_event
 {
-	nevent   					event;
-	struct nrtc_time *			time;
+    nevent                      event;
+    struct nrtc_time *          time;
 };
 
 
 
 struct rtc_time_event
 {
-	nevent   					event;
-	struct nrtc_time *			time;
-	struct nrtc_state *			state;
+    nevent                      event;
+    struct nrtc_time *          time;
+    struct nrtc_state *         state;
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/

@@ -83,7 +83,7 @@ struct npdev_clk;
  */
 struct npdev_mux;
 
-/**@brief		Peripheral device
+/**@brief       Peripheral device
  */
 struct npdev
 {
@@ -93,10 +93,10 @@ struct npdev
         uint16_t                dev_instance;
     }                           recognition;
     uint32_t                    flags;  /**<@brief Device flags               */
-    uint32_t					max_ref;/**<@brief Maximum reference counter
+    uint32_t                    max_ref;/**<@brief Maximum reference counter
                                           * value.
                                           */
-    struct npdrv *             	pdrv;   /**<@brief Peripheral driver for this
+    struct npdrv *              pdrv;   /**<@brief Peripheral driver for this
                                           * device.
                                           */
 #if (NP_ATTR_ADDRESS == 1)
@@ -109,10 +109,10 @@ struct npdev
     const struct npdev_rst *    rst;
 #endif
 #if (NP_ATTR_PWR == 1)
-    const struct npdev_pwr *  	pwr;
+    const struct npdev_pwr *    pwr;
 #endif
 #if (NP_ATTR_CLK == 1)
-    const struct npdev_clk * 	clk;
+    const struct npdev_clk *    clk;
 #endif
 };
 
@@ -140,7 +140,7 @@ struct npdrv
  * @return      Pointer to peripheral driver
  * @api
  */
-#define npdev_to_pdrv(pdev)				(pdev)->pdrv
+#define npdev_to_pdrv(pdev)             (pdev)->pdrv
 
 /**@brief       Get the peripheral instance number
  * @param       pdev
@@ -148,7 +148,7 @@ struct npdrv
  * @return      Instance number value
  * @api
  */
-#define npdev_instance(pdev) 			((pdev)->recognition.dev_instance)
+#define npdev_instance(pdev)            ((pdev)->recognition.dev_instance)
 
 /**@brief       Get the peripheral class number
  * @param       pdev
@@ -164,7 +164,7 @@ struct npdrv
  * @return      Flags value
  * @api
  */
-#define npdev_flags(pdev)             	(pdev)->flags
+#define npdev_flags(pdev)               (pdev)->flags
 
 /**@brief       Get the peripheral register address
  * @param       pdev
@@ -172,7 +172,7 @@ struct npdrv
  * @return      Register address
  * @api
  */
-#define npdev_address(pdev)           	(pdev)->address
+#define npdev_address(pdev)             (pdev)->address
 
 /**@brief       Get the peripheral ISR structures
  * @param       pdev
@@ -182,7 +182,7 @@ struct npdrv
  * @return      Pointer to the ISR structure
  * @api
  */
-#define npdev_isr(pdev, no)			    &((pdev)->isr[no])
+#define npdev_isr(pdev, no)             &((pdev)->isr[no])
 
 /**@brief       Get the peripheral RST structures
  * @param       pdev
@@ -192,7 +192,7 @@ struct npdrv
  * @return      Pointer to the RST structure
  * @api
  */
-#define npdev_rst(pdev, no)			    &((pdev)->rst[no])
+#define npdev_rst(pdev, no)             &((pdev)->rst[no])
 
 /**@brief       Get the peripheral PWR structures
  * @param       pdev
@@ -202,7 +202,7 @@ struct npdrv
  * @return      Pointer to the PWR structure
  * @api
  */
-#define npdev_pwr(pdev, no)		        &((pdev)->pwr[no])
+#define npdev_pwr(pdev, no)             &((pdev)->pwr[no])
 
 /**@brief       Get the peripheral CLK structures
  * @param       pdev
@@ -212,7 +212,7 @@ struct npdrv
  * @return      Pointer to the CLK structure
  * @api
  */
-#define npdev_clk(pdev, no)		    	&((pdev)->clk[no])
+#define npdev_clk(pdev, no)             &((pdev)->clk[no])
 
 /**@} *//*----------------------------------------------------------------*//**
  * @name        Peripheral driver methods
@@ -232,7 +232,7 @@ struct npdrv
  * @return      Instance number value
  * @api
  */
-#define npdrv_get_id(pdrv)			    npdev_instance(npdrv_to_pdev(pdrv))
+#define npdrv_get_id(pdrv)              npdev_instance(npdrv_to_pdev(pdrv))
 
 /**@brief       Get the peripheral driver class number
  * @param       pdrv
@@ -240,14 +240,14 @@ struct npdrv
  * @return      Class number value
  * @api
  */
-#define npdrv_class(pdrv)				npdev_class(npdrv_to_pdev(pdrv))
-#define npdrv_flags(pdrv)				npdev_flags(npdrv_to_pdev(pdrv))
-#define npdrv_address(pdrv)				npdev_address(npdrv_to_pdev(pdrv))
-#define npdrv_ref(pdrv)					(pdrv)->ref
-#define npdrv_isr(pdrv, no)				npdev_isr(npdrv_to_pdev(pdrv), (no))
-#define npdrv_rst(pdrv, no)				npdev_rst(npdrv_to_pdev(pdrv), (no))
-#define npdrv_pwr(pdrv, no)				npdev_pwr(npdrv_to_pdev(pdrv), (no))
-#define npdrv_clk(pdrv, no)				npdev_clk(npdrv_to_pdev(pdrv), (no))
+#define npdrv_class(pdrv)               npdev_class(npdrv_to_pdev(pdrv))
+#define npdrv_flags(pdrv)               npdev_flags(npdrv_to_pdev(pdrv))
+#define npdrv_address(pdrv)             npdev_address(npdrv_to_pdev(pdrv))
+#define npdrv_ref(pdrv)                 (pdrv)->ref
+#define npdrv_isr(pdrv, no)             npdev_isr(npdrv_to_pdev(pdrv), (no))
+#define npdrv_rst(pdrv, no)             npdev_rst(npdrv_to_pdev(pdrv), (no))
+#define npdrv_pwr(pdrv, no)             npdev_pwr(npdrv_to_pdev(pdrv), (no))
+#define npdrv_clk(pdrv, no)             npdev_clk(npdrv_to_pdev(pdrv), (no))
 
 #define npdrv_isr_enable(pdrv, no)      np_isr_enable(npdrv_isr((pdrv), (no)))
 
@@ -273,7 +273,7 @@ struct npdrv
 #define npdrv_mux_setup(pdrv, no, pin_id)                                       \
     np_mux_enable(npdrv_mux((pdrv), (no)), (pin_id))
 
-#define npdrv_mux_reset(pin_id)                                     			\
+#define npdrv_mux_reset(pin_id)                                                 \
     np_mux_disable(pin_id)
 
 struct npdrv * npdrv_request(uint32_t dev_id);

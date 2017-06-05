@@ -20,10 +20,10 @@
  * e-mail : nenad.b.radulovic@gmail.com
  *//***********************************************************************//**
  * @file
- * @author 		Dejan Ristic
- * @brief 		Pin Peripheral Multiplexer
- * @defgroup	mux_intf Pin Peripheral Multiplexer
- * @brief 		Pin Peripheral Multiplexer
+ * @author      Dejan Ristic
+ * @brief       Pin Peripheral Multiplexer
+ * @defgroup    mux_intf Pin Peripheral Multiplexer
+ * @brief       Pin Peripheral Multiplexer
  *********************************************************************//** @{ */
 
 #ifndef NEON_DRIVERS_MCU_MUX_H_
@@ -42,34 +42,34 @@ extern "C" {
 
 /*============================================================  DATA TYPES  ==*/
 
-/**@brief		Portable multiplexer structure
- * @details		This is forward declaration of the multiplexer structure. The
- * 				structure is defined in port p_mux.h header.
+/**@brief       Portable multiplexer structure
+ * @details     This is forward declaration of the multiplexer structure. The
+ *              structure is defined in port p_mux.h header.
  */
 struct nmux;
 
 /*======================================================  GLOBAL VARIABLES  ==*/
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 
-/**@brief		Setup multiplexer according to given array
- * @param 		mux_array
- * 				Pointer to mux array
- * @param 		size
- * 				The size of mux array in bytes, eg. sizeof(array).
+/**@brief       Setup multiplexer according to given array
+ * @param       mux_array
+ *              Pointer to mux array
+ * @param       size
+ *              The size of mux array in bytes, eg. sizeof(array).
  * @api
  */
 void nmux_setup(
-	const struct nmux * 		mux_array,
-	size_t 						size);
+    const struct nmux *         mux_array,
+    size_t                      size);
 
 
 
-/**@brief		Reset mux settings to power-on defaults
- * @param 		gpio_id
- * 				GPIO id number.
+/**@brief       Reset mux settings to power-on defaults
+ * @param       gpio_id
+ *              GPIO id number.
  */
 void nmux_reset(
-	uint32_t 					gpio_id);
+    uint32_t                    gpio_id);
 
 /*--------------------------------------------------------  C++ extern end  --*/
 #ifdef __cplusplus

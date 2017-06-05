@@ -48,81 +48,81 @@
  * @return      Returns valid I2C bus ID number which can be used with other
  *              functions and macros.
  */
-#define NI2C_ID(bus)            	NP_DEV_CREATE_ID(NPROFILE_CLASS_I2C, bus, 0)
+#define NI2C_ID(bus)                NP_DEV_CREATE_ID(NPROFILE_CLASS_I2C, bus, 0)
 
 /**@brief       Convenience wrapper macro around @ref NP_DEV_ID_TO_MAJOR().
  * @param       id
  *              Valid I2C bus ID
  * @return      Returns I2C bus number
  */
-#define NI2C_ID_TO_BUS(id)      	NP_DEV_ID_TO_MAJOR(id)
+#define NI2C_ID_TO_BUS(id)          NP_DEV_ID_TO_MAJOR(id)
 
-#define NI2C0						0
-#define NI2C1						1
-#define NI2C2						2
-#define NI2C3						3
-#define NI2C4						4
-#define NI2C5						5
-#define NI2C6						6
-#define NI2C7						7
-#define NI2C8						8
-#define NI2C9						9
-#define NI2C10						10
-#define NI2C11						11
-#define NI2C12						12
-#define NI2C13						13
-#define NI2C14						14
-#define NI2C15						15
+#define NI2C0                       0
+#define NI2C1                       1
+#define NI2C2                       2
+#define NI2C3                       3
+#define NI2C4                       4
+#define NI2C5                       5
+#define NI2C6                       6
+#define NI2C7                       7
+#define NI2C8                       8
+#define NI2C9                       9
+#define NI2C10                      10
+#define NI2C11                      11
+#define NI2C12                      12
+#define NI2C13                      13
+#define NI2C14                      14
+#define NI2C15                      15
 
-#define NI2C_BUS_MODE_MASTER		(0x0u << 0)
-#define NI2C_BUS_MODE_SLAVE			(0x1u << 0)
-#define NI2C_BUS_ADDRESS_7BIT   	(0x0u << 1)
-#define NI2C_BUS_ADDRESS_10BIT  	(0x1u << 1)
-#define NI2C_BUS_SPEED_100			(0x0u << 4)
-#define NI2C_BUS_SPEED_400			(0x1u << 4)
-#define NI2C_BUS_SPEED_1700			(0x2u << 4)
-#define NI2C_BUS_SPEED_3400			(0x3u << 4)
-#define NI2C_BUS_HANDLING_IT		(0x0u << 6)
-#define NI2C_BUS_HANDLING_DMA		(0x1u << 6)
+#define NI2C_BUS_MODE_MASTER        (0x0u << 0)
+#define NI2C_BUS_MODE_SLAVE         (0x1u << 0)
+#define NI2C_BUS_ADDRESS_7BIT       (0x0u << 1)
+#define NI2C_BUS_ADDRESS_10BIT      (0x1u << 1)
+#define NI2C_BUS_SPEED_100          (0x0u << 4)
+#define NI2C_BUS_SPEED_400          (0x1u << 4)
+#define NI2C_BUS_SPEED_1700         (0x2u << 4)
+#define NI2C_BUS_SPEED_3400         (0x3u << 4)
+#define NI2C_BUS_HANDLING_IT        (0x0u << 6)
+#define NI2C_BUS_HANDLING_DMA       (0x1u << 6)
 
-#define NI2C_REG_SIZE_0				(0u << 0)
-#define NI2C_REG_SIZE_1				(1u << 0)
-#define NI2C_REG_SIZE_2				(2u << 0)
-#define NI2C_REG_SIZE_3				(3u << 0)
-#define NI2C_REG_SIZE_4				(4u << 0)
+#define NI2C_REG_SIZE_0             (0u << 0)
+#define NI2C_REG_SIZE_1             (1u << 0)
+#define NI2C_REG_SIZE_2             (2u << 0)
+#define NI2C_REG_SIZE_3             (3u << 0)
+#define NI2C_REG_SIZE_4             (4u << 0)
 
-#define NI2C_READ_WITH_RESTART		(0u << 4)
-#define NI2C_READ_WITHOUT_RESTART	(1u << 4)
+#define NI2C_READ_WITH_RESTART      (0u << 4)
+#define NI2C_READ_WITHOUT_RESTART   (1u << 4)
 
 
-#define NI2C_BUS_ADDRESSING_MODE												\
-	(NI2C_BUS_ADDRESS_7BIT | NI2C_BUS_ADDRESS_10BIT)
+#define NI2C_BUS_ADDRESSING_MODE                                                \
+    (NI2C_BUS_ADDRESS_7BIT | NI2C_BUS_ADDRESS_10BIT)
 
-#define NI2C_BUS_SPEED															\
-	(NI2C_BUS_SPEED_100 | NI2C_BUS_SPEED_400 | NI2C_BUS_SPEED_1700 | 			\
-	NI2C_BUS_SPEED_3400)
+#define NI2C_BUS_SPEED                                                          \
+    (NI2C_BUS_SPEED_100 | NI2C_BUS_SPEED_400 | NI2C_BUS_SPEED_1700 |            \
+    NI2C_BUS_SPEED_3400)
 
-#define NI2C_BUS_HANDLING														\
-	(NI2C_BUS_HANDLING_IT | NI2C_BUS_HANDLING_DMA)
+#define NI2C_BUS_HANDLING                                                       \
+    (NI2C_BUS_HANDLING_IT | NI2C_BUS_HANDLING_DMA)
 
-#define NI2C_REG_SIZE															\
-	(NI2C_REG_SIZE_0 | NI2C_REG_SIZE_1 | NI2C_REG_SIZE_2						\
-	| NI2C_REG_SIZE_3 | NI2C_REG_SIZE_4)
+#define NI2C_REG_SIZE                                                           \
+    (NI2C_REG_SIZE_0 | NI2C_REG_SIZE_1 | NI2C_REG_SIZE_2                        \
+    | NI2C_REG_SIZE_3 | NI2C_REG_SIZE_4)
 
-#define NI2C_READ_MODE															\
-	(NI2C_READ_WITH_RESTART | NI2C_READ_WITHOUT_RESTART)
+#define NI2C_READ_MODE                                                          \
+    (NI2C_READ_WITH_RESTART | NI2C_READ_WITHOUT_RESTART)
 
-#define ni2c_get_reg_size(slave, value)											\
-	((slave)->flags & NI2C_REG_SIZE)
+#define ni2c_get_reg_size(slave, value)                                         \
+    ((slave)->flags & NI2C_REG_SIZE)
 
-#define ni2c_set_reg_size(slave, value)											\
-	(slave)->flags = (value & NI2C_REG_SIZE)
+#define ni2c_set_reg_size(slave, value)                                         \
+    (slave)->flags = (value & NI2C_REG_SIZE)
 
-#define ni2c_get_slave_address(slave)											\
-	(slave)->address
+#define ni2c_get_slave_address(slave)                                           \
+    (slave)->address
 
-#define ni2c_set_slave_address(slave, slave_address)							\
-	(slave)->address = (slave_address)
+#define ni2c_set_slave_address(slave, slave_address)                            \
+    (slave)->address = (slave_address)
 
 /*-------------------------------------------------------  C++ extern base  --*/
 #ifdef __cplusplus
@@ -133,33 +133,33 @@ extern "C" {
 
 enum ni2c_bus_error
 {
-	NI2C_BUS_COLISION_ERROR,
-	NI2C_BUS_ACKNOWLEDGE_FAILURE,
-	NI2C_BUS_ARBITRATION_LOST,
-	NI2C_BUS_OVERFLOW
+    NI2C_BUS_COLISION_ERROR,
+    NI2C_BUS_ACKNOWLEDGE_FAILURE,
+    NI2C_BUS_ARBITRATION_LOST,
+    NI2C_BUS_OVERFLOW
 };
 
 
 
-struct np_dev_i2c			    ctx;
+struct np_dev_i2c               ctx;
 
 
 
 struct ni2c_bus_driver
 {
-    struct npdrv               	pdrv;
-    struct np_dev_i2c		   	ctx;
-    struct ni2c_slave *			slave;
-    uint32_t				   	bus_handling;
-    uint32_t					reg;
-    void *					   	data;
-    size_t					   	size;
-    uint32_t					phase;
-    uint32_t					format;
-    uint32_t					type;
-    uint32_t					read_mode;
-    uint32_t					retry;
-    enum ni2c_bus_error			error;
+    struct npdrv                pdrv;
+    struct np_dev_i2c           ctx;
+    struct ni2c_slave *         slave;
+    uint32_t                    bus_handling;
+    uint32_t                    reg;
+    void *                      data;
+    size_t                      size;
+    uint32_t                    phase;
+    uint32_t                    format;
+    uint32_t                    type;
+    uint32_t                    read_mode;
+    uint32_t                    retry;
+    enum ni2c_bus_error         error;
     struct ntimer               recovery_period;
 };
 
@@ -171,11 +171,11 @@ struct ni2c_slave;
 
 struct ni2c_slave
 {
-	uint32_t				   	address;
-	uint32_t				   	flags;
-	struct ni2c_bus_driver *   	bus;
-	void                        (* transfer)(struct ni2c_slave * slave);
-	void                        (* error)(struct ni2c_slave * slave, enum ni2c_bus_error error);
+    uint32_t                    address;
+    uint32_t                    flags;
+    struct ni2c_bus_driver *    bus;
+    void                        (* transfer)(struct ni2c_slave * slave);
+    void                        (* error)(struct ni2c_slave * slave, enum ni2c_bus_error error);
 };
 
 /*======================================================  GLOBAL VARIABLES  ==*/
@@ -243,49 +243,49 @@ extern struct ni2c_bus_driver  g_i2c15_driver;
 /*===================================================  FUNCTION PROTOTYPES  ==*/
 
 void ni2c_bus_init(
-    uint32_t              		bus_id,
-    uint32_t					config);
+    uint32_t                    bus_id,
+    uint32_t                    config);
 
 
 
 void ni2c_bus_term(
-	uint32_t              		bus_id);
+    uint32_t                    bus_id);
 
 
 
 void ni2c_open_slave(
-	struct ni2c_slave *			slave,
-	struct ni2c_bus_driver *	bus,
-	uint32_t					flags,
-	uint32_t					address,
-	void						(* transfer)(struct ni2c_slave * slave),
-	void						(* error)(struct ni2c_slave * slave, enum ni2c_bus_error id));
+    struct ni2c_slave *         slave,
+    struct ni2c_bus_driver *    bus,
+    uint32_t                    flags,
+    uint32_t                    address,
+    void                        (* transfer)(struct ni2c_slave * slave),
+    void                        (* error)(struct ni2c_slave * slave, enum ni2c_bus_error id));
 
 
 
 void ni2c_write_slave(
-	struct ni2c_slave *			slave,
-	uint32_t					reg,
-	void *						data,
-	size_t						size);
+    struct ni2c_slave *         slave,
+    uint32_t                    reg,
+    void *                      data,
+    size_t                      size);
 
 
 
 void ni2c_read_slave(
-	struct ni2c_slave *			slave,
-	uint32_t					reg,
-	void *						data,
-	size_t						size);
+    struct ni2c_slave *         slave,
+    uint32_t                    reg,
+    void *                      data,
+    size_t                      size);
 
 
 
 void ni2c_event_isr(
-	struct ni2c_bus_driver *	bus);
+    struct ni2c_bus_driver *    bus);
 
 
 
 void ni2c_error_isr(
-	struct ni2c_bus_driver *	bus);
+    struct ni2c_bus_driver *    bus);
 
 /*--------------------------------------------------------  C++ extern end  --*/
 #ifdef __cplusplus

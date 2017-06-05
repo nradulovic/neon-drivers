@@ -98,18 +98,18 @@ struct nuart_config
     const uint32_t *            gpios;
 };
 
-/**@brief		UART driver structure
- * @details		The structure is instantiated by profile data source file,
- * 				one structure per peripheral.
+/**@brief       UART driver structure
+ * @details     The structure is instantiated by profile data source file,
+ *              one structure per peripheral.
  */
 struct nuart_drv
 {
     struct npdrv                pdrv;  /**<@brief Generic peripheral driver
-    									 * structure
-    									 */
-    struct np_dev_uart          ctx;	/**<@brief Custom data type which is
-    									 * defined in family port header file.
-     	 	 	 	 	 	 	 	 	 */
+                                         * structure
+                                         */
+    struct np_dev_uart          ctx;    /**<@brief Custom data type which is
+                                         * defined in family port header file.
+                                         */
     const uint32_t *            gpios;
     uint32_t                    flags;
     uint32_t                    state;
