@@ -1,0 +1,3 @@
+PROJECT_NAME                    = "Neon Drivers"
+PROJECT_BRIEF                   = "Hardware drivers"
+INPUT                           = ../documentation/src
